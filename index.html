@@ -96,10 +96,12 @@
     box-shadow: 0 8px 22px rgba(42,157,159,.30);
     position: relative;
     overflow: hidden;
+    background: var(--white);
   }
-  .logo-mark svg.logo-svg {
+  .logo-mark img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
     display: block;
   }
   .logo-title {
@@ -252,10 +254,12 @@
     justify-content: center;
     box-shadow: 0 3px 10px rgba(42,157,159,.25);
     overflow: hidden;
+    background: var(--white);
   }
-  .topbar-logo svg.logo-svg {
+  .topbar-logo img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
     display: block;
   }
   .topbar-title {
@@ -573,67 +577,12 @@
 </head>
 <body>
 
-<!-- =============== Elite Clinic LOGO (SVG symbol, 定義一次供兩處使用) =============== -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="clinic-logo" viewBox="0 0 320 320">
-    <!-- 青綠色圓形背景 -->
-    <circle cx="160" cy="160" r="158" fill="#2CA5AD"/>
-
-    <!-- 枝幹：從左下弧形延伸到中右 -->
-    <path d="M40 258 C 80 220, 130 215, 170 215 L 226 215"
-          stroke="white" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-
-    <!-- 5 片葉子（白色、內部有脈紋） -->
-    <g fill="white">
-      <path d="M 52 215 Q 38 188 50 152 Q 66 188 52 215 Z"/>
-      <path d="M 77 213 Q 64 182 75 146 Q 88 182 77 213 Z"/>
-      <path d="M 102 215 Q 91 178 101 140 Q 113 178 102 215 Z"/>
-      <path d="M 128 214 Q 117 183 127 148 Q 139 183 128 214 Z"/>
-      <path d="M 153 213 Q 144 185 152 158 Q 162 185 153 213 Z"/>
-    </g>
-    <g stroke="#2CA5AD" stroke-width="1.2" fill="none" stroke-linecap="round">
-      <path d="M 52 158 L 52 212"/>
-      <path d="M 77 152 L 77 210"/>
-      <path d="M 102 146 L 102 213"/>
-      <path d="M 128 154 L 128 212"/>
-      <path d="M 152 164 L 152 210"/>
-    </g>
-
-    <!-- 小鳥剪影（停在枝幹右側，面朝左） -->
-    <g fill="white">
-      <!-- 身體 -->
-      <path d="M 175 210
-               C 175 196, 187 188, 202 190
-               C 218 192, 226 200, 222 211
-               C 219 219, 205 223, 188 220
-               C 180 218, 175 215, 175 210 Z"/>
-      <!-- 頭 -->
-      <circle cx="180" cy="194" r="10.5"/>
-      <!-- 尾巴 -->
-      <path d="M 218 205 L 240 210 L 232 221 Z"/>
-      <!-- 腳 -->
-      <line x1="190" y1="221" x2="188" y2="234" stroke="white" stroke-width="2" stroke-linecap="round"/>
-      <line x1="202" y1="221" x2="204" y2="234" stroke="white" stroke-width="2" stroke-linecap="round"/>
-      <!-- 嘴 -->
-      <path d="M 170 194 L 160 195 L 167 198 Z"/>
-    </g>
-    <!-- 眼睛 -->
-    <circle cx="181" cy="192" r="1.4" fill="#2CA5AD"/>
-
-    <!-- 文字 Elite Clinic -->
-    <g fill="white" font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif" font-weight="400">
-      <text x="190" y="102" font-size="38" letter-spacing="0.5">Elite</text>
-      <text x="190" y="146" font-size="38" letter-spacing="0.5">Clinic</text>
-    </g>
-  </symbol>
-</svg>
-
 <!-- =============== 登入畫面 =============== -->
 <div id="loginPage">
   <div class="login-card fade-up">
     <div class="logo-wrap">
       <div class="logo-mark">
-        <svg class="logo-svg" role="img" aria-label="Elite Clinic"><use href="#clinic-logo"/></svg>
+        <img src="logo.png" alt="Elite Clinic">
       </div>
       <div class="logo-title">金鶯診所</div>
       <div class="logo-sub">EMPLOYEE PORTAL</div>
@@ -678,7 +627,7 @@
   <div class="topbar">
     <div class="topbar-brand">
       <div class="topbar-logo">
-        <svg class="logo-svg" role="img" aria-label="Elite Clinic"><use href="#clinic-logo"/></svg>
+        <img src="logo.png" alt="Elite Clinic">
       </div>
       <div>
         <div class="topbar-title">金鶯診所</div>
