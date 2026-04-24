@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>金鶯診所 員工入口網站</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold-deep: #8B6914;
+    --gold: #B8860B;
+    --gold-light: #D4AF37;
+    --gold-soft: #E8C76F;
+    --cream: #FDF8F0;
+    --cream-deep: #F5EDDC;
+    --brown: #6B4F2B;
+    --brown-light: #8B6F47;
+    --text: #3D2B1F;
+    --text-muted: #8A7560;
+    --white: #FFFFFF;
+    --shadow: 0 4px 20px rgba(139,105,20,.12);
+    --shadow-hover: 0 12px 40px rgba(139,105,20,.22);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text);
+    background: linear-gradient(135deg, #FDF8F0 0%, #F5EDDC 50%, #F0E4C8 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .serif { font-family: 'Noto Serif TC', serif; }
+
+  /* 裝飾性背景 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(212,175,55,.12) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(184,134,11,.10) 0%, transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ============ 登入畫面 ============ */
+  #loginPage {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 10;
+  }
+  .login-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 44px 36px 36px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(212,175,55,.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .login-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold-deep));
+  }
+  .logo-wrap {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .logo-mark {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(184,134,11,.35);
+    position: relative;
+  }
+  .logo-mark svg { width: 40px; height: 40px; }
+  .logo-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--brown);
+    margin-bottom: 4px;
+  }
+  .logo-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 4px;
+  }
+
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--brown);
+    margin-bottom: 6px;
+    letter-spacing: .5px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #E5D5B8;
+    border-radius: 10px;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--cream);
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(212,175,55,.15);
+  }
+  .form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0 20px;
+    font-size: 13px;
+  }
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .form-check input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .btn-primary {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all .25s;
+    font-family: inherit;
+    box-shadow: 0 4px 14px rgba(139,105,20,.3);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(139,105,20,.4);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled {
+    opacity: .6;
+    cursor: wait;
+  }
+  .login-msg {
+    min-height: 20px;
+    margin-top: 14px;
+    font-size: 13px;
+    text-align: center;
+    color: #C0392B;
+  }
+  .login-msg.ok { color: #2E7D32; }
+  .login-foot {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* ============ 主畫面 ============ */
+  #dashboard {
+    display: none;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: rgba(255,255,255,.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(212,175,55,.25);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .topbar-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(184,134,11,.3);
+  }
+  .topbar-logo svg { width: 22px; height: 22px; }
+  .topbar-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--brown);
+    letter-spacing: 1.5px;
+  }
+  .topbar-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+  }
+  .topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px 6px 6px;
+    border-radius: 30px;
+    background: var(--cream-deep);
+    font-size: 13px;
+  }
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .user-name { font-weight: 500; color: var(--brown); }
+  .user-role {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 4px;
+    padding: 2px 8px;
+    background: var(--white);
+    border-radius: 10px;
+  }
+  .btn-logout {
+    background: transparent;
+    border: 1.5px solid #E5D5B8;
+    color: var(--brown);
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .btn-logout:hover {
+    background: var(--brown);
+    color: var(--white);
+    border-color: var(--brown);
+  }
+
+  .hero {
+    padding: 48px 32px 24px;
+    text-align: center;
+  }
+  .hero-welcome {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--brown);
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+  }
+  .hero-divider {
+    width: 60px;
+    height: 3px;
+    margin: 0 auto 12px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .hero-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .section-label {
+    max-width: 1200px;
+    margin: 20px auto 18px;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::before,
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(184,134,11,.3), transparent);
+  }
+  .section-label span {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    color: var(--brown);
+    letter-spacing: 4px;
+  }
+
+  .cards {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 28px 24px 24px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(212,175,55,.2);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all .3s cubic-bezier(.2,.8,.2,1);
+    text-decoration: none;
+    color: inherit;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold-light), var(--gold));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .4s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--gold-soft);
+  }
+  .card:hover::before { transform: scaleX(1); }
+  .card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--cream-deep), #EED7A5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    transition: all .3s;
+  }
+  .card:hover .card-icon {
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    transform: rotate(-5deg) scale(1.05);
+  }
+  .card-icon svg {
+    width: 28px;
+    height: 28px;
+    color: var(--gold-deep);
+    transition: color .3s;
+  }
+  .card:hover .card-icon svg { color: var(--white); }
+  .card-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--brown);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .card-desc {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    flex: 1;
+    letter-spacing: .3px;
+  }
+  .card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(184,134,11,.25);
+  }
+  .card-tag {
+    font-size: 11px;
+    color: var(--gold-deep);
+    background: var(--cream-deep);
+    padding: 3px 10px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+  }
+  .card-cta {
+    font-size: 13px;
+    color: var(--gold-deep);
+    font-weight: 500;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all .3s;
+  }
+  .card:hover .card-cta { gap: 8px; }
+  .card-coming {
+    background: repeating-linear-gradient(45deg,
+      rgba(212,175,55,.05), rgba(212,175,55,.05) 10px,
+      rgba(212,175,55,.1) 10px, rgba(212,175,55,.1) 20px);
+    border-style: dashed;
+    border-width: 2px;
+    border-color: rgba(184,134,11,.3);
+    cursor: default;
+  }
+  .card-coming:hover {
+    transform: none;
+    box-shadow: var(--shadow);
+  }
+  .card-coming::before { display: none; }
+  .card-coming .card-icon {
+    background: rgba(212,175,55,.15);
+  }
+  .card-coming .card-icon svg { color: var(--text-muted); }
+  .card-coming .card-title { color: var(--text-muted); }
+
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    border-top: 1px solid rgba(212,175,55,.2);
+    background: rgba(255,255,255,.5);
+  }
+
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--brown);
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    opacity: 0;
+    transition: all .3s;
+    z-index: 100;
+    pointer-events: none;
+  }
+  #toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  #toast.err { background: #C0392B; }
+  #toast.ok { background: #2E7D32; }
+
+  /* Loading */
+  .spin {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 響應式 */
+  @media (max-width: 600px) {
+    .topbar { padding: 12px 16px; }
+    .topbar-sub { display: none; }
+    .user-name { display: none; }
+    .hero { padding: 32px 20px 16px; }
+    .hero-title { font-size: 24px; letter-spacing: 2px; }
+    .section-label { padding: 0 20px; }
+    .cards { padding: 0 20px 32px; gap: 16px; }
+    .card { padding: 22px 20px 20px; }
+    .login-card { padding: 36px 24px 28px; }
+  }
+
+  /* 入場動畫 */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp .5s cubic-bezier(.2,.8,.2,1) both; }
+  .fade-up.d1 { animation-delay: .05s; }
+  .fade-up.d2 { animation-delay: .10s; }
+  .fade-up.d3 { animation-delay: .15s; }
+  .fade-up.d4 { animation-delay: .20s; }
+  .fade-up.d5 { animation-delay: .25s; }
+</style>
+</head>
+<body>
+
+<!-- =============== 登入畫面 =============== -->
+<div id="loginPage">
+  <div class="login-card fade-up">
+    <div class="logo-wrap">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L14 7L19 7L15 11L17 16L12 13L7 16L9 11L5 7L10 7Z" fill="#fff" stroke="none"/>
+        </svg>
+      </div>
+      <div class="logo-title">金鶯診所</div>
+      <div class="logo-sub">EMPLOYEE PORTAL</div>
+    </div>
+
+    <form id="loginForm" autocomplete="on">
+      <div class="form-group">
+        <label class="form-label" for="loginAcc">員工姓名</label>
+        <input type="text" id="loginAcc" class="form-input" placeholder="請輸入姓名" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="loginPwd">密碼</label>
+        <input type="password" id="loginPwd" class="form-input" placeholder="請輸入密碼" autocomplete="current-password" required>
+      </div>
+      <div class="form-row">
+        <label class="form-check">
+          <input type="checkbox" id="loginRemember" checked>
+          <span>記住我</span>
+        </label>
+        <span style="color:var(--text-muted);font-size:12px;">忘記密碼請洽系統管理員</span>
+      </div>
+      <button type="submit" class="btn-primary" id="btnLogin">登　入</button>
+      <div class="login-msg" id="loginMsg"></div>
+    </form>
+
+    <div class="login-foot">© 金鶯診所 ELITE CLINIC</div>
+  </div>
+</div>
+
+<!-- =============== 主畫面 =============== -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L14 7L19 7L15 11L17 16L12 13L7 16L9 11L5 7L10 7Z" fill="#fff" stroke="none"/>
+        </svg>
+      </div>
+      <div>
+        <div class="topbar-title">金鶯診所</div>
+        <div class="topbar-sub">EMPLOYEE PORTAL</div>
+      </div>
+    </div>
+    <div class="topbar-user">
+      <div class="user-chip">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <span class="user-name" id="userName">-</span>
+        <span class="user-role" id="userRole">-</span>
+      </div>
+      <button class="btn-logout" id="btnLogout">登出</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-welcome fade-up">WELCOME BACK</div>
+    <div class="hero-title fade-up d1" id="welcomeTitle">歡迎回來</div>
+    <div class="hero-divider fade-up d2"></div>
+    <div class="hero-desc fade-up d3">請選擇您要使用的系統</div>
+  </div>
+
+  <div class="section-label fade-up d3">
+    <span>系 統 功 能</span>
+  </div>
+
+  <div class="cards" id="cardsContainer"></div>
+
+  <div class="footer">© 金鶯診所 ELITE CLINIC ‧ EMPLOYEE PORTAL</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+ * 系統設定
+ * ========================================================= */
+// Apps Script Web App API（部署完後把網址貼進來）
+var API = 'https://script.google.com/macros/s/REPLACE_WITH_YOUR_DEPLOY_ID/exec';
+
+// 功能卡片清單（新增功能只要在這裡加一筆就會自動出現）
+// roles: [] 或省略 = 全部員工可見；['doctor','nurse']= 只有指定角色可見（預留，目前未啟用）
+var APPS = [
+  {
+    key: 'injection',
+    title: '減重針劑查詢登錄系統',
+    desc: '登錄病人施打針劑記錄、查詢歷史、管理針劑餘量與購買資料。',
+    tag: '臨床',
+    url: 'https://jason19820913-lab.github.io/pen/',
+    icon: 'syringe',
+    roles: []
+  },
+  {
+    key: 'pos',
+    title: '擇木良食電子訂購系統',
+    desc: '擇木良食產品線上訂購、客戶訂單管理與出貨流程。',
+    tag: '營運',
+    url: 'https://jason19820913-lab.github.io/customer/clinic-pos-customer.html',
+    icon: 'leaf',
+    roles: []
+  },
+  {
+    key: 'leave',
+    title: '員工請假管理系統',
+    desc: '線上申請請假、查詢假別餘額、主管簽核與請假記錄追蹤。',
+    tag: '人事',
+    url: 'https://jason19820913-lab.github.io/leave/',
+    icon: 'calendar',
+    roles: []
+  }
+  // 未來新增：直接在這個陣列加入新物件即可
+];
+
+// 圖示（SVG）
+var ICONS = {
+  syringe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4"/><path d="M15 5l4 4"/><path d="M16 6l-7.5 7.5L9 16l-4 4-1-1 4-4 2.5.5L18 8"/><path d="M13 3l8 8"/></svg>',
+  leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96A3.5 3.5 0 0 1 20 6c0 9-4.5 10.5-9 14z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+};
+
+var ROLE_LABEL = { doctor:'醫師', nurse:'護理師', admin:'管理員', staff:'員工' };
+var STORAGE_KEY = 'eliteClinicPortalUser';
+var CURRENT_USER = null;
+
+/* =========================================================
+ * 工具函式
+ * ========================================================= */
+function $(id){ return document.getElementById(id); }
+
+function toast(msg, type) {
+  var t = $('toast');
+  t.className = '';
+  if (type) t.classList.add(type);
+  t.textContent = msg;
+  setTimeout(function(){ t.classList.add('show'); }, 10);
+  setTimeout(function(){ t.classList.remove('show'); }, 2400);
+}
+
+// 用 GET 呼叫 Apps Script（避開 CORS）
+function apiGet(params, cb, errCb) {
+  var q = Object.keys(params).map(function(k){
+    return encodeURIComponent(k) + '=' + encodeURIComponent(params[k] == null ? '' : params[k]);
+  }).join('&');
+  fetch(API + '?' + q)
+    .then(function(r){ return r.json(); })
+    .then(cb)
+    .catch(function(e){ if (errCb) errCb(e); else console.error(e); });
+}
+
+/* =========================================================
+ * 登入
+ * ========================================================= */
+function initLogin() {
+  // 記住帳號
+  try {
+    var remembered = localStorage.getItem('eliteClinicRememberAcc');
+    if (remembered) $('loginAcc').value = remembered;
+  } catch(e) {}
+
+  // 已登入就直接進主畫面
+  try {
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      var u = JSON.parse(saved);
+      if (u && u.name) {
+        CURRENT_USER = u;
+        showDashboard();
+        return;
+      }
+    }
+  } catch(e) {}
+
+  $('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    doLogin();
+  });
+}
+
+function doLogin() {
+  var acc = $('loginAcc').value.trim();
+  var pwd = $('loginPwd').value;
+  var remember = $('loginRemember').checked;
+  var msg = $('loginMsg');
+  var btn = $('btnLogin');
+
+  msg.textContent = '';
+  msg.className = 'login-msg';
+
+  if (!acc || !pwd) {
+    msg.textContent = '請輸入姓名與密碼';
+    return;
+  }
+
+  if (API.indexOf('REPLACE_WITH_YOUR_DEPLOY_ID') >= 0) {
+    msg.textContent = '尚未設定 API 網址，請先部署 Apps Script';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>驗證中…';
+
+  apiGet({ action:'login', acc:acc, pwd:pwd }, function(res){
+    btn.disabled = false;
+    btn.textContent = '登　入';
+
+    if (res && res.success && res.user) {
+      CURRENT_USER = res.user;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(res.user));
+        if (remember) {
+          localStorage.setItem('eliteClinicRememberAcc', acc);
+        } else {
+          localStorage.removeItem('eliteClinicRememberAcc');
+        }
+      } catch(e) {}
+      msg.className = 'login-msg ok';
+      msg.textContent = '登入成功，正在進入…';
+      setTimeout(showDashboard, 400);
+    } else {
+      msg.textContent = (res && res.error) ? res.error : '帳號或密碼錯誤';
+    }
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '登　入';
+    msg.textContent = '連線失敗，請稍後再試';
+  });
+}
+
+function logout() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  CURRENT_USER = null;
+  $('dashboard').style.display = 'none';
+  $('loginPage').style.display = 'flex';
+  $('loginPwd').value = '';
+  $('loginMsg').textContent = '';
+  toast('已登出', 'ok');
+}
+
+/* =========================================================
+ * 主畫面
+ * ========================================================= */
+function showDashboard() {
+  if (!CURRENT_USER) return;
+  $('loginPage').style.display = 'none';
+  $('dashboard').style.display = 'block';
+
+  // 使用者資訊
+  var u = CURRENT_USER;
+  $('userName').textContent = u.name || '-';
+  $('userAvatar').textContent = (u.name || '?').charAt(0);
+  $('userRole').textContent = ROLE_LABEL[u.role] || (u.role || '員工');
+  $('welcomeTitle').textContent = u.name + '　您好';
+
+  renderCards();
+}
+
+function renderCards() {
+  var cont = $('cardsContainer');
+  cont.innerHTML = '';
+  var role = (CURRENT_USER && CURRENT_USER.role) ? String(CURRENT_USER.role).toLowerCase() : '';
+
+  APPS.forEach(function(app, i){
+    // 角色過濾（預留：目前 APPS 的 roles 都是 []，表示全部可見）
+    if (app.roles && app.roles.length > 0 && role && app.roles.indexOf(role) < 0) return;
+
+    var card = document.createElement('a');
+    card.className = 'card fade-up d' + Math.min(i+1, 5);
+    card.href = app.url;
+    card.target = '_blank';
+    card.rel = 'noopener';
+
+    card.innerHTML =
+      '<div class="card-icon">' + (ICONS[app.icon] || ICONS.plus) + '</div>' +
+      '<div class="card-title">' + app.title + '</div>' +
+      '<div class="card-desc">' + app.desc + '</div>' +
+      '<div class="card-foot">' +
+        '<span class="card-tag">' + app.tag + '</span>' +
+        '<span class="card-cta">開啟系統 →</span>' +
+      '</div>';
+
+    cont.appendChild(card);
+  });
+
+  // 尾端加一張「更多功能開發中」的提示卡
+  var coming = document.createElement('div');
+  coming.className = 'card card-coming fade-up d5';
+  coming.innerHTML =
+    '<div class="card-icon">' + ICONS.plus + '</div>' +
+    '<div class="card-title">更多功能開發中</div>' +
+    '<div class="card-desc">更多院內工具將陸續上線，敬請期待。</div>' +
+    '<div class="card-foot">' +
+      '<span class="card-tag">COMING SOON</span>' +
+      '<span class="card-cta" style="color:var(--text-muted);">即將推出</span>' +
+    '</div>';
+  cont.appendChild(coming);
+}
+
+/* =========================================================
+ * 啟動
+ * ========================================================= */
+document.addEventListener('DOMContentLoaded', function(){
+  $('btnLogout').addEventListener('click', logout);
+  initLogin();
+});
+</script>
+</body>
+</html>
