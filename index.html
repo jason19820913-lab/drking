@@ -9,19 +9,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold-deep: #8B6914;
-    --gold: #B8860B;
-    --gold-light: #D4AF37;
-    --gold-soft: #E8C76F;
+    /* 品牌色：取自 LOGO 的青綠 */
+    --teal-deep: #1B7678;
+    --teal: #2A9D9F;
+    --teal-light: #4FB8BA;
+    --teal-soft: #9FD9DA;
+    /* 暖色背景維持米色 */
     --cream: #FDF8F0;
     --cream-deep: #F5EDDC;
-    --brown: #6B4F2B;
-    --brown-light: #8B6F47;
-    --text: #3D2B1F;
-    --text-muted: #8A7560;
+    /* 金色作為細節點綴 */
+    --gold: #D4AF37;
+    --gold-deep: #B8860B;
+    /* 文字 */
+    --brown: #2C5254;
+    --brown-light: #5B7B7D;
+    --text: #263B3C;
+    --text-muted: #7A9091;
     --white: #FFFFFF;
-    --shadow: 0 4px 20px rgba(139,105,20,.12);
-    --shadow-hover: 0 12px 40px rgba(139,105,20,.22);
+    --shadow: 0 4px 20px rgba(42,157,159,.12);
+    --shadow-hover: 0 12px 40px rgba(42,157,159,.22);
     --radius: 14px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -41,8 +47,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      radial-gradient(circle at 15% 20%, rgba(212,175,55,.12) 0%, transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(184,134,11,.10) 0%, transparent 45%);
+      radial-gradient(circle at 15% 20%, rgba(42,157,159,.10) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(212,175,55,.08) 0%, transparent 45%);
     pointer-events: none;
     z-index: 0;
   }
@@ -73,25 +79,31 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 6px;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold-deep));
+    background: linear-gradient(90deg, var(--teal-deep), var(--teal), var(--teal-light));
   }
   .logo-wrap {
     text-align: center;
     margin-bottom: 28px;
   }
   .logo-mark {
-    width: 72px;
-    height: 72px;
+    width: 96px;
+    height: 96px;
     margin: 0 auto 14px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold-light), var(--gold));
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 18px rgba(184,134,11,.35);
+    box-shadow: 0 8px 22px rgba(42,157,159,.30);
     position: relative;
+    overflow: hidden;
+    background: var(--white);
   }
-  .logo-mark svg { width: 40px; height: 40px; }
+  .logo-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
   .logo-title {
     font-family: 'Noto Serif TC', serif;
     font-size: 24px;
@@ -102,8 +114,9 @@
   }
   .logo-sub {
     font-size: 13px;
-    color: var(--text-muted);
+    color: var(--teal);
     letter-spacing: 4px;
+    font-weight: 500;
   }
 
   .form-group { margin-bottom: 16px; }
@@ -118,7 +131,7 @@
   .form-input {
     width: 100%;
     padding: 12px 14px;
-    border: 1.5px solid #E5D5B8;
+    border: 1.5px solid #D5E5E5;
     border-radius: 10px;
     font-size: 15px;
     color: var(--text);
@@ -128,9 +141,23 @@
   }
   .form-input:focus {
     outline: none;
-    border-color: var(--gold);
+    border-color: var(--teal);
     background: var(--white);
-    box-shadow: 0 0 0 3px rgba(212,175,55,.15);
+    box-shadow: 0 0 0 3px rgba(42,157,159,.15);
+  }
+  select.form-input {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%232A9D9F' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  select.form-input:disabled {
+    background-color: #F5F5F5;
+    color: var(--text-muted);
+    cursor: not-allowed;
   }
   .form-row {
     display: flex;
@@ -150,7 +177,7 @@
   .form-check input {
     width: 16px;
     height: 16px;
-    accent-color: var(--gold);
+    accent-color: var(--teal);
     cursor: pointer;
   }
   .btn-primary {
@@ -158,7 +185,7 @@
     padding: 13px;
     border: none;
     border-radius: 10px;
-    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    background: linear-gradient(135deg, var(--teal), var(--teal-deep));
     color: var(--white);
     font-size: 15px;
     font-weight: 500;
@@ -166,11 +193,11 @@
     cursor: pointer;
     transition: all .25s;
     font-family: inherit;
-    box-shadow: 0 4px 14px rgba(139,105,20,.3);
+    box-shadow: 0 4px 14px rgba(42,157,159,.35);
   }
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(139,105,20,.4);
+    box-shadow: 0 6px 20px rgba(42,157,159,.45);
   }
   .btn-primary:active { transform: translateY(0); }
   .btn-primary:disabled {
@@ -201,10 +228,10 @@
     min-height: 100vh;
   }
   .topbar {
-    background: rgba(255,255,255,.85);
+    background: rgba(255,255,255,.9);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(212,175,55,.25);
+    border-bottom: 1px solid rgba(42,157,159,.2);
     padding: 14px 32px;
     display: flex;
     align-items: center;
@@ -219,16 +246,22 @@
     gap: 12px;
   }
   .topbar-logo {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold-light), var(--gold));
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 10px rgba(184,134,11,.3);
+    box-shadow: 0 3px 10px rgba(42,157,159,.25);
+    overflow: hidden;
+    background: var(--white);
   }
-  .topbar-logo svg { width: 22px; height: 22px; }
+  .topbar-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
   .topbar-title {
     font-family: 'Noto Serif TC', serif;
     font-size: 18px;
@@ -259,7 +292,7 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    background: linear-gradient(135deg, var(--teal), var(--teal-deep));
     color: var(--white);
     display: flex;
     align-items: center;
@@ -270,7 +303,7 @@
   .user-name { font-weight: 500; color: var(--brown); }
   .user-role {
     font-size: 11px;
-    color: var(--text-muted);
+    color: var(--teal-deep);
     margin-left: 4px;
     padding: 2px 8px;
     background: var(--white);
@@ -278,7 +311,7 @@
   }
   .btn-logout {
     background: transparent;
-    border: 1.5px solid #E5D5B8;
+    border: 1.5px solid #C5D9DA;
     color: var(--brown);
     padding: 7px 16px;
     border-radius: 8px;
@@ -288,9 +321,9 @@
     transition: all .2s;
   }
   .btn-logout:hover {
-    background: var(--brown);
+    background: var(--teal-deep);
     color: var(--white);
-    border-color: var(--brown);
+    border-color: var(--teal-deep);
   }
 
   .hero {
@@ -315,7 +348,7 @@
     width: 60px;
     height: 3px;
     margin: 0 auto 12px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    background: linear-gradient(90deg, transparent, var(--teal), transparent);
   }
   .hero-desc {
     font-size: 14px;
@@ -336,7 +369,7 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(184,134,11,.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(42,157,159,.3), transparent);
   }
   .section-label span {
     font-family: 'Noto Serif TC', serif;
@@ -358,7 +391,7 @@
     border-radius: var(--radius);
     padding: 28px 24px 24px;
     box-shadow: var(--shadow);
-    border: 1px solid rgba(212,175,55,.2);
+    border: 1px solid rgba(42,157,159,.15);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -373,7 +406,7 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--gold-light), var(--gold));
+    background: linear-gradient(90deg, var(--teal-light), var(--teal));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform .4s;
@@ -381,14 +414,14 @@
   .card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-hover);
-    border-color: var(--gold-soft);
+    border-color: var(--teal-soft);
   }
   .card:hover::before { transform: scaleX(1); }
   .card-icon {
     width: 56px;
     height: 56px;
     border-radius: 14px;
-    background: linear-gradient(135deg, var(--cream-deep), #EED7A5);
+    background: linear-gradient(135deg, #E5F4F4, #B8E0E1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -396,13 +429,13 @@
     transition: all .3s;
   }
   .card:hover .card-icon {
-    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    background: linear-gradient(135deg, var(--teal-light), var(--teal));
     transform: rotate(-5deg) scale(1.05);
   }
   .card-icon svg {
     width: 28px;
     height: 28px;
-    color: var(--gold-deep);
+    color: var(--teal-deep);
     transition: color .3s;
   }
   .card:hover .card-icon svg { color: var(--white); }
@@ -427,19 +460,19 @@
     align-items: center;
     justify-content: space-between;
     padding-top: 14px;
-    border-top: 1px dashed rgba(184,134,11,.25);
+    border-top: 1px dashed rgba(42,157,159,.25);
   }
   .card-tag {
     font-size: 11px;
-    color: var(--gold-deep);
-    background: var(--cream-deep);
+    color: var(--teal-deep);
+    background: #E5F4F4;
     padding: 3px 10px;
     border-radius: 10px;
     letter-spacing: 1px;
   }
   .card-cta {
     font-size: 13px;
-    color: var(--gold-deep);
+    color: var(--teal-deep);
     font-weight: 500;
     letter-spacing: 1px;
     display: flex;
@@ -450,11 +483,11 @@
   .card:hover .card-cta { gap: 8px; }
   .card-coming {
     background: repeating-linear-gradient(45deg,
-      rgba(212,175,55,.05), rgba(212,175,55,.05) 10px,
-      rgba(212,175,55,.1) 10px, rgba(212,175,55,.1) 20px);
+      rgba(42,157,159,.04), rgba(42,157,159,.04) 10px,
+      rgba(42,157,159,.08) 10px, rgba(42,157,159,.08) 20px);
     border-style: dashed;
     border-width: 2px;
-    border-color: rgba(184,134,11,.3);
+    border-color: rgba(42,157,159,.3);
     cursor: default;
   }
   .card-coming:hover {
@@ -463,7 +496,7 @@
   }
   .card-coming::before { display: none; }
   .card-coming .card-icon {
-    background: rgba(212,175,55,.15);
+    background: rgba(42,157,159,.12);
   }
   .card-coming .card-icon svg { color: var(--text-muted); }
   .card-coming .card-title { color: var(--text-muted); }
@@ -474,7 +507,7 @@
     font-size: 12px;
     color: var(--text-muted);
     letter-spacing: 2px;
-    border-top: 1px solid rgba(212,175,55,.2);
+    border-top: 1px solid rgba(42,157,159,.2);
     background: rgba(255,255,255,.5);
   }
 
@@ -549,9 +582,7 @@
   <div class="login-card fade-up">
     <div class="logo-wrap">
       <div class="logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L14 7L19 7L15 11L17 16L12 13L7 16L9 11L5 7L10 7Z" fill="#fff" stroke="none"/>
-        </svg>
+        <img src="logo.png" alt="Elite Clinic">
       </div>
       <div class="logo-title">金鶯診所</div>
       <div class="logo-sub">EMPLOYEE PORTAL</div>
@@ -559,8 +590,18 @@
 
     <form id="loginForm" autocomplete="on">
       <div class="form-group">
-        <label class="form-label" for="loginAcc">員工姓名</label>
-        <input type="text" id="loginAcc" class="form-input" placeholder="請輸入姓名" autocomplete="username" required>
+        <label class="form-label" for="loginEmpId">員工編號</label>
+        <input type="text" id="loginEmpId" class="form-input" placeholder="例如 E001" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="loginClinic">所屬院區</label>
+        <select id="loginClinic" class="form-input" required>
+          <option value="">載入中…</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="loginName">姓名</label>
+        <input type="text" id="loginName" class="form-input" placeholder="請輸入姓名" required>
       </div>
       <div class="form-group">
         <label class="form-label" for="loginPwd">密碼</label>
@@ -586,9 +627,7 @@
   <div class="topbar">
     <div class="topbar-brand">
       <div class="topbar-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L14 7L19 7L15 11L17 16L12 13L7 16L9 11L5 7L10 7Z" fill="#fff" stroke="none"/>
-        </svg>
+        <img src="logo.png" alt="Elite Clinic">
       </div>
       <div>
         <div class="topbar-title">金鶯診所</div>
@@ -628,7 +667,7 @@
  * 系統設定
  * ========================================================= */
 // Apps Script Web App API（部署完後把網址貼進來）
-var API = 'https://script.google.com/macros/s/AKfycbxiH7TjD5KFZQR1mWRPrKKseFmHIbdBBlXamA76Hm-gWQTnAnmqv1k_2E8tZdAIfe5u/exec';
+var API = 'https://script.google.com/macros/s/REPLACE_WITH_YOUR_DEPLOY_ID/exec';
 
 // 功能卡片清單（新增功能只要在這裡加一筆就會自動出現）
 // roles: [] 或省略 = 全部員工可見；['doctor','nurse']= 只有指定角色可見（預留，目前未啟用）
@@ -704,10 +743,15 @@ function apiGet(params, cb, errCb) {
  * 登入
  * ========================================================= */
 function initLogin() {
-  // 記住帳號
+  // 記住上次登入的員工編號
   try {
-    var remembered = localStorage.getItem('eliteClinicRememberAcc');
-    if (remembered) $('loginAcc').value = remembered;
+    var rememberedEmpId = localStorage.getItem('eliteClinicRememberEmpId');
+    if (rememberedEmpId) $('loginEmpId').value = rememberedEmpId;
+    var rememberedClinic = localStorage.getItem('eliteClinicRememberClinic');
+    var rememberedName = localStorage.getItem('eliteClinicRememberName');
+    if (rememberedName) $('loginName').value = rememberedName;
+    // 院區之後等下拉讀完再恢復
+    window._rememberedClinic = rememberedClinic;
   } catch(e) {}
 
   // 已登入就直接進主畫面
@@ -727,10 +771,44 @@ function initLogin() {
     e.preventDefault();
     doLogin();
   });
+
+  // 載入院區下拉選單
+  loadClinicOptions();
+}
+
+// 從 Apps Script 讀取院區清單
+function loadClinicOptions() {
+  var sel = $('loginClinic');
+
+  // API 未設定時，塞預設選項（純文字）
+  if (API.indexOf('REPLACE_WITH_YOUR_DEPLOY_ID') >= 0) {
+    sel.innerHTML = '<option value="">尚未設定 API</option>';
+    return;
+  }
+
+  apiGet({ action: 'getClinics' }, function(res){
+    if (res && res.success && Array.isArray(res.clinics) && res.clinics.length > 0) {
+      var html = '<option value="">請選擇院區</option>';
+      res.clinics.forEach(function(c){
+        html += '<option value="' + c + '">' + c + '</option>';
+      });
+      sel.innerHTML = html;
+      // 恢復上次選擇
+      if (window._rememberedClinic) {
+        sel.value = window._rememberedClinic;
+      }
+    } else {
+      sel.innerHTML = '<option value="">找不到院區，請聯絡管理員</option>';
+    }
+  }, function(){
+    sel.innerHTML = '<option value="">無法連線，請稍後重試</option>';
+  });
 }
 
 function doLogin() {
-  var acc = $('loginAcc').value.trim();
+  var empId = $('loginEmpId').value.trim();
+  var clinic = $('loginClinic').value.trim();
+  var name = $('loginName').value.trim();
   var pwd = $('loginPwd').value;
   var remember = $('loginRemember').checked;
   var msg = $('loginMsg');
@@ -739,8 +817,8 @@ function doLogin() {
   msg.textContent = '';
   msg.className = 'login-msg';
 
-  if (!acc || !pwd) {
-    msg.textContent = '請輸入姓名與密碼';
+  if (!empId || !clinic || !name || !pwd) {
+    msg.textContent = '請完整填寫所有欄位';
     return;
   }
 
@@ -752,7 +830,13 @@ function doLogin() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span>驗證中…';
 
-  apiGet({ action:'login', acc:acc, pwd:pwd }, function(res){
+  apiGet({
+    action: 'login',
+    empId: empId,
+    clinic: clinic,
+    name: name,
+    pwd: pwd
+  }, function(res){
     btn.disabled = false;
     btn.textContent = '登　入';
 
@@ -761,16 +845,20 @@ function doLogin() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(res.user));
         if (remember) {
-          localStorage.setItem('eliteClinicRememberAcc', acc);
+          localStorage.setItem('eliteClinicRememberEmpId', empId);
+          localStorage.setItem('eliteClinicRememberClinic', clinic);
+          localStorage.setItem('eliteClinicRememberName', name);
         } else {
-          localStorage.removeItem('eliteClinicRememberAcc');
+          localStorage.removeItem('eliteClinicRememberEmpId');
+          localStorage.removeItem('eliteClinicRememberClinic');
+          localStorage.removeItem('eliteClinicRememberName');
         }
       } catch(e) {}
       msg.className = 'login-msg ok';
       msg.textContent = '登入成功，正在進入…';
       setTimeout(showDashboard, 400);
     } else {
-      msg.textContent = (res && res.error) ? res.error : '帳號或密碼錯誤';
+      msg.textContent = (res && res.error) ? res.error : '驗證失敗，請檢查員工編號、院區、姓名、密碼是否正確';
     }
   }, function(){
     btn.disabled = false;
@@ -799,7 +887,9 @@ function showDashboard() {
 
   // 使用者資訊
   var u = CURRENT_USER;
-  $('userName').textContent = u.name || '-';
+  var displayName = u.name || '-';
+  if (u.empId) displayName = u.empId + ' · ' + displayName;
+  $('userName').textContent = displayName;
   $('userAvatar').textContent = (u.name || '?').charAt(0);
   $('userRole').textContent = ROLE_LABEL[u.role] || (u.role || '員工');
   $('welcomeTitle').textContent = u.name + '　您好';
