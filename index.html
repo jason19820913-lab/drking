@@ -401,7 +401,16 @@
     border-radius: 30px;
     background: var(--cream-deep);
     font-size: 13px;
+    cursor: pointer;
+    transition: all .2s;
+    border: 1.5px solid transparent;
   }
+  .user-chip:hover {
+    background: var(--white);
+    border-color: var(--teal-soft);
+    box-shadow: 0 3px 10px rgba(42,157,159,.15);
+  }
+  .user-chip:hover .user-name { color: var(--teal-deep); }
   .user-avatar {
     width: 32px;
     height: 32px;
@@ -1146,6 +1155,38 @@
   </div>
 </div>
 
+<!-- =============== 變更密碼 Modal =============== -->
+<div class="modal-overlay" id="changePwdModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title">變更入口網站密碼</div>
+        <div class="modal-meta">變更後請使用新密碼登入</div>
+      </div>
+      <button type="button" class="modal-close" data-close="changePwdModal" aria-label="關閉">✕</button>
+    </div>
+    <form id="changePwdForm" class="modal-form" autocomplete="off">
+      <div class="form-group">
+        <label class="form-label" for="changePwdOld">目前密碼</label>
+        <input type="password" id="changePwdOld" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="changePwdNew">新密碼</label>
+        <input type="password" id="changePwdNew" class="form-input" placeholder="至少 4 個字元" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="changePwdConfirm">再次輸入新密碼</label>
+        <input type="password" id="changePwdConfirm" class="form-input" required>
+      </div>
+    </form>
+    <div class="modal-msg" id="changePwdMsg"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="changePwdModal">取消</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnChangePwdSubmit">變更密碼</button>
+    </div>
+  </div>
+</div>
+
 <!-- =============== 發布公告 Modal =============== -->
 <div class="modal-overlay" id="annPostModal">
   <div class="modal-card">
@@ -1777,7 +1818,94 @@ function showDashboard() {
 
   renderCards();
   setupAnnouncements();
+  setupChangePwd();
   loadAnnouncements();
+}
+
+/* =========================================================
+ * 變更密碼
+ * ========================================================= */
+function setupChangePwd() {
+  if (window._changePwdSetup) return;
+  window._changePwdSetup = true;
+
+  // user-chip 變成可點開變更密碼
+  var chip = document.querySelector('.user-chip');
+  if (chip) {
+    chip.title = '點此變更密碼';
+    chip.addEventListener('click', function(){
+      $('changePwdMsg').textContent = '';
+      $('changePwdMsg').className = 'modal-msg';
+      $('changePwdOld').value = '';
+      $('changePwdNew').value = '';
+      $('changePwdConfirm').value = '';
+      openModal('changePwdModal');
+      setTimeout(function(){ $('changePwdOld').focus(); }, 100);
+    });
+  }
+
+  $('btnChangePwdSubmit').addEventListener('click', submitChangePwd);
+}
+
+function submitChangePwd() {
+  var oldPwd = $('changePwdOld').value;
+  var newPwd = $('changePwdNew').value;
+  var confirmPwd = $('changePwdConfirm').value;
+  var msg = $('changePwdMsg');
+  var btn = $('btnChangePwdSubmit');
+
+  msg.textContent = '';
+  msg.className = 'modal-msg';
+
+  if (!oldPwd || !newPwd || !confirmPwd) {
+    msg.textContent = '請填寫所有欄位';
+    return;
+  }
+  if (newPwd.length < 4) {
+    msg.textContent = '新密碼至少 4 個字元';
+    return;
+  }
+  if (newPwd !== confirmPwd) {
+    msg.textContent = '兩次輸入的新密碼不一致';
+    return;
+  }
+  if (newPwd === oldPwd) {
+    msg.textContent = '新密碼不能和舊密碼相同';
+    return;
+  }
+  if (!CURRENT_USER || !CURRENT_USER.empId) {
+    msg.textContent = '尚未登入';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>變更中…';
+
+  apiGet({
+    action: 'changePassword',
+    empId: CURRENT_USER.empId,
+    oldPwd: oldPwd,
+    newPwd: newPwd
+  }, function(res){
+    btn.disabled = false;
+    btn.textContent = '變更密碼';
+
+    if (res && res.success) {
+      msg.className = 'modal-msg ok';
+      msg.textContent = '✓ 密碼已成功變更';
+      setTimeout(function(){
+        closeModal('changePwdModal');
+        msg.textContent = '';
+        toast('密碼已更新', 'ok');
+      }, 1000);
+    } else {
+      msg.textContent = (res && res.error) ? res.error : '變更失敗，請稍後再試';
+    }
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '變更密碼';
+    msg.textContent = '連線失敗，請稍後再試';
+  });
 }
 
 function renderCards() {
