@@ -470,6 +470,322 @@
     letter-spacing: 1px;
   }
 
+  /* ============ 公告區塊 ============ */
+  .anns-section {
+    max-width: 1200px;
+    margin: 8px auto 0;
+    padding: 0 32px;
+  }
+  .anns-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .anns-header-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    color: var(--brown);
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .anns-header-title svg {
+    width: 20px;
+    height: 20px;
+    color: var(--teal);
+  }
+  .anns-badge {
+    background: #C0392B;
+    color: var(--white);
+    font-size: 11px;
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    box-shadow: 0 2px 6px rgba(192,57,43,.25);
+  }
+  .anns-badge.zero { background: var(--text-muted); box-shadow: none; }
+  .btn-post-ann {
+    margin-left: auto;
+    padding: 7px 14px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-deep));
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 3px 10px rgba(42,157,159,.25);
+    transition: all .2s;
+    letter-spacing: .5px;
+  }
+  .btn-post-ann:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(42,157,159,.4);
+  }
+  .anns-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ann-item {
+    background: var(--white);
+    border: 1px solid rgba(42,157,159,.18);
+    border-left: 4px solid var(--teal);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .ann-item:hover {
+    border-color: var(--teal);
+    box-shadow: 0 4px 14px rgba(42,157,159,.12);
+    transform: translateY(-1px);
+  }
+  .ann-item.urgent { border-left-color: #C0392B; }
+  .ann-item.important { border-left-color: #E67E22; }
+  .ann-item.unread {
+    background: linear-gradient(90deg, rgba(42,157,159,.04), rgba(255,255,255,1) 30%);
+  }
+  .ann-item.unread::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #C0392B;
+    box-shadow: 0 0 0 3px rgba(192,57,43,.15);
+  }
+  .ann-level {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #E5F4F4;
+    color: var(--teal-deep);
+    font-weight: 500;
+    letter-spacing: .5px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .ann-level.urgent { background: #FBE9E6; color: #C0392B; }
+  .ann-level.important { background: #FDF2E5; color: #B36410; }
+  .ann-body { flex: 1; min-width: 0; padding-right: 16px; }
+  .ann-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--brown);
+    margin-bottom: 4px;
+    letter-spacing: .5px;
+  }
+  .ann-summary {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+  .ann-meta {
+    margin-top: 6px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    letter-spacing: .5px;
+  }
+  .anns-empty {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+    background: rgba(255,255,255,.5);
+    border-radius: 10px;
+    border: 1px dashed rgba(42,157,159,.2);
+  }
+  .anns-toggle-all {
+    text-align: center;
+    margin-top: 6px;
+  }
+  .anns-toggle-all button {
+    background: transparent;
+    border: none;
+    color: var(--teal-deep);
+    font-size: 12.5px;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: background .2s;
+    font-family: inherit;
+    letter-spacing: .5px;
+  }
+  .anns-toggle-all button:hover { background: rgba(42,157,159,.1); }
+
+  /* ============ Modal ============ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(38,59,60,.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+    animation: fadeIn .2s ease;
+  }
+  .modal-overlay.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal-card {
+    background: var(--white);
+    border-radius: 16px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    position: relative;
+    animation: modalIn .25s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px) scale(.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-header {
+    padding: 22px 26px 14px;
+    border-bottom: 1px solid rgba(42,157,159,.15);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .modal-header-text { flex: 1; min-width: 0; }
+  .modal-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--brown);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  .modal-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    letter-spacing: .5px;
+  }
+  .modal-close {
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .modal-close:hover { background: var(--cream-deep); color: var(--brown); }
+  .modal-body {
+    padding: 18px 26px 8px;
+    font-size: 14.5px;
+    color: var(--text);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .modal-foot {
+    padding: 14px 26px 22px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-modal {
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13.5px;
+    cursor: pointer;
+    border: none;
+    letter-spacing: 1px;
+    transition: all .2s;
+  }
+  .btn-modal-primary {
+    background: linear-gradient(135deg, var(--teal), var(--teal-deep));
+    color: var(--white);
+    box-shadow: 0 3px 10px rgba(42,157,159,.3);
+  }
+  .btn-modal-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(42,157,159,.4); }
+  .btn-modal-primary:disabled { opacity: .6; cursor: wait; }
+  .btn-modal-cancel {
+    background: var(--white);
+    border: 1.5px solid #D5E5E5;
+    color: var(--brown);
+  }
+  .btn-modal-cancel:hover { background: var(--cream-deep); }
+  .btn-modal-danger {
+    background: var(--white);
+    border: 1.5px solid #E5B5AE;
+    color: #C0392B;
+  }
+  .btn-modal-danger:hover { background: #FBE9E6; }
+
+  /* Modal 表單 */
+  .modal-form { padding: 18px 26px 8px; }
+  .modal-form .form-group { margin-bottom: 14px; }
+  .modal-form textarea.form-input {
+    min-height: 130px;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.6;
+  }
+  .level-pick {
+    display: flex;
+    gap: 8px;
+  }
+  .level-pick label {
+    flex: 1;
+    cursor: pointer;
+    padding: 10px 8px;
+    border: 1.5px solid #D5E5E5;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--brown);
+    background: var(--cream);
+    transition: all .2s;
+  }
+  .level-pick input { display: none; }
+  .level-pick input:checked + span { font-weight: 700; }
+  .level-pick label:has(input:checked) {
+    background: var(--white);
+    border-color: var(--teal);
+    color: var(--teal-deep);
+    box-shadow: 0 0 0 3px rgba(42,157,159,.12);
+  }
+  .modal-msg {
+    min-height: 18px;
+    font-size: 12.5px;
+    margin-top: -4px;
+    padding: 0 26px;
+    color: #C0392B;
+  }
+  .modal-msg.ok { color: #2E7D32; }
+
   .section-label {
     max-width: 1200px;
     margin: 20px auto 18px;
@@ -674,6 +990,14 @@
     .cards { padding: 0 20px 32px; gap: 16px; }
     .card { padding: 22px 20px 20px; }
     .login-card { padding: 36px 24px 28px; }
+    .anns-section { padding: 0 20px; }
+    .anns-header-title { font-size: 15px; }
+    .ann-item { padding: 12px 14px; gap: 10px; }
+    .ann-title { font-size: 14px; }
+    .ann-summary { font-size: 12.5px; }
+    .modal-card { max-height: 90vh; }
+    .modal-header, .modal-form, .modal-body { padding-left: 20px; padding-right: 20px; }
+    .modal-foot { padding-left: 20px; padding-right: 20px; }
   }
 
   /* 入場動畫 */
@@ -779,6 +1103,22 @@
     <div class="hero-desc fade-up d3">請選擇您要使用的系統</div>
   </div>
 
+  <!-- =============== 公告區塊 =============== -->
+  <div class="anns-section fade-up d2" id="annsSection">
+    <div class="anns-header">
+      <div class="anns-header-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+        <span>診所公告</span>
+      </div>
+      <span class="anns-badge zero" id="annsBadge">0 則新訊息</span>
+      <button class="btn-post-ann" id="btnPostAnn" style="display:none;">＋ 新增公告</button>
+    </div>
+    <div class="anns-list" id="annsList"></div>
+    <div class="anns-toggle-all" id="annsToggleAll" style="display:none;">
+      <button type="button" id="btnAnnsExpand">查看全部 <span id="annsTotalCount">0</span> 則 ▾</button>
+    </div>
+  </div>
+
   <div class="section-label fade-up d3">
     <span>系 統 功 能</span>
   </div>
@@ -786,6 +1126,64 @@
   <div class="cards" id="cardsContainer"></div>
 
   <div class="footer">© 金鶯診所 ELITE CLINIC ‧ EMPLOYEE PORTAL</div>
+</div>
+
+<!-- =============== 公告詳情 Modal =============== -->
+<div class="modal-overlay" id="annViewModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title" id="annViewTitle">-</div>
+        <div class="modal-meta" id="annViewMeta">-</div>
+      </div>
+      <button type="button" class="modal-close" data-close="annViewModal" aria-label="關閉">✕</button>
+    </div>
+    <div class="modal-body" id="annViewContent">-</div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-danger" id="btnAnnArchive" style="display:none;">下架公告</button>
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="annViewModal">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============== 發布公告 Modal =============== -->
+<div class="modal-overlay" id="annPostModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title">發布新公告</div>
+        <div class="modal-meta">公告會立即發送給所有員工，請確認內容無誤</div>
+      </div>
+      <button type="button" class="modal-close" data-close="annPostModal" aria-label="關閉">✕</button>
+    </div>
+    <form id="annPostForm" class="modal-form" autocomplete="off">
+      <div class="form-group">
+        <label class="form-label" for="annPostTitle">公告標題</label>
+        <input type="text" id="annPostTitle" class="form-input" placeholder="例如：本週四院務會議延後至 14:00" maxlength="80" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="annPostContent">公告內容</label>
+        <textarea id="annPostContent" class="form-input" placeholder="詳細說明…" maxlength="2000" required></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">重要性</label>
+        <div class="level-pick" id="annPostLevel">
+          <label><input type="radio" name="annLevel" value="一般" checked><span>一般</span></label>
+          <label><input type="radio" name="annLevel" value="重要"><span>重要</span></label>
+          <label><input type="radio" name="annLevel" value="緊急"><span>緊急</span></label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="annPostPwd">確認你的密碼</label>
+        <input type="password" id="annPostPwd" class="form-input" placeholder="再次輸入密碼以確認身分" required>
+      </div>
+    </form>
+    <div class="modal-msg" id="annPostMsg"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="annPostModal">取消</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnAnnPostSubmit">送出公告</button>
+    </div>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -1071,11 +1469,289 @@ function escapeAttr(s) { return escapeHtml(s); }
 function logout() {
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
   CURRENT_USER = null;
+  ANNOUNCEMENTS = [];
+  ANNS_EXPANDED = false;
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
   $('loginMsg').textContent = '';
   toast('已登出', 'ok');
+}
+
+/* =========================================================
+ * 公告功能
+ * ========================================================= */
+var ANNOUNCEMENTS = [];
+var ANNS_EXPANDED = false;
+var ANN_PERM_KEYWORDS = ['策略長', '院長', '主任', '管理', 'admin'];
+
+function hasAnnouncePermission() {
+  if (!CURRENT_USER || !CURRENT_USER.title) return false;
+  var t = String(CURRENT_USER.title).toLowerCase();
+  for (var i = 0; i < ANN_PERM_KEYWORDS.length; i++) {
+    if (t.indexOf(ANN_PERM_KEYWORDS[i].toLowerCase()) >= 0) return true;
+  }
+  return false;
+}
+
+function annsReadKey() {
+  return 'eliteClinicReadAnns_' + ((CURRENT_USER && CURRENT_USER.empId) || 'anon');
+}
+
+function getReadAnnIds() {
+  try {
+    var raw = localStorage.getItem(annsReadKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function markAnnAsRead(id) {
+  var read = getReadAnnIds();
+  if (read.indexOf(id) < 0) {
+    read.push(id);
+    try { localStorage.setItem(annsReadKey(), JSON.stringify(read)); } catch(e) {}
+  }
+}
+
+function setupAnnouncements() {
+  // 管理者顯示「+ 新增公告」
+  $('btnPostAnn').style.display = hasAnnouncePermission() ? 'inline-block' : 'none';
+
+  // 事件只綁一次
+  if (window._annsSetup) return;
+  window._annsSetup = true;
+
+  $('btnPostAnn').addEventListener('click', function(){
+    $('annPostMsg').textContent = '';
+    openModal('annPostModal');
+    setTimeout(function(){ $('annPostTitle').focus(); }, 100);
+  });
+  $('btnAnnPostSubmit').addEventListener('click', submitAnnPost);
+  $('btnAnnsExpand').addEventListener('click', function(){
+    ANNS_EXPANDED = !ANNS_EXPANDED;
+    renderAnnouncements();
+  });
+
+  // 所有 [data-close] 按鈕
+  document.querySelectorAll('[data-close]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      closeModal(btn.getAttribute('data-close'));
+    });
+  });
+
+  // 點 modal 背景關閉
+  document.querySelectorAll('.modal-overlay').forEach(function(overlay){
+    overlay.addEventListener('click', function(e){
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
+  });
+
+  // Esc 關閉
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.show').forEach(function(m){
+        m.classList.remove('show');
+      });
+    }
+  });
+}
+
+function openModal(id) { $(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { $(id).classList.remove('show'); document.body.style.overflow = ''; }
+
+function loadAnnouncements() {
+  apiGet({ action: 'getAnnouncements' }, function(res){
+    if (res && res.success && Array.isArray(res.announcements)) {
+      ANNOUNCEMENTS = res.announcements;
+    } else {
+      ANNOUNCEMENTS = [];
+    }
+    renderAnnouncements();
+  }, function(){
+    ANNOUNCEMENTS = [];
+    renderAnnouncements();
+  });
+}
+
+function renderAnnouncements() {
+  var list = $('annsList');
+  var badge = $('annsBadge');
+  var toggleAll = $('annsToggleAll');
+  var anns = ANNOUNCEMENTS || [];
+
+  if (anns.length === 0) {
+    list.innerHTML = '<div class="anns-empty">目前沒有公告</div>';
+    badge.textContent = '無新訊息';
+    badge.className = 'anns-badge zero';
+    toggleAll.style.display = 'none';
+    return;
+  }
+
+  var read = getReadAnnIds();
+  var unreadCount = 0;
+  for (var i = 0; i < anns.length; i++) {
+    if (read.indexOf(anns[i].id) < 0) unreadCount++;
+  }
+
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount + ' 則新訊息';
+    badge.className = 'anns-badge';
+  } else {
+    badge.textContent = '無新訊息';
+    badge.className = 'anns-badge zero';
+  }
+
+  var INITIAL_SHOW = 3;
+  var showCount = ANNS_EXPANDED ? anns.length : Math.min(INITIAL_SHOW, anns.length);
+
+  list.innerHTML = '';
+  for (var j = 0; j < showCount; j++) {
+    list.appendChild(buildAnnItem(anns[j], read));
+  }
+
+  if (anns.length > INITIAL_SHOW) {
+    toggleAll.style.display = 'block';
+    $('annsTotalCount').textContent = anns.length;
+    $('btnAnnsExpand').innerHTML = ANNS_EXPANDED
+      ? '收合 ▴'
+      : '查看全部 <span id="annsTotalCount">' + anns.length + '</span> 則 ▾';
+  } else {
+    toggleAll.style.display = 'none';
+  }
+}
+
+function buildAnnItem(a, read) {
+  var unread = read.indexOf(a.id) < 0;
+  var levelCls = a.level === '緊急' ? 'urgent'
+                : a.level === '重要' ? 'important' : '';
+
+  var item = document.createElement('div');
+  item.className = 'ann-item' + (unread ? ' unread' : '') + (levelCls ? ' ' + levelCls : '');
+  item.setAttribute('data-id', a.id);
+  item.innerHTML =
+    '<span class="ann-level' + (levelCls ? ' ' + levelCls : '') + '">' +
+      escapeHtml(a.level || '一般') +
+    '</span>' +
+    '<div class="ann-body">' +
+      '<div class="ann-title">' + escapeHtml(a.title) + '</div>' +
+      '<div class="ann-summary">' + escapeHtml(a.content) + '</div>' +
+      '<div class="ann-meta">' + escapeHtml(a.authorName || '') +
+        ' · ' + escapeHtml(a.time || '') + '</div>' +
+    '</div>';
+
+  item.addEventListener('click', function(){ openAnnView(a.id); });
+  return item;
+}
+
+function findAnnById(id) {
+  for (var i = 0; i < ANNOUNCEMENTS.length; i++) {
+    if (ANNOUNCEMENTS[i].id === id) return ANNOUNCEMENTS[i];
+  }
+  return null;
+}
+
+function openAnnView(id) {
+  var a = findAnnById(id);
+  if (!a) return;
+
+  $('annViewTitle').textContent = a.title;
+  $('annViewMeta').textContent =
+    [a.level || '一般', a.authorName, a.time].filter(Boolean).join(' · ');
+  $('annViewContent').textContent = a.content;
+
+  var btnArchive = $('btnAnnArchive');
+  if (hasAnnouncePermission()) {
+    btnArchive.style.display = 'inline-block';
+    btnArchive.onclick = function(){ archiveAnn(a.id); };
+  } else {
+    btnArchive.style.display = 'none';
+  }
+
+  openModal('annViewModal');
+
+  // 標記已讀
+  if (getReadAnnIds().indexOf(id) < 0) {
+    markAnnAsRead(id);
+    setTimeout(renderAnnouncements, 300);
+  }
+}
+
+function submitAnnPost() {
+  var title = $('annPostTitle').value.trim();
+  var content = $('annPostContent').value.trim();
+  var levelEl = document.querySelector('input[name="annLevel"]:checked');
+  var level = levelEl ? levelEl.value : '一般';
+  var pwd = $('annPostPwd').value;
+  var msg = $('annPostMsg');
+  var btn = $('btnAnnPostSubmit');
+
+  msg.textContent = '';
+  msg.className = 'modal-msg';
+
+  if (!title) { msg.textContent = '請輸入標題'; return; }
+  if (!content) { msg.textContent = '請輸入內容'; return; }
+  if (!pwd) { msg.textContent = '請輸入密碼以確認身分'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>送出中…';
+
+  apiGet({
+    action: 'postAnnouncement',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    title: title,
+    content: content,
+    level: level
+  }, function(res){
+    btn.disabled = false;
+    btn.textContent = '送出公告';
+
+    if (res && res.success) {
+      msg.className = 'modal-msg ok';
+      msg.textContent = '✓ 公告已發布';
+      // Reset
+      $('annPostTitle').value = '';
+      $('annPostContent').value = '';
+      $('annPostPwd').value = '';
+      var def = document.querySelector('input[name="annLevel"][value="一般"]');
+      if (def) def.checked = true;
+
+      setTimeout(function(){
+        closeModal('annPostModal');
+        msg.textContent = '';
+        loadAnnouncements();
+      }, 800);
+    } else {
+      msg.textContent = (res && res.error) ? res.error : '發布失敗，請稍後再試';
+    }
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '送出公告';
+    msg.textContent = '連線失敗，請稍後再試';
+  });
+}
+
+function archiveAnn(id) {
+  if (!confirm('確定要下架這則公告嗎？所有員工將不再看到。')) return;
+  var pwd = prompt('請再次輸入你的密碼以確認：');
+  if (!pwd) return;
+
+  apiGet({
+    action: 'archiveAnnouncement',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    id: id
+  }, function(res){
+    if (res && res.success) {
+      toast('已下架', 'ok');
+      closeModal('annViewModal');
+      loadAnnouncements();
+    } else {
+      toast((res && res.error) || '下架失敗', 'err');
+    }
+  }, function(){
+    toast('連線失敗', 'err');
+  });
 }
 
 /* =========================================================
@@ -1100,6 +1776,8 @@ function showDashboard() {
   $('welcomeTitle').textContent = u.name + '　您好';
 
   renderCards();
+  setupAnnouncements();
+  loadAnnouncements();
 }
 
 function renderCards() {
