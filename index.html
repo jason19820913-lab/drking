@@ -55,12 +55,12 @@
 
   /* ============ 登入畫面 ============ */
   #loginPage {
-    position: fixed;
-    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    min-height: 100vh;
+    padding: 40px 20px;
+    position: relative;
     z-index: 10;
   }
   .login-card {
@@ -252,7 +252,7 @@
     margin-top: 8px;
     border-top: 1px dashed rgba(42,157,159,.25);
   }
-  .lookup-panel.open { max-height: 600px; }
+  .lookup-panel.open { max-height: 2000px; }
   .lookup-inner {
     padding: 18px 4px 4px;
   }
@@ -1092,7 +1092,11 @@ function showDashboard() {
   if (u.empId) displayName = u.empId + ' · ' + displayName;
   $('userName').textContent = displayName;
   $('userAvatar').textContent = (u.name || '?').charAt(0);
-  $('userRole').textContent = ROLE_LABEL[u.role] || (u.role || '員工');
+  // 優先顯示 F 欄職稱；沒有就回退 role 對應的中文
+  var roleText = u.title && u.title.trim()
+    ? u.title.trim()
+    : (ROLE_LABEL[u.role] || u.role || '員工');
+  $('userRole').textContent = roleText;
   $('welcomeTitle').textContent = u.name + '　您好';
 
   renderCards();
