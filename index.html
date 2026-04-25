@@ -220,6 +220,120 @@
     letter-spacing: 1px;
   }
 
+  /* ===== 查詢員編（可展開） ===== */
+  .lookup-toggle {
+    margin-top: 18px;
+    text-align: center;
+  }
+  .lookup-toggle button {
+    background: transparent;
+    border: none;
+    color: var(--teal-deep);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background .2s;
+    letter-spacing: .5px;
+  }
+  .lookup-toggle button:hover { background: rgba(42,157,159,.08); }
+  .lookup-toggle .arrow {
+    display: inline-block;
+    transition: transform .25s;
+    margin-left: 4px;
+  }
+  .lookup-toggle.open .arrow { transform: rotate(180deg); }
+
+  .lookup-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .35s cubic-bezier(.2,.8,.2,1);
+    margin-top: 8px;
+    border-top: 1px dashed rgba(42,157,159,.25);
+  }
+  .lookup-panel.open { max-height: 600px; }
+  .lookup-inner {
+    padding: 18px 4px 4px;
+  }
+  .lookup-title {
+    font-size: 13px;
+    color: var(--brown);
+    margin-bottom: 12px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .btn-secondary {
+    width: 100%;
+    padding: 11px;
+    border: 1.5px solid var(--teal);
+    border-radius: 10px;
+    background: var(--white);
+    color: var(--teal-deep);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .btn-secondary:hover {
+    background: var(--teal);
+    color: var(--white);
+  }
+  .btn-secondary:disabled { opacity: .6; cursor: wait; }
+
+  .lookup-result {
+    margin-top: 14px;
+    font-size: 13px;
+  }
+  .lookup-empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 12px;
+    font-size: 13px;
+  }
+  .lookup-item {
+    background: var(--cream);
+    border: 1px solid rgba(42,157,159,.18);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .lookup-item:last-child { margin-bottom: 0; }
+  .lookup-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .lookup-item-emp {
+    font-weight: 700;
+    color: var(--teal-deep);
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+  .lookup-item-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .lookup-item button {
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: background .2s;
+  }
+  .lookup-item button:hover { background: var(--teal-deep); }
+
   /* ============ 主畫面 ============ */
   #dashboard {
     display: none;
@@ -594,16 +708,6 @@
         <input type="text" id="loginEmpId" class="form-input" placeholder="例如 E001" autocomplete="username" required>
       </div>
       <div class="form-group">
-        <label class="form-label" for="loginClinic">所屬院區</label>
-        <select id="loginClinic" class="form-input" required>
-          <option value="">載入中…</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="loginName">姓名</label>
-        <input type="text" id="loginName" class="form-input" placeholder="請輸入姓名" required>
-      </div>
-      <div class="form-group">
         <label class="form-label" for="loginPwd">密碼</label>
         <input type="password" id="loginPwd" class="form-input" placeholder="請輸入密碼" autocomplete="current-password" required>
       </div>
@@ -617,6 +721,30 @@
       <button type="submit" class="btn-primary" id="btnLogin">登　入</button>
       <div class="login-msg" id="loginMsg"></div>
     </form>
+
+    <!-- 查詢員工編號（可展開） -->
+    <div class="lookup-toggle" id="lookupToggle">
+      <button type="button" id="btnLookupToggle">
+        忘記員工編號？點此查詢<span class="arrow">▾</span>
+      </button>
+    </div>
+    <div class="lookup-panel" id="lookupPanel">
+      <div class="lookup-inner">
+        <div class="lookup-title">輸入姓名與所屬院區查詢員工編號</div>
+        <div class="form-group">
+          <label class="form-label" for="lookupName">姓名</label>
+          <input type="text" id="lookupName" class="form-input" placeholder="請輸入完整姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="lookupClinic">所屬院區</label>
+          <select id="lookupClinic" class="form-input">
+            <option value="">載入中…</option>
+          </select>
+        </div>
+        <button type="button" class="btn-secondary" id="btnLookup">查　詢</button>
+        <div class="lookup-result" id="lookupResult"></div>
+      </div>
+    </div>
 
     <div class="login-foot">© 金鶯診所 ELITE CLINIC</div>
   </div>
@@ -754,11 +882,6 @@ function initLogin() {
   try {
     var rememberedEmpId = localStorage.getItem('eliteClinicRememberEmpId');
     if (rememberedEmpId) $('loginEmpId').value = rememberedEmpId;
-    var rememberedClinic = localStorage.getItem('eliteClinicRememberClinic');
-    var rememberedName = localStorage.getItem('eliteClinicRememberName');
-    if (rememberedName) $('loginName').value = rememberedName;
-    // 院區之後等下拉讀完再恢復
-    window._rememberedClinic = rememberedClinic;
   } catch(e) {}
 
   // 已登入就直接進主畫面
@@ -779,19 +902,31 @@ function initLogin() {
     doLogin();
   });
 
-  // 載入院區下拉選單
-  loadClinicOptions();
+  // 查詢員編：展開 / 收合
+  $('btnLookupToggle').addEventListener('click', function(){
+    var t = $('lookupToggle');
+    var p = $('lookupPanel');
+    var open = !t.classList.contains('open');
+    t.classList.toggle('open', open);
+    p.classList.toggle('open', open);
+    // 第一次展開時才載入院區下拉
+    if (open && !window._clinicsLoaded) {
+      loadClinicOptions();
+      window._clinicsLoaded = true;
+    }
+  });
+
+  // 查詢員編：送出
+  $('btnLookup').addEventListener('click', doLookupEmpId);
+  $('lookupName').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); doLookupEmpId(); }
+  });
 }
 
-// 從 Apps Script 讀取院區清單
+// 從 Apps Script 讀取院區清單（提供查詢區用）
 function loadClinicOptions() {
-  var sel = $('loginClinic');
-
-  // API 未設定時，塞預設選項（純文字）
-  if (API.indexOf('REPLACE_WITH_YOUR_DEPLOY_ID') >= 0) {
-    sel.innerHTML = '<option value="">尚未設定 API</option>';
-    return;
-  }
+  var sel = $('lookupClinic');
+  if (!sel) return;
 
   apiGet({ action: 'getClinics' }, function(res){
     if (res && res.success && Array.isArray(res.clinics) && res.clinics.length > 0) {
@@ -800,10 +935,6 @@ function loadClinicOptions() {
         html += '<option value="' + c + '">' + c + '</option>';
       });
       sel.innerHTML = html;
-      // 恢復上次選擇
-      if (window._rememberedClinic) {
-        sel.value = window._rememberedClinic;
-      }
     } else {
       sel.innerHTML = '<option value="">找不到院區，請聯絡管理員</option>';
     }
@@ -814,8 +945,6 @@ function loadClinicOptions() {
 
 function doLogin() {
   var empId = $('loginEmpId').value.trim();
-  var clinic = $('loginClinic').value.trim();
-  var name = $('loginName').value.trim();
   var pwd = $('loginPwd').value;
   var remember = $('loginRemember').checked;
   var msg = $('loginMsg');
@@ -824,13 +953,8 @@ function doLogin() {
   msg.textContent = '';
   msg.className = 'login-msg';
 
-  if (!empId || !clinic || !name || !pwd) {
-    msg.textContent = '請完整填寫所有欄位';
-    return;
-  }
-
-  if (API.indexOf('REPLACE_WITH_YOUR_DEPLOY_ID') >= 0) {
-    msg.textContent = '尚未設定 API 網址，請先部署 Apps Script';
+  if (!empId || !pwd) {
+    msg.textContent = '請輸入員工編號和密碼';
     return;
   }
 
@@ -840,8 +964,6 @@ function doLogin() {
   apiGet({
     action: 'login',
     empId: empId,
-    clinic: clinic,
-    name: name,
     pwd: pwd,
     ua: (navigator && navigator.userAgent) ? navigator.userAgent : ''
   }, function(res){
@@ -854,19 +976,15 @@ function doLogin() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(res.user));
         if (remember) {
           localStorage.setItem('eliteClinicRememberEmpId', empId);
-          localStorage.setItem('eliteClinicRememberClinic', clinic);
-          localStorage.setItem('eliteClinicRememberName', name);
         } else {
           localStorage.removeItem('eliteClinicRememberEmpId');
-          localStorage.removeItem('eliteClinicRememberClinic');
-          localStorage.removeItem('eliteClinicRememberName');
         }
       } catch(e) {}
       msg.className = 'login-msg ok';
       msg.textContent = '登入成功，正在進入…';
       setTimeout(showDashboard, 400);
     } else {
-      msg.textContent = (res && res.error) ? res.error : '驗證失敗，請檢查員工編號、院區、姓名、密碼是否正確';
+      msg.textContent = (res && res.error) ? res.error : '驗證失敗，請檢查員工編號和密碼';
     }
   }, function(){
     btn.disabled = false;
@@ -874,6 +992,81 @@ function doLogin() {
     msg.textContent = '連線失敗，請稍後再試';
   });
 }
+
+/* =========================================================
+ * 查詢員工編號（依姓名 + 院區）
+ * ========================================================= */
+function doLookupEmpId() {
+  var name = $('lookupName').value.trim();
+  var clinic = $('lookupClinic').value.trim();
+  var btn = $('btnLookup');
+  var box = $('lookupResult');
+
+  box.innerHTML = '';
+
+  if (!name) {
+    box.innerHTML = '<div class="lookup-empty" style="color:#C0392B;">請輸入姓名</div>';
+    return;
+  }
+  if (!clinic) {
+    box.innerHTML = '<div class="lookup-empty" style="color:#C0392B;">請選擇院區</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin" style="border-color:rgba(42,157,159,.3);border-top-color:var(--teal-deep);"></span>查詢中…';
+
+  apiGet({
+    action: 'lookupEmpId',
+    name: name,
+    clinic: clinic
+  }, function(res){
+    btn.disabled = false;
+    btn.textContent = '查　詢';
+
+    if (!res || res.error) {
+      box.innerHTML = '<div class="lookup-empty" style="color:#C0392B;">' +
+        ((res && res.error) ? res.error : '查詢失敗') + '</div>';
+      return;
+    }
+    if (!res.matches || res.matches.length === 0) {
+      box.innerHTML = '<div class="lookup-empty">查無此員工，請確認姓名和院區是否正確</div>';
+      return;
+    }
+
+    var html = '';
+    res.matches.forEach(function(m){
+      html += '<div class="lookup-item">' +
+        '<div class="lookup-item-info">' +
+          '<div class="lookup-item-emp">' + escapeHtml(m.empId) + '</div>' +
+          '<div class="lookup-item-meta">' + escapeHtml(m.name) + ' · ' + escapeHtml(m.clinic) + '</div>' +
+        '</div>' +
+        '<button type="button" data-emp="' + escapeAttr(m.empId) + '">帶入登入</button>' +
+      '</div>';
+    });
+    box.innerHTML = html;
+
+    // 綁定「帶入登入」按鈕
+    box.querySelectorAll('button[data-emp]').forEach(function(b){
+      b.addEventListener('click', function(){
+        $('loginEmpId').value = this.getAttribute('data-emp');
+        $('loginPwd').focus();
+        toast('已帶入員工編號 ' + this.getAttribute('data-emp'), 'ok');
+      });
+    });
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '查　詢';
+    box.innerHTML = '<div class="lookup-empty" style="color:#C0392B;">連線失敗，請稍後再試</div>';
+  });
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escapeAttr(s) { return escapeHtml(s); }
 
 function logout() {
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
