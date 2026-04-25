@@ -514,6 +514,233 @@
     letter-spacing: 1px;
   }
 
+  /* ============ 慶祝橫幅（生日/紀念日）============ */
+  .celebrations {
+    max-width: 1200px;
+    margin: 8px auto 0;
+    padding: 0 32px;
+  }
+  .celebrations-bar {
+    background: linear-gradient(135deg, rgba(212,175,55,.10), rgba(42,157,159,.08));
+    border: 1px solid rgba(212,175,55,.35);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: thin;
+  }
+  .celebrations-bar::-webkit-scrollbar { height: 4px; }
+  .celebrations-bar::-webkit-scrollbar-thumb {
+    background: rgba(42,157,159,.25);
+    border-radius: 2px;
+  }
+  .celebration-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: var(--white);
+    border: 1px solid rgba(212,175,55,.35);
+    border-radius: 20px;
+    font-size: 12.5px;
+    color: var(--brown);
+    flex-shrink: 0;
+  }
+  .celebration-chip.today {
+    background: linear-gradient(135deg, var(--gold), #E8C766);
+    border-color: var(--gold-deep);
+    color: #5A3F08;
+    font-weight: 700;
+    box-shadow: 0 3px 10px rgba(212,175,55,.35);
+  }
+  .celebration-chip-emoji { font-size: 14px; }
+  .celebration-chip-name { font-weight: 500; }
+  .celebration-chip-date {
+    color: var(--text-muted);
+    font-size: 11.5px;
+    margin-left: 2px;
+  }
+  .celebration-chip.today .celebration-chip-date { color: #5A3F08; opacity: .85; }
+
+  /* ============ 任務區塊 ============ */
+  .tasks-section {
+    max-width: 1200px;
+    margin: 18px auto 0;
+    padding: 0 32px;
+  }
+  .tasks-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .tasks-header-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    color: var(--brown);
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tasks-header-title svg {
+    width: 20px;
+    height: 20px;
+    color: var(--teal);
+  }
+  .tasks-tabs {
+    display: flex;
+    gap: 4px;
+    margin-left: 6px;
+  }
+  .tasks-tab {
+    background: transparent;
+    border: 1.5px solid transparent;
+    color: var(--text-muted);
+    padding: 4px 12px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-family: inherit;
+    transition: all .2s;
+    letter-spacing: .5px;
+  }
+  .tasks-tab.active {
+    background: var(--white);
+    border-color: var(--teal-soft);
+    color: var(--teal-deep);
+    font-weight: 700;
+  }
+  .tasks-tab:hover:not(.active) { color: var(--brown); }
+  .tasks-tab .count {
+    display: inline-block;
+    background: #C0392B;
+    color: var(--white);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+    font-weight: 700;
+  }
+  .tasks-tab.active .count { background: var(--teal); }
+  .tasks-tab .count.zero { display: none; }
+
+  .btn-assign-task {
+    margin-left: auto;
+    padding: 7px 14px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-deep));
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 3px 10px rgba(42,157,159,.25);
+    transition: all .2s;
+  }
+  .btn-assign-task:hover { transform: translateY(-1px); }
+
+  .tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .task-item {
+    background: var(--white);
+    border: 1px solid rgba(42,157,159,.18);
+    border-left: 4px solid var(--teal-soft);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all .2s;
+  }
+  .task-item:hover {
+    border-color: var(--teal-soft);
+    box-shadow: 0 3px 10px rgba(42,157,159,.10);
+  }
+  .task-item.done {
+    opacity: .55;
+    border-left-color: rgba(42,157,159,.3);
+  }
+  .task-item.done .task-title { text-decoration: line-through; }
+  .task-item.overdue:not(.done) {
+    border-left-color: #C0392B;
+    background: linear-gradient(90deg, rgba(192,57,43,.04), var(--white) 30%);
+  }
+  .task-check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--teal-soft);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+    margin-top: 1px;
+  }
+  .task-check:hover { border-color: var(--teal); }
+  .task-check.checked {
+    background: var(--teal);
+    border-color: var(--teal);
+  }
+  .task-check.checked::after {
+    content: '✓';
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .task-body {
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+  }
+  .task-title {
+    font-size: 14px;
+    color: var(--brown);
+    font-weight: 600;
+    margin-bottom: 4px;
+    word-break: break-word;
+  }
+  .task-meta {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    letter-spacing: .3px;
+  }
+  .task-due {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .task-due.overdue {
+    color: #C0392B;
+    font-weight: 700;
+  }
+  .task-due.today { color: #B36410; font-weight: 700; }
+  .task-empty {
+    text-align: center;
+    padding: 24px 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+    background: rgba(255,255,255,.5);
+    border-radius: 10px;
+    border: 1px dashed rgba(42,157,159,.2);
+  }
+
   /* ============ 公告區塊 ============ */
   .anns-section {
     max-width: 1200px;
@@ -1223,6 +1450,10 @@
     .ann-item { padding: 12px 14px; gap: 10px; }
     .ann-title { font-size: 14px; }
     .ann-summary { font-size: 12.5px; }
+    .celebrations { padding: 0 20px; }
+    .tasks-section { padding: 0 20px; }
+    .tasks-header-title { font-size: 15px; }
+    .task-item { padding: 9px 12px; gap: 9px; }
     .modal-card { max-height: 90vh; }
     .modal-header, .modal-form, .modal-body { padding-left: 20px; padding-right: 20px; }
     .modal-foot { padding-left: 20px; padding-right: 20px; }
@@ -1338,6 +1569,11 @@
     <div class="hero-desc fade-up d3">請選擇您要使用的系統</div>
   </div>
 
+  <!-- =============== 生日 / 紀念日 橫幅 =============== -->
+  <div class="celebrations" id="celebrationsSection" style="display:none;">
+    <div class="celebrations-bar" id="celebrationsBar"></div>
+  </div>
+
   <!-- =============== 公告區塊 =============== -->
   <div class="anns-section fade-up d2" id="annsSection">
     <div class="anns-header">
@@ -1352,6 +1588,26 @@
     <div class="anns-toggle-all" id="annsToggleAll" style="display:none;">
       <button type="button" id="btnAnnsExpand">查看全部 <span id="annsTotalCount">0</span> 則 ▾</button>
     </div>
+  </div>
+
+  <!-- =============== 任務區塊 =============== -->
+  <div class="tasks-section fade-up d3" id="tasksSection" style="display:none;">
+    <div class="tasks-header">
+      <div class="tasks-header-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>我的任務</span>
+      </div>
+      <div class="tasks-tabs">
+        <button type="button" class="tasks-tab active" id="tabReceived" data-tab="received">
+          收到的<span class="count zero" id="cntReceived">0</span>
+        </button>
+        <button type="button" class="tasks-tab" id="tabAssigned" data-tab="assigned" style="display:none;">
+          派出的<span class="count zero" id="cntAssigned">0</span>
+        </button>
+      </div>
+      <button class="btn-assign-task" id="btnAssignTask" style="display:none;">＋ 派任務</button>
+    </div>
+    <div class="tasks-list" id="tasksList"></div>
   </div>
 
   <div class="section-label fade-up d3">
@@ -1381,6 +1637,67 @@
     <div class="modal-foot">
       <button type="button" class="btn-modal btn-modal-danger" id="btnAnnArchive" style="display:none;">下架公告</button>
       <button type="button" class="btn-modal btn-modal-cancel" data-close="annViewModal">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============== 任務詳情 Modal =============== -->
+<div class="modal-overlay" id="taskViewModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title" id="taskViewTitle">-</div>
+        <div class="modal-meta" id="taskViewMeta">-</div>
+      </div>
+      <button type="button" class="modal-close" data-close="taskViewModal" aria-label="關閉">✕</button>
+    </div>
+    <div class="modal-body" id="taskViewContent">-</div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-danger" id="btnTaskCancel" style="display:none;">下架任務</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnTaskToggleDone" style="display:none;">標記完成</button>
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="taskViewModal">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============== 派任務 Modal =============== -->
+<div class="modal-overlay" id="taskAssignModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title">派發新任務</div>
+        <div class="modal-meta">受派同仁的 dashboard 會立即顯示紅點提示</div>
+      </div>
+      <button type="button" class="modal-close" data-close="taskAssignModal" aria-label="關閉">✕</button>
+    </div>
+    <form id="taskAssignForm" class="modal-form" autocomplete="off">
+      <div class="form-group">
+        <label class="form-label" for="taskAssignee">受派員工編號</label>
+        <input type="text" id="taskAssignee" class="form-input" placeholder="例如 0011" required>
+        <div class="form-hint">不知道對方的員編？請先到登入頁查詢，或請對方提供。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="taskTitle">任務標題</label>
+        <input type="text" id="taskTitle" class="form-input" placeholder="例如：彙整 4 月針劑庫存盤點" maxlength="80" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="taskContent">任務內容</label>
+        <textarea id="taskContent" class="form-input" placeholder="詳細說明任務、需要的資料或交付方式…" maxlength="2000" required></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="taskDueDate">截止日期</label>
+        <input type="date" id="taskDueDate" class="form-input">
+        <div class="form-hint">留空 = 沒有截止日；逾期未完成會在受派人 dashboard 標紅</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="taskAssignPwd">確認你的密碼</label>
+        <input type="password" id="taskAssignPwd" class="form-input" placeholder="再次輸入密碼以確認身分" required>
+      </div>
+    </form>
+    <div class="modal-msg" id="taskAssignMsg"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="taskAssignModal">取消</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnTaskAssignSubmit">派發任務</button>
     </div>
   </div>
 </div>
@@ -1779,11 +2096,405 @@ function logout() {
   CURRENT_USER = null;
   ANNOUNCEMENTS = [];
   ANNS_EXPANDED = false;
+  TASKS_RECEIVED = [];
+  TASKS_ASSIGNED = [];
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
   $('loginMsg').textContent = '';
   toast('已登出', 'ok');
+}
+
+/* =========================================================
+ * 任務功能
+ * ========================================================= */
+var TASKS_RECEIVED = [];
+var TASKS_ASSIGNED = [];
+var TASKS_TAB = 'received'; // received / assigned
+
+function setupTasks() {
+  var canAssign = hasAnnouncePermission();
+  $('btnAssignTask').style.display = canAssign ? 'inline-block' : 'none';
+  $('tabAssigned').style.display = canAssign ? 'inline-block' : 'none';
+
+  if (window._tasksSetup) return;
+  window._tasksSetup = true;
+
+  $('btnAssignTask').addEventListener('click', openAssignTask);
+  $('btnTaskAssignSubmit').addEventListener('click', submitAssignTask);
+
+  document.querySelectorAll('.tasks-tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      var which = t.getAttribute('data-tab');
+      TASKS_TAB = which;
+      document.querySelectorAll('.tasks-tab').forEach(function(x){
+        x.classList.toggle('active', x === t);
+      });
+      renderTasks();
+    });
+  });
+}
+
+function loadTasks() {
+  if (!CURRENT_USER || !CURRENT_USER.empId) return;
+  apiGet({ action: 'getMyTasks', empId: CURRENT_USER.empId }, function(res){
+    if (res && res.success) {
+      TASKS_RECEIVED = res.received || [];
+      TASKS_ASSIGNED = res.assigned || [];
+    } else {
+      TASKS_RECEIVED = [];
+      TASKS_ASSIGNED = [];
+    }
+    renderTasks();
+  });
+}
+
+function renderTasks() {
+  // 計算未完成數
+  var pendingReceived = countPending(TASKS_RECEIVED);
+  var pendingAssigned = countPending(TASKS_ASSIGNED);
+  var cntR = $('cntReceived');
+  var cntA = $('cntAssigned');
+  cntR.textContent = pendingReceived;
+  cntR.classList.toggle('zero', pendingReceived === 0);
+  cntA.textContent = pendingAssigned;
+  cntA.classList.toggle('zero', pendingAssigned === 0);
+
+  // 顯示/隱藏整個區塊
+  // 一般員工：沒收到任務也沒派出去就隱藏
+  // 管理者：永遠顯示（為了能派任務）
+  var hasAny = TASKS_RECEIVED.length > 0 || TASKS_ASSIGNED.length > 0;
+  if (!hasAnnouncePermission() && !hasAny) {
+    $('tasksSection').style.display = 'none';
+    return;
+  }
+  $('tasksSection').style.display = 'block';
+
+  var list = TASKS_TAB === 'assigned' ? TASKS_ASSIGNED : TASKS_RECEIVED;
+  var box = $('tasksList');
+  box.innerHTML = '';
+
+  if (list.length === 0) {
+    box.innerHTML = '<div class="task-empty">' +
+      (TASKS_TAB === 'assigned' ? '尚未派發任何任務' : '目前沒有指派給您的任務') +
+      '</div>';
+    return;
+  }
+
+  // 排序：未完成、逾期最前；已完成最後
+  var sorted = list.slice().sort(function(a, b){
+    var ad = a.status === 'done', bd = b.status === 'done';
+    if (ad !== bd) return ad ? 1 : -1;
+    return 0;
+  });
+
+  sorted.forEach(function(t){
+    box.appendChild(buildTaskItem(t, TASKS_TAB));
+  });
+}
+
+function countPending(arr) {
+  var n = 0;
+  for (var i = 0; i < arr.length; i++) if (arr[i].status !== 'done') n++;
+  return n;
+}
+
+function buildTaskItem(t, tab) {
+  var done = t.status === 'done';
+  var overdue = !done && isOverdue(t.dueDate);
+  var item = document.createElement('div');
+  item.className = 'task-item' + (done ? ' done' : '') + (overdue ? ' overdue' : '');
+
+  var dueHtml = '';
+  if (t.dueDate) {
+    var dueCls = '';
+    if (!done) {
+      if (overdue) dueCls = ' overdue';
+      else if (isToday(t.dueDate)) dueCls = ' today';
+    }
+    dueHtml = '<span class="task-due' + dueCls + '">⏰ ' + escapeHtml(t.dueDate) + '</span>';
+  }
+
+  var who = (tab === 'assigned')
+    ? '指派給 ' + escapeHtml(t.assigneeName || t.assigneeEmpId)
+    : '來自 ' + escapeHtml(t.assignerName || t.assignerEmpId);
+
+  item.innerHTML =
+    '<div class="task-check' + (done ? ' checked' : '') + '" data-id="' + escapeAttr(t.id) + '"></div>' +
+    '<div class="task-body">' +
+      '<div class="task-title">' + escapeHtml(t.title) + '</div>' +
+      '<div class="task-meta">' +
+        '<span>' + who + '</span>' +
+        dueHtml +
+        (done && t.doneTime ? '<span style="color:var(--teal-deep);">✓ ' + escapeHtml(t.doneTime) + '</span>' : '') +
+      '</div>' +
+    '</div>';
+
+  // 點 checkbox 切換完成狀態（只有受派人才能切換）
+  var check = item.querySelector('.task-check');
+  if (tab === 'received') {
+    check.style.cursor = 'pointer';
+    check.addEventListener('click', function(e){
+      e.stopPropagation();
+      toggleTaskDone(t.id);
+    });
+  } else {
+    check.style.cursor = 'default';
+    check.style.opacity = '.6';
+  }
+
+  // 點主體看詳情
+  item.querySelector('.task-body').addEventListener('click', function(){
+    openTaskView(t.id, tab);
+  });
+
+  return item;
+}
+
+function isOverdue(dueDate) {
+  if (!dueDate) return false;
+  var due = parseDateOnly(dueDate);
+  if (!due) return false;
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return due.getTime() < today.getTime();
+}
+
+function isToday(dueDate) {
+  var due = parseDateOnly(dueDate);
+  if (!due) return false;
+  var today = new Date();
+  return due.getFullYear() === today.getFullYear()
+      && due.getMonth() === today.getMonth()
+      && due.getDate() === today.getDate();
+}
+
+function parseDateOnly(s) {
+  if (!s) return null;
+  var m = String(s).match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+  if (!m) return null;
+  var d = new Date(parseInt(m[1],10), parseInt(m[2],10) - 1, parseInt(m[3],10));
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function findTaskById(id) {
+  var list = TASKS_RECEIVED.concat(TASKS_ASSIGNED);
+  for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+  return null;
+}
+
+function openTaskView(id, tab) {
+  var t = findTaskById(id);
+  if (!t) return;
+
+  $('taskViewTitle').textContent = t.title;
+  var who = (tab === 'assigned')
+    ? '指派給 ' + (t.assigneeName || t.assigneeEmpId)
+    : '來自 ' + (t.assignerName || t.assignerEmpId);
+  var meta = [who, t.time];
+  if (t.dueDate) meta.push('截止 ' + t.dueDate);
+  if (t.status === 'done' && t.doneTime) meta.push('已完成 ' + t.doneTime);
+  $('taskViewMeta').textContent = meta.join(' · ');
+  $('taskViewContent').textContent = t.content;
+
+  // 受派人本人：可標完成 / 反向操作
+  var btnToggle = $('btnTaskToggleDone');
+  var isAssignee = CURRENT_USER && t.assigneeEmpId
+    && String(t.assigneeEmpId).toLowerCase() === String(CURRENT_USER.empId).toLowerCase();
+  if (isAssignee) {
+    btnToggle.style.display = 'inline-block';
+    btnToggle.textContent = (t.status === 'done') ? '取消完成標記' : '標記完成';
+    btnToggle.onclick = function(){
+      toggleTaskDone(t.id, function(){
+        closeModal('taskViewModal');
+      });
+    };
+  } else {
+    btnToggle.style.display = 'none';
+  }
+
+  // 派發者本人或管理者：可下架
+  var btnCancel = $('btnTaskCancel');
+  var isAssigner = CURRENT_USER && t.assignerEmpId
+    && String(t.assignerEmpId).toLowerCase() === String(CURRENT_USER.empId).toLowerCase();
+  if (isAssigner || hasAnnouncePermission()) {
+    btnCancel.style.display = 'inline-block';
+    btnCancel.onclick = function(){ doCancelTask(t.id); };
+  } else {
+    btnCancel.style.display = 'none';
+  }
+
+  openModal('taskViewModal');
+}
+
+function toggleTaskDone(taskId, afterCb) {
+  var pwd = prompt('請輸入您的密碼以確認操作：');
+  if (!pwd) return;
+
+  apiGet({
+    action: 'markTaskDone',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    taskId: taskId
+  }, function(res){
+    if (res && res.success) {
+      toast(res.status === 'done' ? '✓ 已標記完成' : '已取消完成標記', 'ok');
+      loadTasks();
+      if (afterCb) afterCb();
+    } else {
+      toast((res && res.error) || '操作失敗', 'err');
+    }
+  });
+}
+
+function doCancelTask(taskId) {
+  if (!confirm('確定要下架這個任務嗎？此動作會讓受派人不再看到任務。')) return;
+  var pwd = prompt('請輸入您的密碼以確認下架：');
+  if (!pwd) return;
+
+  apiGet({
+    action: 'cancelTask',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    taskId: taskId
+  }, function(res){
+    if (res && res.success) {
+      toast('任務已下架', 'ok');
+      closeModal('taskViewModal');
+      loadTasks();
+    } else {
+      toast((res && res.error) || '下架失敗', 'err');
+    }
+  });
+}
+
+function openAssignTask() {
+  $('taskAssignMsg').textContent = '';
+  $('taskAssignMsg').className = 'modal-msg';
+  $('taskAssignee').value = '';
+  $('taskTitle').value = '';
+  $('taskContent').value = '';
+  $('taskDueDate').value = '';
+  $('taskAssignPwd').value = '';
+  openModal('taskAssignModal');
+  setTimeout(function(){ $('taskAssignee').focus(); }, 100);
+}
+
+function submitAssignTask() {
+  var assigneeEmpId = $('taskAssignee').value.trim();
+  var title = $('taskTitle').value.trim();
+  var content = $('taskContent').value.trim();
+  var dueDate = $('taskDueDate').value;
+  var pwd = $('taskAssignPwd').value;
+  var msg = $('taskAssignMsg');
+  var btn = $('btnTaskAssignSubmit');
+
+  msg.textContent = '';
+  msg.className = 'modal-msg';
+
+  if (!assigneeEmpId) { msg.textContent = '請輸入受派員工編號'; return; }
+  if (!title) { msg.textContent = '請輸入任務標題'; return; }
+  if (!content) { msg.textContent = '請輸入任務內容'; return; }
+  if (!pwd) { msg.textContent = '請輸入密碼以確認身分'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>派發中…';
+
+  apiGet({
+    action: 'assignTask',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    assigneeEmpId: assigneeEmpId,
+    title: title,
+    content: content,
+    dueDate: dueDate
+  }, function(res){
+    btn.disabled = false;
+    btn.textContent = '派發任務';
+
+    if (res && res.success) {
+      msg.className = 'modal-msg ok';
+      msg.textContent = '✓ 任務已派發給 ' + (res.task.assigneeName || res.task.assigneeEmpId);
+      setTimeout(function(){
+        closeModal('taskAssignModal');
+        msg.textContent = '';
+        TASKS_TAB = 'assigned';  // 切到派出的 tab 看到剛派的
+        document.querySelectorAll('.tasks-tab').forEach(function(t){
+          t.classList.toggle('active', t.getAttribute('data-tab') === 'assigned');
+        });
+        loadTasks();
+      }, 800);
+    } else {
+      msg.textContent = (res && res.error) ? res.error : '派發失敗，請稍後再試';
+    }
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '派發任務';
+    msg.textContent = '連線失敗，請稍後再試';
+  });
+}
+
+/* =========================================================
+ * 生日 / 紀念日
+ * ========================================================= */
+function loadCelebrations() {
+  apiGet({ action: 'getCelebrations' }, function(res){
+    if (!res || !res.success) {
+      $('celebrationsSection').style.display = 'none';
+      return;
+    }
+    renderCelebrations(res);
+  }, function(){
+    $('celebrationsSection').style.display = 'none';
+  });
+}
+
+function renderCelebrations(data) {
+  var bar = $('celebrationsBar');
+  var section = $('celebrationsSection');
+  bar.innerHTML = '';
+
+  var bdays = data.birthdays || [];
+  var anns = data.anniversaries || [];
+  if (bdays.length === 0 && anns.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  // 本月壽星
+  bdays.forEach(function(b){
+    var chip = document.createElement('span');
+    chip.className = 'celebration-chip' + (b.isToday ? ' today' : '');
+    chip.innerHTML =
+      '<span class="celebration-chip-emoji">🎂</span>' +
+      '<span class="celebration-chip-name">' + escapeHtml(b.name) + '</span>' +
+      '<span class="celebration-chip-date">' +
+        (b.clinic ? escapeHtml(b.clinic) + ' · ' : '') +
+        b.month + '/' + b.day +
+        (b.isToday ? ' · 今天 🎉' : '') +
+      '</span>';
+    bar.appendChild(chip);
+  });
+
+  // 本月到職紀念日
+  anns.forEach(function(a){
+    var chip = document.createElement('span');
+    chip.className = 'celebration-chip' + (a.isToday ? ' today' : '');
+    var yearText = a.years ? a.years + ' 週年' : '';
+    chip.innerHTML =
+      '<span class="celebration-chip-emoji">🎉</span>' +
+      '<span class="celebration-chip-name">' + escapeHtml(a.name) + '</span>' +
+      '<span class="celebration-chip-date">' +
+        (a.clinic ? escapeHtml(a.clinic) + ' · ' : '') +
+        a.month + '/' + a.day +
+        (yearText ? ' · ' + yearText : ' · 入職') +
+        (a.isToday ? ' · 今天' : '') +
+      '</span>';
+    bar.appendChild(chip);
+  });
+
+  section.style.display = 'block';
 }
 
 /* =========================================================
@@ -2374,11 +3085,14 @@ function showDashboard() {
 
   renderCards();
   setupChangePwd();
+  loadCelebrations();
 
-  // 先抓最新權限設定，再 setup 公告（按鈕顯示要依最新設定判斷）
+  // 先抓最新權限設定，再 setup 公告/任務（按鈕顯示要依最新權限判斷）
   loadAnnPermConfig(function(){
     setupAnnouncements();
     loadAnnouncements();
+    setupTasks();
+    loadTasks();
   });
 }
 
