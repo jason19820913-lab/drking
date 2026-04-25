@@ -1791,19 +1791,54 @@ function logout() {
  * ========================================================= */
 var ANNOUNCEMENTS = [];
 var ANNS_EXPANDED = false;
-// 前端對應後端「公告權限」分頁的預設關鍵字（後端為主，前端僅控制 UI 顯示）
-var ANN_PERM_KEYWORDS = ['策略長', '院長', '主任', '管理', 'admin'];
+// 公告權限設定，從後端「公告權限」分頁拉下來；null = 尚未載入
+var ANN_PERM_CONFIG = null;
+// 載入失敗時的後備關鍵字（理論上用不到）
+var ANN_PERM_FALLBACK = ['策略長', '院長', '主任', '管理', 'admin'];
 var ALL_CLINICS = [];
 var ALL_TITLES = [];
 var POST_FILES = [];  // File 物件陣列（待上傳）
 
 function hasAnnouncePermission() {
   if (!CURRENT_USER) return false;
+
+  var keywords, empIds;
+  if (ANN_PERM_CONFIG) {
+    keywords = ANN_PERM_CONFIG.titleKeywords || [];
+    empIds = ANN_PERM_CONFIG.empIds || [];
+  } else {
+    keywords = ANN_PERM_FALLBACK;
+    empIds = [];
+  }
+
+  // 員編白名單（不分大小寫）
+  var userEmpId = String(CURRENT_USER.empId || '').toLowerCase();
+  for (var i = 0; i < empIds.length; i++) {
+    if (String(empIds[i]).toLowerCase() === userEmpId) return true;
+  }
+
+  // 職稱關鍵字
   var t = String(CURRENT_USER.title || '').toLowerCase();
-  for (var i = 0; i < ANN_PERM_KEYWORDS.length; i++) {
-    if (t && t.indexOf(ANN_PERM_KEYWORDS[i].toLowerCase()) >= 0) return true;
+  if (!t) return false;
+  for (var j = 0; j < keywords.length; j++) {
+    var kw = String(keywords[j]).toLowerCase();
+    if (kw && t.indexOf(kw) >= 0) return true;
   }
   return false;
+}
+
+function loadAnnPermConfig(callback) {
+  apiGet({ action: 'getAnnPermConfig' }, function(res){
+    if (res && res.success) {
+      ANN_PERM_CONFIG = {
+        titleKeywords: Array.isArray(res.titleKeywords) ? res.titleKeywords : [],
+        empIds: Array.isArray(res.empIds) ? res.empIds : []
+      };
+    }
+    if (callback) callback();
+  }, function(){
+    if (callback) callback();
+  });
 }
 
 function annsReadKey() {
@@ -2338,9 +2373,13 @@ function showDashboard() {
   $('welcomeTitle').textContent = u.name + '　您好';
 
   renderCards();
-  setupAnnouncements();
   setupChangePwd();
-  loadAnnouncements();
+
+  // 先抓最新權限設定，再 setup 公告（按鈕顯示要依最新設定判斷）
+  loadAnnPermConfig(function(){
+    setupAnnouncements();
+    loadAnnouncements();
+  });
 }
 
 /* =========================================================
