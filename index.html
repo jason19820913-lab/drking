@@ -220,6 +220,41 @@
     letter-spacing: 1px;
   }
 
+  /* 登入頁提示（首次登入說明） */
+  .info-notice {
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: rgba(42,157,159,.08);
+    border: 1px solid rgba(42,157,159,.22);
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--brown);
+  }
+  .info-notice-icon {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: serif;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .info-notice strong {
+    color: var(--teal-deep);
+    font-weight: 700;
+  }
+
   /* ===== 查詢員編（可展開） ===== */
   .lookup-toggle {
     margin-top: 18px;
@@ -807,6 +842,8 @@
     min-height: 42px;
     max-height: 140px;
     overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
   }
   .chip-pick.empty::before {
     content: '載入中…';
@@ -841,6 +878,8 @@
 
   /* 附件上傳區 */
   .file-drop {
+    display: block;
+    width: 100%;
     border: 1.5px dashed rgba(42,157,159,.4);
     border-radius: 10px;
     padding: 18px 14px;
@@ -852,11 +891,13 @@
   .file-drop:hover { border-color: var(--teal); background: var(--white); }
   .file-drop input[type="file"] { display: none; }
   .file-drop-text {
+    display: block;
     font-size: 13px;
     color: var(--brown);
     letter-spacing: .5px;
   }
   .file-drop-sub {
+    display: block;
     font-size: 11.5px;
     color: var(--text-muted);
     margin-top: 4px;
@@ -1227,10 +1268,17 @@
           <input type="checkbox" id="loginRemember" checked>
           <span>記住我</span>
         </label>
-        <span style="color:var(--text-muted);font-size:12px;">忘記密碼請洽系統管理員</span>
       </div>
       <button type="submit" class="btn-primary" id="btnLogin">登　入</button>
       <div class="login-msg" id="loginMsg"></div>
+
+      <div class="info-notice">
+        <span class="info-notice-icon">i</span>
+        <div>
+          首次登入：密碼預設為您的<strong>員工編號</strong>。<br>
+          建議登入後輕按右上角姓名 <strong>變更密碼</strong>，並妥善保管。
+        </div>
+      </div>
     </form>
 
     <!-- 查詢員工編號（可展開） -->
@@ -1412,8 +1460,8 @@
       <div class="form-group">
         <label class="form-label">附件（可選）</label>
         <label class="file-drop" for="annPostFiles">
-          <div class="file-drop-text">＋ 點此選擇檔案</div>
-          <div class="file-drop-sub">支援 PDF / JPG / PNG / GIF / WebP / HEIC，每檔 ≤ 10MB</div>
+          <span class="file-drop-text">＋ 點此選擇檔案</span>
+          <span class="file-drop-sub">支援 PDF / JPG / PNG / GIF / WebP / HEIC，每檔 ≤ 10MB</span>
           <input type="file" id="annPostFiles" multiple accept="application/pdf,image/*">
         </label>
         <div class="file-list" id="annPostFileList"></div>
