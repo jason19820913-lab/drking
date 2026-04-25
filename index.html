@@ -795,6 +795,184 @@
   }
   .modal-msg.ok { color: #2E7D32; }
 
+  /* 受眾多選 chip */
+  .chip-pick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px;
+    background: var(--cream);
+    border: 1.5px solid #D5E5E5;
+    border-radius: 8px;
+    min-height: 42px;
+    max-height: 140px;
+    overflow-y: auto;
+  }
+  .chip-pick.empty::before {
+    content: '載入中…';
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  .chip-pick label {
+    cursor: pointer;
+    padding: 5px 12px;
+    border: 1.5px solid #D5E5E5;
+    border-radius: 18px;
+    font-size: 12.5px;
+    background: var(--white);
+    color: var(--brown);
+    transition: all .15s;
+    user-select: none;
+  }
+  .chip-pick label:hover { border-color: var(--teal-soft); }
+  .chip-pick input { display: none; }
+  .chip-pick label.checked {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--white);
+  }
+  .form-hint {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: .3px;
+  }
+
+  /* 附件上傳區 */
+  .file-drop {
+    border: 1.5px dashed rgba(42,157,159,.4);
+    border-radius: 10px;
+    padding: 18px 14px;
+    text-align: center;
+    background: var(--cream);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .file-drop:hover { border-color: var(--teal); background: var(--white); }
+  .file-drop input[type="file"] { display: none; }
+  .file-drop-text {
+    font-size: 13px;
+    color: var(--brown);
+    letter-spacing: .5px;
+  }
+  .file-drop-sub {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .file-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--white);
+    border: 1px solid rgba(42,157,159,.15);
+    border-radius: 8px;
+    font-size: 12.5px;
+  }
+  .file-item-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--teal-deep);
+    flex-shrink: 0;
+  }
+  .file-item-name {
+    flex: 1;
+    min-width: 0;
+    color: var(--brown);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .file-item-size { color: var(--text-muted); font-size: 11px; }
+  .file-item-remove {
+    background: none;
+    border: none;
+    color: #C0392B;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+  }
+
+  /* 公告詳情 modal 的附件區 */
+  .ann-target-line {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--teal-deep);
+    background: rgba(42,157,159,.08);
+    padding: 5px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    letter-spacing: .3px;
+  }
+  .ann-attachments {
+    margin: 16px 0 4px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(42,157,159,.25);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ann-attachment-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--teal-soft);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--teal-deep);
+    font-size: 13px;
+    background: var(--white);
+    transition: all .2s;
+    max-width: 100%;
+  }
+  .ann-attachment-item:hover {
+    background: var(--teal);
+    color: var(--white);
+    border-color: var(--teal);
+  }
+  .ann-attachment-item svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+  .ann-attachment-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 220px;
+  }
+
+  /* ann-item 上的 target badges */
+  .ann-targets {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 6px;
+    flex-wrap: wrap;
+  }
+  .ann-target-badge {
+    font-size: 10.5px;
+    background: rgba(42,157,159,.10);
+    color: var(--teal-deep);
+    padding: 1px 7px;
+    border-radius: 8px;
+    letter-spacing: .3px;
+  }
+  .ann-clip {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    color: var(--teal-deep);
+  }
+
   .section-label {
     max-width: 1200px;
     margin: 20px auto 18px;
@@ -1147,7 +1325,11 @@
       </div>
       <button type="button" class="modal-close" data-close="annViewModal" aria-label="關閉">✕</button>
     </div>
-    <div class="modal-body" id="annViewContent">-</div>
+    <div class="modal-body">
+      <div id="annViewTarget" style="display:none;"></div>
+      <div id="annViewContent">-</div>
+      <div class="ann-attachments" id="annViewAttachments" style="display:none;"></div>
+    </div>
     <div class="modal-foot">
       <button type="button" class="btn-modal btn-modal-danger" id="btnAnnArchive" style="display:none;">下架公告</button>
       <button type="button" class="btn-modal btn-modal-cancel" data-close="annViewModal">關閉</button>
@@ -1214,6 +1396,29 @@
           <label><input type="radio" name="annLevel" value="緊急"><span>緊急</span></label>
         </div>
       </div>
+
+      <div class="form-group">
+        <label class="form-label">推送院區</label>
+        <div class="chip-pick empty" id="annPostClinics"></div>
+        <div class="form-hint">不勾選任一個 = 全部院區皆可看到</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">推送職稱</label>
+        <div class="chip-pick empty" id="annPostTitles"></div>
+        <div class="form-hint">不勾選任一個 = 全部職稱皆可看到（與院區條件取交集）</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">附件（可選）</label>
+        <label class="file-drop" for="annPostFiles">
+          <div class="file-drop-text">＋ 點此選擇檔案</div>
+          <div class="file-drop-sub">支援 PDF / JPG / PNG / GIF / WebP / HEIC，每檔 ≤ 10MB</div>
+          <input type="file" id="annPostFiles" multiple accept="application/pdf,image/*">
+        </label>
+        <div class="file-list" id="annPostFileList"></div>
+      </div>
+
       <div class="form-group">
         <label class="form-label" for="annPostPwd">確認你的密碼</label>
         <input type="password" id="annPostPwd" class="form-input" placeholder="再次輸入密碼以確認身分" required>
@@ -1308,6 +1513,20 @@ function apiGet(params, cb, errCb) {
     return encodeURIComponent(k) + '=' + encodeURIComponent(params[k] == null ? '' : params[k]);
   }).join('&');
   fetch(API + '?' + q)
+    .then(function(r){ return r.json(); })
+    .then(cb)
+    .catch(function(e){ if (errCb) errCb(e); else console.error(e); });
+}
+
+// 用 POST 呼叫 Apps Script（用於含陣列、附件 base64 的請求）
+// Content-Type 用 text/plain 避開 CORS preflight
+function apiPost(payload, cb, errCb) {
+  fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload),
+    redirect: 'follow'
+  })
     .then(function(r){ return r.json(); })
     .then(cb)
     .catch(function(e){ if (errCb) errCb(e); else console.error(e); });
@@ -1524,13 +1743,17 @@ function logout() {
  * ========================================================= */
 var ANNOUNCEMENTS = [];
 var ANNS_EXPANDED = false;
+// 前端對應後端「公告權限」分頁的預設關鍵字（後端為主，前端僅控制 UI 顯示）
 var ANN_PERM_KEYWORDS = ['策略長', '院長', '主任', '管理', 'admin'];
+var ALL_CLINICS = [];
+var ALL_TITLES = [];
+var POST_FILES = [];  // File 物件陣列（待上傳）
 
 function hasAnnouncePermission() {
-  if (!CURRENT_USER || !CURRENT_USER.title) return false;
-  var t = String(CURRENT_USER.title).toLowerCase();
+  if (!CURRENT_USER) return false;
+  var t = String(CURRENT_USER.title || '').toLowerCase();
   for (var i = 0; i < ANN_PERM_KEYWORDS.length; i++) {
-    if (t.indexOf(ANN_PERM_KEYWORDS[i].toLowerCase()) >= 0) return true;
+    if (t && t.indexOf(ANN_PERM_KEYWORDS[i].toLowerCase()) >= 0) return true;
   }
   return false;
 }
@@ -1564,6 +1787,10 @@ function setupAnnouncements() {
 
   $('btnPostAnn').addEventListener('click', function(){
     $('annPostMsg').textContent = '';
+    $('annPostMsg').className = 'modal-msg';
+    POST_FILES = [];
+    renderPostFileList();
+    loadTargetPickers();  // 第一次開啟才載入院區/職稱
     openModal('annPostModal');
     setTimeout(function(){ $('annPostTitle').focus(); }, 100);
   });
@@ -1571,6 +1798,20 @@ function setupAnnouncements() {
   $('btnAnnsExpand').addEventListener('click', function(){
     ANNS_EXPANDED = !ANNS_EXPANDED;
     renderAnnouncements();
+  });
+
+  // 檔案選擇
+  $('annPostFiles').addEventListener('change', function(e){
+    var files = Array.prototype.slice.call(e.target.files);
+    files.forEach(function(f){
+      if (f.size > 10 * 1024 * 1024) {
+        toast('「' + f.name + '」超過 10MB，已略過', 'err');
+        return;
+      }
+      POST_FILES.push(f);
+    });
+    e.target.value = '';  // reset 以便同檔名可再選
+    renderPostFileList();
   });
 
   // 所有 [data-close] 按鈕
@@ -1597,6 +1838,82 @@ function setupAnnouncements() {
   });
 }
 
+function loadTargetPickers() {
+  if (window._targetsLoaded) return;
+  window._targetsLoaded = true;
+
+  // 院區
+  apiGet({ action: 'getClinics' }, function(res){
+    if (res && res.success && Array.isArray(res.clinics)) {
+      ALL_CLINICS = res.clinics;
+      renderChipPick('annPostClinics', ALL_CLINICS, 'clinic');
+    }
+  });
+  // 職稱
+  apiGet({ action: 'getTitles' }, function(res){
+    if (res && res.success && Array.isArray(res.titles)) {
+      ALL_TITLES = res.titles;
+      renderChipPick('annPostTitles', ALL_TITLES, 'title');
+    }
+  });
+}
+
+function renderChipPick(containerId, items, name) {
+  var box = $(containerId);
+  box.classList.remove('empty');
+  if (!items || items.length === 0) {
+    box.innerHTML = '<span style="color:var(--text-muted);font-size:12px;padding:4px 8px;">沒有可選的選項</span>';
+    return;
+  }
+  box.innerHTML = '';
+  items.forEach(function(item){
+    var label = document.createElement('label');
+    label.innerHTML = '<input type="checkbox" name="' + name + '" value="' + escapeAttr(item) + '">' +
+                      '<span>' + escapeHtml(item) + '</span>';
+    var input = label.querySelector('input');
+    input.addEventListener('change', function(){
+      label.classList.toggle('checked', input.checked);
+    });
+    box.appendChild(label);
+  });
+}
+
+function getCheckedValues(containerId) {
+  var box = $(containerId);
+  var inputs = box.querySelectorAll('input[type="checkbox"]:checked');
+  var arr = [];
+  inputs.forEach(function(i){ arr.push(i.value); });
+  return arr;
+}
+
+function renderPostFileList() {
+  var list = $('annPostFileList');
+  if (POST_FILES.length === 0) { list.innerHTML = ''; return; }
+  list.innerHTML = '';
+  POST_FILES.forEach(function(f, idx){
+    var item = document.createElement('div');
+    item.className = 'file-item';
+    var icon = f.type === 'application/pdf'
+      ? '<svg class="file-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+      : '<svg class="file-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    item.innerHTML = icon +
+      '<span class="file-item-name">' + escapeHtml(f.name) + '</span>' +
+      '<span class="file-item-size">' + formatBytes(f.size) + '</span>' +
+      '<button type="button" class="file-item-remove" data-idx="' + idx + '" aria-label="移除">✕</button>';
+    item.querySelector('.file-item-remove').addEventListener('click', function(){
+      POST_FILES.splice(idx, 1);
+      renderPostFileList();
+    });
+    list.appendChild(item);
+  });
+}
+
+function formatBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1024 / 1024).toFixed(1) + ' MB';
+}
+
 function openModal(id) { $(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
 function closeModal(id) { $(id).classList.remove('show'); document.body.style.overflow = ''; }
 
@@ -1614,11 +1931,33 @@ function loadAnnouncements() {
   });
 }
 
+/**
+ * 依使用者的院區/職稱過濾公告。
+ * 規則：targetClinics、targetTitles 各自空陣列=全部；都符合（AND）才看得到。
+ * 例外：有發公告權限者一律看得到所有公告（方便管理）。
+ */
+function isAnnVisibleToUser(ann) {
+  if (hasAnnouncePermission()) return true;
+  var u = CURRENT_USER || {};
+  if (ann.targetClinics && ann.targetClinics.length > 0) {
+    if (ann.targetClinics.indexOf(u.clinic) < 0) return false;
+  }
+  if (ann.targetTitles && ann.targetTitles.length > 0) {
+    if (ann.targetTitles.indexOf(u.title) < 0) return false;
+  }
+  return true;
+}
+
 function renderAnnouncements() {
   var list = $('annsList');
   var badge = $('annsBadge');
   var toggleAll = $('annsToggleAll');
-  var anns = ANNOUNCEMENTS || [];
+  var allAnns = ANNOUNCEMENTS || [];
+  // 套受眾過濾
+  var anns = [];
+  for (var k = 0; k < allAnns.length; k++) {
+    if (isAnnVisibleToUser(allAnns[k])) anns.push(allAnns[k]);
+  }
 
   if (anns.length === 0) {
     list.innerHTML = '<div class="anns-empty">目前沒有公告</div>';
@@ -1669,12 +2008,35 @@ function buildAnnItem(a, read) {
   var item = document.createElement('div');
   item.className = 'ann-item' + (unread ? ' unread' : '') + (levelCls ? ' ' + levelCls : '');
   item.setAttribute('data-id', a.id);
+
+  // 對象 badge（只在管理者視角顯示，因為一般員工看到的本來就是符合自己的）
+  var targetsHtml = '';
+  if (hasAnnouncePermission()) {
+    var badges = [];
+    if (a.targetClinics && a.targetClinics.length > 0) {
+      badges.push('<span class="ann-target-badge">院 ' + escapeHtml(a.targetClinics.join('/')) + '</span>');
+    }
+    if (a.targetTitles && a.targetTitles.length > 0) {
+      badges.push('<span class="ann-target-badge">職 ' + escapeHtml(a.targetTitles.join('/')) + '</span>');
+    }
+    if (badges.length > 0) {
+      targetsHtml = '<span class="ann-targets">' + badges.join('') + '</span>';
+    }
+  }
+
+  // 附件 clip icon
+  var clipHtml = (a.attachments && a.attachments.length > 0)
+    ? '<span class="ann-clip" title="有 ' + a.attachments.length + ' 個附件">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
+      '</span>'
+    : '';
+
   item.innerHTML =
     '<span class="ann-level' + (levelCls ? ' ' + levelCls : '') + '">' +
       escapeHtml(a.level || '一般') +
     '</span>' +
     '<div class="ann-body">' +
-      '<div class="ann-title">' + escapeHtml(a.title) + '</div>' +
+      '<div class="ann-title">' + escapeHtml(a.title) + clipHtml + targetsHtml + '</div>' +
       '<div class="ann-summary">' + escapeHtml(a.content) + '</div>' +
       '<div class="ann-meta">' + escapeHtml(a.authorName || '') +
         ' · ' + escapeHtml(a.time || '') + '</div>' +
@@ -1700,6 +2062,46 @@ function openAnnView(id) {
     [a.level || '一般', a.authorName, a.time].filter(Boolean).join(' · ');
   $('annViewContent').textContent = a.content;
 
+  // 對象資訊（只在有篩選且使用者為管理者時顯示，避免一般員工困惑）
+  var targetEl = $('annViewTarget');
+  if (hasAnnouncePermission() &&
+      ((a.targetClinics && a.targetClinics.length > 0) ||
+       (a.targetTitles && a.targetTitles.length > 0))) {
+    var parts = [];
+    if (a.targetClinics && a.targetClinics.length > 0) {
+      parts.push('院區：' + a.targetClinics.join('、'));
+    }
+    if (a.targetTitles && a.targetTitles.length > 0) {
+      parts.push('職稱：' + a.targetTitles.join('、'));
+    }
+    targetEl.innerHTML = '<span class="ann-target-line">推送對象 ｜ ' + escapeHtml(parts.join('  ｜  ')) + '</span>';
+    targetEl.style.display = 'block';
+    targetEl.style.marginBottom = '12px';
+  } else {
+    targetEl.style.display = 'none';
+  }
+
+  // 附件
+  var attEl = $('annViewAttachments');
+  if (a.attachments && a.attachments.length > 0) {
+    attEl.innerHTML = a.attachments.map(function(f){
+      var isPdf = (f.mimeType || '').indexOf('pdf') >= 0
+                || /\.pdf$/i.test(f.name || '');
+      var icon = isPdf
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+      return '<a class="ann-attachment-item" href="' + escapeAttr(f.url) + '" target="_blank" rel="noopener">' +
+        icon +
+        '<span class="ann-attachment-name">' + escapeHtml(f.name || '附件') + '</span>' +
+        (f.size ? '<span style="color:inherit;opacity:.7;font-size:11.5px;">' + formatBytes(f.size) + '</span>' : '') +
+      '</a>';
+    }).join('');
+    attEl.style.display = 'flex';
+  } else {
+    attEl.style.display = 'none';
+    attEl.innerHTML = '';
+  }
+
   var btnArchive = $('btnAnnArchive');
   if (hasAnnouncePermission()) {
     btnArchive.style.display = 'inline-block';
@@ -1723,6 +2125,8 @@ function submitAnnPost() {
   var levelEl = document.querySelector('input[name="annLevel"]:checked');
   var level = levelEl ? levelEl.value : '一般';
   var pwd = $('annPostPwd').value;
+  var targetClinics = getCheckedValues('annPostClinics');
+  var targetTitles = getCheckedValues('annPostTitles');
   var msg = $('annPostMsg');
   var btn = $('btnAnnPostSubmit');
 
@@ -1736,40 +2140,109 @@ function submitAnnPost() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span>送出中…';
 
-  apiGet({
-    action: 'postAnnouncement',
-    empId: CURRENT_USER.empId,
-    pwd: pwd,
-    title: title,
-    content: content,
-    level: level
-  }, function(res){
+  // 先上傳附件，再發公告
+  uploadAllPostFiles(pwd, function(attachments){
+    btn.innerHTML = '<span class="spin"></span>發布公告…';
+    apiPost({
+      action: 'postAnnouncement',
+      empId: CURRENT_USER.empId,
+      pwd: pwd,
+      title: title,
+      content: content,
+      level: level,
+      targetClinics: targetClinics,
+      targetTitles: targetTitles,
+      attachments: attachments
+    }, function(res){
+      btn.disabled = false;
+      btn.textContent = '送出公告';
+
+      if (res && res.success) {
+        msg.className = 'modal-msg ok';
+        msg.textContent = '✓ 公告已發布';
+        // Reset 表單
+        $('annPostTitle').value = '';
+        $('annPostContent').value = '';
+        $('annPostPwd').value = '';
+        var def = document.querySelector('input[name="annLevel"][value="一般"]');
+        if (def) def.checked = true;
+        // 清空多選
+        document.querySelectorAll('#annPostClinics input:checked,#annPostTitles input:checked').forEach(function(i){
+          i.checked = false;
+          i.parentNode.classList.remove('checked');
+        });
+        POST_FILES = [];
+        renderPostFileList();
+
+        setTimeout(function(){
+          closeModal('annPostModal');
+          msg.textContent = '';
+          loadAnnouncements();
+        }, 800);
+      } else {
+        msg.textContent = (res && res.error) ? res.error : '發布失敗，請稍後再試';
+      }
+    }, function(){
+      btn.disabled = false;
+      btn.textContent = '送出公告';
+      msg.textContent = '連線失敗，請稍後再試';
+    });
+  }, function(err){
     btn.disabled = false;
     btn.textContent = '送出公告';
-
-    if (res && res.success) {
-      msg.className = 'modal-msg ok';
-      msg.textContent = '✓ 公告已發布';
-      // Reset
-      $('annPostTitle').value = '';
-      $('annPostContent').value = '';
-      $('annPostPwd').value = '';
-      var def = document.querySelector('input[name="annLevel"][value="一般"]');
-      if (def) def.checked = true;
-
-      setTimeout(function(){
-        closeModal('annPostModal');
-        msg.textContent = '';
-        loadAnnouncements();
-      }, 800);
-    } else {
-      msg.textContent = (res && res.error) ? res.error : '發布失敗，請稍後再試';
-    }
-  }, function(){
-    btn.disabled = false;
-    btn.textContent = '送出公告';
-    msg.textContent = '連線失敗，請稍後再試';
+    msg.textContent = err || '附件上傳失敗';
   });
+}
+
+/**
+ * 依序上傳 POST_FILES，全部上傳完成後 callback 收到 attachments 陣列
+ */
+function uploadAllPostFiles(pwd, callback, errorCb) {
+  if (POST_FILES.length === 0) { callback([]); return; }
+
+  var uploaded = [];
+  var idx = 0;
+  var btn = $('btnAnnPostSubmit');
+
+  function next() {
+    if (idx >= POST_FILES.length) { callback(uploaded); return; }
+    var file = POST_FILES[idx];
+    btn.innerHTML = '<span class="spin"></span>上傳附件 ' + (idx + 1) + '/' + POST_FILES.length + '…';
+
+    var reader = new FileReader();
+    reader.onload = function(){
+      var dataUrl = reader.result;
+      var commaIdx = String(dataUrl).indexOf(',');
+      var base64 = commaIdx >= 0 ? dataUrl.substring(commaIdx + 1) : dataUrl;
+
+      apiPost({
+        action: 'uploadAttachment',
+        empId: CURRENT_USER.empId,
+        pwd: pwd,
+        fileName: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        dataBase64: base64
+      }, function(res){
+        if (res && res.success) {
+          uploaded.push({
+            name: res.name,
+            url: res.url,
+            mimeType: res.mimeType,
+            size: res.size
+          });
+          idx++;
+          next();
+        } else {
+          errorCb((res && res.error) || ('上傳失敗：' + file.name));
+        }
+      }, function(){
+        errorCb('上傳「' + file.name + '」連線失敗');
+      });
+    };
+    reader.onerror = function(){ errorCb('無法讀取「' + file.name + '」'); };
+    reader.readAsDataURL(file);
+  }
+  next();
 }
 
 function archiveAnn(id) {
