@@ -1569,6 +1569,134 @@
   .card-coming .card-icon svg { color: var(--text-muted); }
   .card-coming .card-title { color: var(--text-muted); }
 
+  /* 「+ 新增系統卡片」卡片（管理者用） */
+  .card-add {
+    background: var(--cream);
+    border-style: dashed;
+    border-width: 2px;
+    border-color: var(--teal-soft);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 200px;
+  }
+  .card-add::before { display: none; }
+  .card-add:hover {
+    background: var(--white);
+    border-color: var(--teal);
+    transform: translateY(-3px);
+  }
+  .card-add .card-icon {
+    background: linear-gradient(135deg, var(--teal-light), var(--teal));
+    margin: 0 auto 14px;
+  }
+  .card-add .card-icon svg { color: var(--white); }
+  .card-add .card-title {
+    text-align: center;
+    color: var(--teal-deep);
+  }
+  .card-add .card-desc {
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  /* 卡片右上角的 ⋮ 管理選單按鈕 */
+  .card-menu {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.85);
+    border: 1px solid rgba(42,157,159,.18);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 18px;
+    line-height: 1;
+    transition: all .2s;
+    z-index: 2;
+    opacity: 0;
+  }
+  .card:hover .card-menu { opacity: 1; }
+  .card-menu:hover {
+    background: var(--white);
+    border-color: var(--teal-soft);
+    color: var(--teal-deep);
+  }
+  .card-menu-pop {
+    position: absolute;
+    top: 44px;
+    right: 12px;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+    border: 1px solid rgba(42,157,159,.15);
+    padding: 6px;
+    min-width: 120px;
+    z-index: 10;
+    display: none;
+  }
+  .card-menu-pop.show { display: block; }
+  .card-menu-pop button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--brown);
+    cursor: pointer;
+    border-radius: 6px;
+    font-family: inherit;
+  }
+  .card-menu-pop button:hover { background: var(--cream-deep); }
+  .card-menu-pop button.danger { color: #C0392B; }
+  .card-menu-pop button.danger:hover { background: #FBE9E6; }
+
+  /* 圖示選擇器 grid */
+  .icon-picker {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    padding: 6px;
+    background: var(--cream);
+    border: 1.5px solid #D5E5E5;
+    border-radius: 8px;
+  }
+  .icon-picker label {
+    aspect-ratio: 1;
+    border: 1.5px solid #D5E5E5;
+    border-radius: 8px;
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+  }
+  .icon-picker label:hover { border-color: var(--teal-soft); }
+  .icon-picker input { display: none; }
+  .icon-picker label.checked {
+    background: linear-gradient(135deg, var(--teal-light), var(--teal));
+    border-color: var(--teal);
+  }
+  .icon-picker label.checked svg { color: var(--white); }
+  .icon-picker svg {
+    width: 22px;
+    height: 22px;
+    color: var(--teal-deep);
+    transition: color .15s;
+  }
+  @media (max-width: 600px) {
+    .icon-picker { grid-template-columns: repeat(6, 1fr); }
+  }
+
   .footer {
     text-align: center;
     padding: 24px;
@@ -1843,6 +1971,61 @@
   </div>
 </div>
 
+<!-- =============== 新增 / 編輯系統卡片 Modal =============== -->
+<div class="modal-overlay" id="appFormModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title" id="appFormTitle">新增系統卡片</div>
+        <div class="modal-meta">員工 dashboard 系統功能區會立即出現此卡片</div>
+      </div>
+      <button type="button" class="modal-close" data-close="appFormModal" aria-label="關閉">✕</button>
+    </div>
+    <form id="appForm" class="modal-form" autocomplete="off">
+      <input type="hidden" id="appEditId" value="">
+      <div class="form-group">
+        <label class="form-label" for="appTitle">卡片標題</label>
+        <input type="text" id="appTitle" class="form-input" placeholder="例如：減重針劑查詢登錄系統" maxlength="50" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="appDesc">卡片描述</label>
+        <textarea id="appDesc" class="form-input" placeholder="一句話說明這個系統做什麼" maxlength="200" style="min-height:70px;"></textarea>
+      </div>
+      <div class="form-group" style="display:flex;gap:10px;">
+        <div style="flex:1;">
+          <label class="form-label" for="appTag">標籤（選填）</label>
+          <input type="text" id="appTag" class="form-input" placeholder="例如：臨床 / 營運 / 人事" maxlength="10">
+        </div>
+        <div style="flex:1;">
+          <label class="form-label" for="appOrder">顯示順序</label>
+          <input type="number" id="appOrder" class="form-input" placeholder="數字小的排前面" step="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="appUrl">連結 URL</label>
+        <input type="url" id="appUrl" class="form-input" placeholder="https://..." required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">圖示</label>
+        <div class="icon-picker" id="appIconPicker"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">可見職稱（不選 = 全員可見）</label>
+        <div class="chip-pick empty" id="appTitles"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="appPwd">確認你的密碼</label>
+        <input type="password" id="appPwd" class="form-input" placeholder="再次輸入密碼以確認身分" required>
+      </div>
+    </form>
+    <div class="modal-msg" id="appMsg"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="appFormModal">取消</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnAppSubmit">送　出</button>
+    </div>
+  </div>
+</div>
+
 <!-- =============== 任務詳情 Modal =============== -->
 <div class="modal-overlay" id="taskViewModal">
   <div class="modal-card">
@@ -2008,46 +2191,29 @@
 // Apps Script Web App API
 var API = 'https://script.google.com/macros/s/AKfycbx7BnATo5p18x2bmC__LxgdL2lNx3G8X3bNJAdLckBlV-Ki9XX7UnalqwGSvd96aoC7/exec';
 
-// 功能卡片清單（新增功能只要在這裡加一筆就會自動出現）
-// roles: [] 或省略 = 全部員工可見；['doctor','nurse']= 只有指定角色可見（預留，目前未啟用）
-var APPS = [
-  {
-    key: 'injection',
-    title: '減重針劑查詢登錄系統',
-    desc: '登錄病人施打針劑記錄、查詢歷史、管理針劑餘量與購買資料。',
-    tag: '臨床',
-    url: 'https://jason19820913-lab.github.io/pen/',
-    icon: 'syringe',
-    roles: []
-  },
-  {
-    key: 'pos',
-    title: '擇木良食電子訂購系統',
-    desc: '擇木良食產品線上訂購、客戶訂單管理與出貨流程。',
-    tag: '營運',
-    url: 'https://jason19820913-lab.github.io/customer/clinic-pos-customer.html',
-    icon: 'leaf',
-    roles: []
-  },
-  {
-    key: 'leave',
-    title: '員工請假管理系統',
-    desc: '線上申請請假、查詢假別餘額、主管簽核與請假記錄追蹤。',
-    tag: '人事',
-    url: 'https://jason19820913-lab.github.io/leave/',
-    icon: 'calendar',
-    roles: []
-  }
-  // 未來新增：直接在這個陣列加入新物件即可
-];
+// 系統卡片清單（從後端「系統卡片」分頁載入；管理者可在前端新增/編輯/下架）
+var APPS = [];
 
-// 圖示（SVG）
+// 圖示庫（16 個常用 SVG）— 後端只存圖示 key，前端查表畫 SVG
 var ICONS = {
-  syringe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4"/><path d="M15 5l4 4"/><path d="M16 6l-7.5 7.5L9 16l-4 4-1-1 4-4 2.5.5L18 8"/><path d="M13 3l8 8"/></svg>',
-  leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96A3.5 3.5 0 0 1 20 6c0 9-4.5 10.5-9 14z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>',
-  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>',
-  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'
+  syringe:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4"/><path d="M15 5l4 4"/><path d="M16 6l-7.5 7.5L9 16l-4 4-1-1 4-4 2.5.5L18 8"/><path d="M13 3l8 8"/></svg>',
+  leaf:        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96A3.5 3.5 0 0 1 20 6c0 9-4.5 10.5-9 14z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>',
+  calendar:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>',
+  plus:        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  file:        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  users:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  pill:        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5a4.95 4.95 0 0 1-7-7l10-10a4.95 4.95 0 0 1 7 7z"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg>',
+  stethoscope: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v5a4 4 0 0 0 8 0V4"/><path d="M4 4h2M10 4h2"/><path d="M8 13v3a5 5 0 0 0 10 0v-1"/><circle cx="18" cy="14" r="2"/></svg>',
+  heart:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+  chart:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',
+  shop:        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M5 9v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/><path d="M9 22V12h6v10"/></svg>',
+  message:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  book:        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  settings:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  clipboard:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>',
+  dollar:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
 };
+var ICON_LIST = ['syringe','leaf','calendar','plus','file','users','pill','stethoscope','heart','chart','shop','message','book','settings','clipboard','dollar'];
 
 var ROLE_LABEL = {
   doctor: '醫師',
@@ -2302,6 +2468,7 @@ function logout() {
   TASKS_ASSIGNED = [];
   KB_DOCS = [];
   KB_SEARCH = '';
+  APPS = [];
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
@@ -3394,18 +3561,19 @@ function showDashboard() {
   $('userRole').textContent = roleText;
   $('welcomeTitle').textContent = u.name + '　您好';
 
-  renderCards();
   setupChangePwd();
   loadCelebrations();
   setupKb();
   loadKb();
+  setupAppsManagement();
 
-  // 先抓最新權限設定，再 setup 公告/任務（按鈕顯示要依最新權限判斷）
+  // 先抓最新權限設定，再 setup 公告/任務/卡片（按鈕顯示要依最新權限判斷）
   loadAnnPermConfig(function(){
     setupAnnouncements();
     loadAnnouncements();
     setupTasks();
     loadTasks();
+    loadApps();  // 卡片從後端載入
   });
 }
 
@@ -3495,45 +3663,324 @@ function submitChangePwd() {
   });
 }
 
+function isAppVisibleToUser(app) {
+  // 管理者一律看得到（方便編輯）
+  if (hasAnnouncePermission()) return true;
+  if (app.targetTitles && app.targetTitles.length > 0) {
+    var t = (CURRENT_USER && CURRENT_USER.title) || '';
+    if (app.targetTitles.indexOf(t) < 0) return false;
+  }
+  return true;
+}
+
 function renderCards() {
   var cont = $('cardsContainer');
   cont.innerHTML = '';
-  var role = (CURRENT_USER && CURRENT_USER.role) ? String(CURRENT_USER.role).toLowerCase() : '';
 
-  APPS.forEach(function(app, i){
-    // 角色過濾（預留：目前 APPS 的 roles 都是 []，表示全部可見）
-    if (app.roles && app.roles.length > 0 && role && app.roles.indexOf(role) < 0) return;
+  var visible = APPS.filter(isAppVisibleToUser);
+  var canManage = hasAnnouncePermission();
 
-    var card = document.createElement('a');
+  visible.forEach(function(app, i){
+    var card = document.createElement('div');
     card.className = 'card fade-up d' + Math.min(i+1, 5);
-    card.href = app.url;
-    card.target = '_blank';
-    card.rel = 'noopener';
+    card.setAttribute('data-id', app.id);
 
-    card.innerHTML =
+    // 主體連結（用 a 包圖示+標題+描述+腳，這樣 ⋮ 按鈕點下去不會跑去開連結）
+    var inner = document.createElement('a');
+    inner.href = app.url;
+    inner.target = '_blank';
+    inner.rel = 'noopener';
+    inner.style.cssText = 'display:contents;color:inherit;text-decoration:none;';
+    inner.innerHTML =
       '<div class="card-icon">' + (ICONS[app.icon] || ICONS.plus) + '</div>' +
-      '<div class="card-title">' + app.title + '</div>' +
-      '<div class="card-desc">' + app.desc + '</div>' +
+      '<div class="card-title">' + escapeHtml(app.title) + '</div>' +
+      '<div class="card-desc">' + escapeHtml(app.desc) + '</div>' +
       '<div class="card-foot">' +
-        '<span class="card-tag">' + app.tag + '</span>' +
+        '<span class="card-tag">' + escapeHtml(app.tag || '') + '</span>' +
         '<span class="card-cta">開啟系統 →</span>' +
       '</div>';
+    card.appendChild(inner);
+
+    // 管理者：右上角 ⋮ 按鈕
+    if (canManage) {
+      var menuBtn = document.createElement('button');
+      menuBtn.className = 'card-menu';
+      menuBtn.type = 'button';
+      menuBtn.setAttribute('aria-label', '管理');
+      menuBtn.innerHTML = '⋮';
+      menuBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        toggleCardMenu(card, app.id);
+      });
+      card.appendChild(menuBtn);
+    }
 
     cont.appendChild(card);
   });
 
-  // 尾端加一張「更多功能開發中」的提示卡
-  var coming = document.createElement('div');
-  coming.className = 'card card-coming fade-up d5';
-  coming.innerHTML =
-    '<div class="card-icon">' + ICONS.plus + '</div>' +
-    '<div class="card-title">更多功能開發中</div>' +
-    '<div class="card-desc">更多院內工具將陸續上線，敬請期待。</div>' +
-    '<div class="card-foot">' +
-      '<span class="card-tag">COMING SOON</span>' +
-      '<span class="card-cta" style="color:var(--text-muted);">即將推出</span>' +
-    '</div>';
-  cont.appendChild(coming);
+  // 管理者尾端加「+ 新增系統卡片」
+  if (canManage) {
+    var add = document.createElement('div');
+    add.className = 'card card-add fade-up d5';
+    add.innerHTML =
+      '<div class="card-icon">' + ICONS.plus + '</div>' +
+      '<div class="card-title">新增系統卡片</div>' +
+      '<div class="card-desc">把新工具或外部連結加進來</div>';
+    add.addEventListener('click', openAddApp);
+    cont.appendChild(add);
+  } else if (visible.length === 0) {
+    // 一般員工沒有任何可見卡片時的占位
+    var empty = document.createElement('div');
+    empty.className = 'card card-coming fade-up d5';
+    empty.innerHTML =
+      '<div class="card-icon">' + ICONS.plus + '</div>' +
+      '<div class="card-title">尚無可用系統</div>' +
+      '<div class="card-desc">系統工具陸續上線中，敬請期待。</div>' +
+      '<div class="card-foot">' +
+        '<span class="card-tag">COMING SOON</span>' +
+        '<span class="card-cta" style="color:var(--text-muted);">即將推出</span>' +
+      '</div>';
+    cont.appendChild(empty);
+  }
+}
+
+function toggleCardMenu(card, appId) {
+  // 先關掉所有打開的 menu
+  document.querySelectorAll('.card-menu-pop.show').forEach(function(p){
+    if (p._cardEl !== card) p.remove();
+  });
+
+  var existing = card.querySelector('.card-menu-pop');
+  if (existing) { existing.remove(); return; }
+
+  var pop = document.createElement('div');
+  pop.className = 'card-menu-pop show';
+  pop._cardEl = card;
+  pop.innerHTML =
+    '<button type="button" data-act="edit">編輯</button>' +
+    '<button type="button" data-act="archive" class="danger">下架</button>';
+  pop.addEventListener('click', function(e){
+    e.stopPropagation();
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var act = btn.getAttribute('data-act');
+    pop.remove();
+    if (act === 'edit') openEditApp(appId);
+    if (act === 'archive') doArchiveApp(appId);
+  });
+  card.appendChild(pop);
+
+  // 點外面關掉
+  setTimeout(function(){
+    document.addEventListener('click', function dismiss(){
+      pop.remove();
+      document.removeEventListener('click', dismiss);
+    });
+  }, 0);
+}
+
+/* =========================================================
+ * 系統卡片管理
+ * ========================================================= */
+function setupAppsManagement() {
+  if (window._appsMgrSetup) return;
+  window._appsMgrSetup = true;
+
+  $('btnAppSubmit').addEventListener('click', submitAppForm);
+
+  // icon picker 渲染（一次性）
+  renderIconPicker();
+}
+
+function renderIconPicker() {
+  var box = $('appIconPicker');
+  box.innerHTML = '';
+  ICON_LIST.forEach(function(key){
+    var label = document.createElement('label');
+    label.setAttribute('data-icon', key);
+    label.innerHTML = '<input type="radio" name="appIcon" value="' + key + '">' + ICONS[key];
+    var input = label.querySelector('input');
+    input.addEventListener('change', function(){
+      // 更新 checked 樣式
+      box.querySelectorAll('label').forEach(function(l){ l.classList.remove('checked'); });
+      label.classList.add('checked');
+    });
+    box.appendChild(label);
+  });
+}
+
+function loadApps() {
+  apiGet({ action: 'getApps' }, function(res){
+    APPS = (res && res.success && Array.isArray(res.apps)) ? res.apps : [];
+    renderCards();
+  }, function(){
+    APPS = [];
+    renderCards();
+  });
+}
+
+function loadAppTitlesPicker() {
+  // 只載一次
+  if (window._appTitlesLoaded) return;
+  window._appTitlesLoaded = true;
+  apiGet({ action: 'getTitles' }, function(res){
+    if (res && res.success) renderChipPick('appTitles', res.titles, 'appTitle');
+  });
+}
+
+function openAddApp() {
+  $('appFormTitle').textContent = '新增系統卡片';
+  $('appEditId').value = '';
+  $('appTitle').value = '';
+  $('appDesc').value = '';
+  $('appTag').value = '';
+  $('appOrder').value = '';
+  $('appUrl').value = '';
+  $('appPwd').value = '';
+  $('appMsg').textContent = '';
+  $('appMsg').className = 'modal-msg';
+
+  // 清空 icon 選擇 → 預設選 plus
+  document.querySelectorAll('#appIconPicker label').forEach(function(l){ l.classList.remove('checked'); });
+  var def = document.querySelector('#appIconPicker input[value="plus"]');
+  if (def) {
+    def.checked = true;
+    def.parentNode.classList.add('checked');
+  }
+
+  // 清空職稱
+  document.querySelectorAll('#appTitles input:checked').forEach(function(i){
+    i.checked = false;
+    i.parentNode.classList.remove('checked');
+  });
+
+  loadAppTitlesPicker();
+  openModal('appFormModal');
+  setTimeout(function(){ $('appTitle').focus(); }, 100);
+}
+
+function openEditApp(appId) {
+  var app = null;
+  for (var i = 0; i < APPS.length; i++) if (APPS[i].id === appId) { app = APPS[i]; break; }
+  if (!app) return;
+
+  $('appFormTitle').textContent = '編輯系統卡片';
+  $('appEditId').value = app.id;
+  $('appTitle').value = app.title || '';
+  $('appDesc').value = app.desc || '';
+  $('appTag').value = app.tag || '';
+  $('appOrder').value = app.order || '';
+  $('appUrl').value = app.url || '';
+  $('appPwd').value = '';
+  $('appMsg').textContent = '';
+  $('appMsg').className = 'modal-msg';
+
+  // 預選圖示
+  document.querySelectorAll('#appIconPicker label').forEach(function(l){ l.classList.remove('checked'); });
+  var iconKey = app.icon || 'plus';
+  var iconInput = document.querySelector('#appIconPicker input[value="' + iconKey + '"]');
+  if (iconInput) {
+    iconInput.checked = true;
+    iconInput.parentNode.classList.add('checked');
+  }
+
+  loadAppTitlesPicker();
+
+  // 等 chip pick 載入完才能勾選對應職稱
+  // 簡單做：延後 200ms 嘗試勾選
+  setTimeout(function(){
+    document.querySelectorAll('#appTitles input').forEach(function(i){
+      var checked = (app.targetTitles || []).indexOf(i.value) >= 0;
+      i.checked = checked;
+      i.parentNode.classList.toggle('checked', checked);
+    });
+  }, 200);
+
+  openModal('appFormModal');
+}
+
+function submitAppForm() {
+  var id = $('appEditId').value;
+  var title = $('appTitle').value.trim();
+  var desc = $('appDesc').value.trim();
+  var tag = $('appTag').value.trim();
+  var orderRaw = $('appOrder').value;
+  var url = $('appUrl').value.trim();
+  var pwd = $('appPwd').value;
+  var iconEl = document.querySelector('#appIconPicker input:checked');
+  var icon = iconEl ? iconEl.value : 'plus';
+  var targetTitles = getCheckedValues('appTitles');
+  var msg = $('appMsg');
+  var btn = $('btnAppSubmit');
+
+  msg.textContent = '';
+  msg.className = 'modal-msg';
+
+  if (!title) { msg.textContent = '請輸入卡片標題'; return; }
+  if (!url) { msg.textContent = '請輸入連結 URL'; return; }
+  if (!pwd) { msg.textContent = '請輸入密碼以確認身分'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>送出中…';
+
+  var payload = {
+    action: id ? 'updateApp' : 'postApp',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    title: title,
+    desc: desc,
+    tag: tag,
+    url: url,
+    icon: icon,
+    targetTitles: targetTitles
+  };
+  if (id) payload.id = id;
+  if (orderRaw !== '') {
+    var ord = parseFloat(orderRaw);
+    if (!isNaN(ord)) payload.order = ord;
+  }
+
+  apiGet(payload, function(res){
+    btn.disabled = false;
+    btn.textContent = '送　出';
+
+    if (res && res.success) {
+      msg.className = 'modal-msg ok';
+      msg.textContent = id ? '✓ 已更新卡片' : '✓ 已新增卡片';
+      setTimeout(function(){
+        closeModal('appFormModal');
+        msg.textContent = '';
+        loadApps();
+      }, 700);
+    } else {
+      msg.textContent = (res && res.error) ? res.error : '操作失敗，請稍後再試';
+    }
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '送　出';
+    msg.textContent = '連線失敗，請稍後再試';
+  });
+}
+
+function doArchiveApp(appId) {
+  if (!confirm('確定要下架這張卡片嗎？所有員工將不再看到。')) return;
+  var pwd = prompt('請輸入您的密碼以確認下架：');
+  if (!pwd) return;
+
+  apiGet({
+    action: 'archiveApp',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    id: appId
+  }, function(res){
+    if (res && res.success) {
+      toast('已下架卡片', 'ok');
+      loadApps();
+    } else {
+      toast((res && res.error) || '下架失敗', 'err');
+    }
+  });
 }
 
 /* =========================================================
