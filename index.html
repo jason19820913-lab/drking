@@ -1001,6 +1001,101 @@
     transition: all .2s;
   }
   .btn-add-kb:hover { transform: translateY(-1px); }
+
+  /* 常用連結（小卡片）*/
+  .kb-links-wrap { margin-bottom: 6px; }
+  .kb-links-title {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .kb-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .kb-link-item {
+    background: linear-gradient(135deg, rgba(42,157,159,.05), var(--white));
+    border: 1px solid rgba(42,157,159,.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: all .2s;
+    position: relative;
+  }
+  .kb-link-item:hover {
+    border-color: var(--teal);
+    box-shadow: 0 4px 14px rgba(42,157,159,.15);
+    transform: translateY(-1px);
+  }
+  .kb-link-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #E5F4F4, #B8E0E1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--teal-deep);
+    transition: all .2s;
+  }
+  .kb-link-item:hover .kb-link-icon {
+    background: linear-gradient(135deg, var(--teal-light), var(--teal));
+    color: var(--white);
+  }
+  .kb-link-icon svg { width: 20px; height: 20px; }
+  .kb-link-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .kb-link-title {
+    font-weight: 700;
+    color: var(--brown);
+    font-size: 13.5px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  .kb-link-desc {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-top: 2px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+  .kb-link-menu {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.85);
+    border: 1px solid rgba(42,157,159,.18);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0;
+    transition: all .2s;
+    z-index: 2;
+  }
+  .kb-link-item:hover .kb-link-menu { opacity: 1; }
+  .kb-link-menu:hover {
+    color: var(--teal-deep);
+    border-color: var(--teal-soft);
+  }
   .kb-controls {
     display: flex;
     gap: 10px;
@@ -2177,8 +2272,17 @@
         <span>知識庫 / SOP</span>
         <span class="kb-count" id="kbCount" style="font-size:13px;font-weight:400;color:var(--text-muted);letter-spacing:1px;"></span>
       </div>
+      <button class="btn-add-kb" id="btnAddKbLink" style="display:none;">＋ 新增連結</button>
     </div>
-    <div class="kb-controls">
+
+    <!-- 常用連結卡片（管理者可新增/編輯/刪除）-->
+    <div class="kb-links-wrap" id="kbLinksWrap" style="display:none;">
+      <div class="kb-links-title">📌 常用連結</div>
+      <div class="kb-links" id="kbLinksList"></div>
+    </div>
+
+    <!-- 文件搜尋 -->
+    <div class="kb-controls" style="margin-top:14px;">
       <input type="text" class="kb-search" id="kbSearch" placeholder="🔍 搜尋文件標題">
     </div>
     <div class="kb-list" id="kbList"></div>
@@ -2205,6 +2309,55 @@
     <div class="modal-foot">
       <button type="button" class="btn-modal btn-modal-danger" id="btnAnnArchive" style="display:none;">下架公告</button>
       <button type="button" class="btn-modal btn-modal-cancel" data-close="annViewModal">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============== 新增 / 編輯知識連結 Modal =============== -->
+<div class="modal-overlay" id="kbLinkFormModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title" id="kbLinkFormTitle">新增常用連結</div>
+        <div class="modal-meta">員工知識庫上方會立即出現此連結</div>
+      </div>
+      <button type="button" class="modal-close" data-close="kbLinkFormModal" aria-label="關閉">✕</button>
+    </div>
+    <form id="kbLinkForm" class="modal-form" autocomplete="off">
+      <input type="hidden" id="kbLinkEditId" value="">
+      <div class="form-group">
+        <label class="form-label" for="kbLinkTitle">標題</label>
+        <input type="text" id="kbLinkTitle" class="form-input" placeholder="例如：金鶯診所 NotebookLM" maxlength="50" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="kbLinkDesc">描述（選填）</label>
+        <textarea id="kbLinkDesc" class="form-input" placeholder="例如：用 AI 對話查 SOP" maxlength="200" style="min-height:60px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="kbLinkUrl">連結 URL</label>
+        <input type="url" id="kbLinkUrl" class="form-input" placeholder="https://notebooklm.google.com/..." required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="kbLinkOrder">顯示順序</label>
+        <input type="number" id="kbLinkOrder" class="form-input" placeholder="數字小的排前面" step="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">圖示</label>
+        <div class="icon-picker" id="kbLinkIconPicker"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">可見職稱（不選 = 全員可見）</label>
+        <div class="chip-pick empty" id="kbLinkTitles"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="kbLinkPwd">確認你的密碼</label>
+        <input type="password" id="kbLinkPwd" class="form-input" placeholder="再次輸入密碼以確認身分" required>
+      </div>
+    </form>
+    <div class="modal-msg" id="kbLinkFormMsg"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="kbLinkFormModal">取消</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnKbLinkSubmit">送　出</button>
     </div>
   </div>
 </div>
@@ -2783,6 +2936,7 @@ function logout() {
   APPS = [];
   KUDOS = [];
   KUDOS_LB = [];
+  KB_LINKS = [];
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
@@ -3096,12 +3250,293 @@ var KB_SEARCH = '';
 var KB_FOLDER_URL = '';
 
 function setupKb() {
+  // 「+ 新增連結」按鈕只給有公告權限的人看
+  $('btnAddKbLink').style.display = hasAnnouncePermission() ? 'inline-block' : 'none';
+
   if (window._kbSetup) return;
   window._kbSetup = true;
+
+  $('btnAddKbLink').addEventListener('click', openAddKbLink);
+  $('btnKbLinkSubmit').addEventListener('click', submitKbLinkForm);
+  // 渲染 icon picker（重用既有的 ICONS 庫）
+  renderKbLinkIconPicker();
 
   $('kbSearch').addEventListener('input', function(){
     KB_SEARCH = this.value.trim().toLowerCase();
     renderKb();
+  });
+}
+
+var KB_LINKS = [];
+
+function renderKbLinkIconPicker() {
+  var box = $('kbLinkIconPicker');
+  if (!box) return;
+  box.innerHTML = '';
+  ICON_LIST.forEach(function(key){
+    var label = document.createElement('label');
+    label.setAttribute('data-icon', key);
+    label.innerHTML = '<input type="radio" name="kbLinkIcon" value="' + key + '">' + ICONS[key];
+    var input = label.querySelector('input');
+    input.addEventListener('change', function(){
+      box.querySelectorAll('label').forEach(function(l){ l.classList.remove('checked'); });
+      label.classList.add('checked');
+    });
+    box.appendChild(label);
+  });
+}
+
+function loadKbLinks() {
+  apiGet({ action: 'getKbLinks' }, function(res){
+    KB_LINKS = (res && res.success && Array.isArray(res.links)) ? res.links : [];
+    renderKbLinks();
+  }, function(){
+    KB_LINKS = [];
+    renderKbLinks();
+  });
+}
+
+function isKbLinkVisibleToUser(link) {
+  if (hasAnnouncePermission()) return true;
+  if (link.targetTitles && link.targetTitles.length > 0) {
+    var t = (CURRENT_USER && CURRENT_USER.title) || '';
+    if (link.targetTitles.indexOf(t) < 0) return false;
+  }
+  return true;
+}
+
+function renderKbLinks() {
+  var wrap = $('kbLinksWrap');
+  var list = $('kbLinksList');
+  list.innerHTML = '';
+
+  var visible = KB_LINKS.filter(isKbLinkVisibleToUser);
+  if (visible.length === 0) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+
+  var canManage = hasAnnouncePermission();
+  visible.forEach(function(link){
+    var item = document.createElement('a');
+    item.className = 'kb-link-item';
+    item.href = link.url || '#';
+    item.target = '_blank';
+    item.rel = 'noopener';
+    item.innerHTML =
+      '<div class="kb-link-icon">' + (ICONS[link.icon] || ICONS.book) + '</div>' +
+      '<div class="kb-link-body">' +
+        '<div class="kb-link-title">' + escapeHtml(link.title) + '</div>' +
+        (link.desc ? '<div class="kb-link-desc">' + escapeHtml(link.desc) + '</div>' : '') +
+      '</div>';
+
+    if (canManage) {
+      var menuBtn = document.createElement('button');
+      menuBtn.className = 'kb-link-menu';
+      menuBtn.type = 'button';
+      menuBtn.innerHTML = '⋮';
+      menuBtn.setAttribute('aria-label', '管理');
+      menuBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        toggleKbLinkMenu(item, link.id);
+      });
+      item.appendChild(menuBtn);
+    }
+
+    list.appendChild(item);
+  });
+}
+
+function toggleKbLinkMenu(card, linkId) {
+  document.querySelectorAll('.card-menu-pop.show').forEach(function(p){
+    if (p._cardEl !== card) p.remove();
+  });
+  var existing = card.querySelector('.card-menu-pop');
+  if (existing) { existing.remove(); return; }
+
+  var pop = document.createElement('div');
+  pop.className = 'card-menu-pop show';
+  pop._cardEl = card;
+  pop.style.top = '40px';
+  pop.style.right = '8px';
+  pop.innerHTML =
+    '<button type="button" data-act="edit">編輯</button>' +
+    '<button type="button" data-act="archive" class="danger">下架</button>';
+  pop.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var act = btn.getAttribute('data-act');
+    pop.remove();
+    if (act === 'edit') openEditKbLink(linkId);
+    if (act === 'archive') doArchiveKbLink(linkId);
+  });
+  card.appendChild(pop);
+
+  setTimeout(function(){
+    document.addEventListener('click', function dismiss(){
+      pop.remove();
+      document.removeEventListener('click', dismiss);
+    });
+  }, 0);
+}
+
+function openAddKbLink() {
+  $('kbLinkFormTitle').textContent = '新增常用連結';
+  $('kbLinkEditId').value = '';
+  $('kbLinkTitle').value = '';
+  $('kbLinkDesc').value = '';
+  $('kbLinkUrl').value = '';
+  $('kbLinkOrder').value = '';
+  $('kbLinkPwd').value = '';
+  $('kbLinkFormMsg').textContent = '';
+  $('kbLinkFormMsg').className = 'modal-msg';
+
+  document.querySelectorAll('#kbLinkIconPicker label').forEach(function(l){ l.classList.remove('checked'); });
+  var def = document.querySelector('#kbLinkIconPicker input[value="book"]');
+  if (def) {
+    def.checked = true;
+    def.parentNode.classList.add('checked');
+  }
+
+  document.querySelectorAll('#kbLinkTitles input:checked').forEach(function(i){
+    i.checked = false;
+    i.parentNode.classList.remove('checked');
+  });
+
+  // 載入職稱選擇（一次性）
+  if (!window._kbLinkTitlesLoaded) {
+    window._kbLinkTitlesLoaded = true;
+    apiGet({ action: 'getTitles' }, function(res){
+      if (res && res.success) renderChipPick('kbLinkTitles', res.titles, 'kbLinkT');
+    });
+  }
+
+  openModal('kbLinkFormModal');
+  setTimeout(function(){ $('kbLinkTitle').focus(); }, 100);
+}
+
+function openEditKbLink(linkId) {
+  var link = null;
+  for (var i = 0; i < KB_LINKS.length; i++) if (KB_LINKS[i].id === linkId) { link = KB_LINKS[i]; break; }
+  if (!link) return;
+
+  $('kbLinkFormTitle').textContent = '編輯常用連結';
+  $('kbLinkEditId').value = link.id;
+  $('kbLinkTitle').value = link.title || '';
+  $('kbLinkDesc').value = link.desc || '';
+  $('kbLinkUrl').value = link.url || '';
+  $('kbLinkOrder').value = link.order || '';
+  $('kbLinkPwd').value = '';
+  $('kbLinkFormMsg').textContent = '';
+  $('kbLinkFormMsg').className = 'modal-msg';
+
+  document.querySelectorAll('#kbLinkIconPicker label').forEach(function(l){ l.classList.remove('checked'); });
+  var iconKey = link.icon || 'book';
+  var iconInput = document.querySelector('#kbLinkIconPicker input[value="' + iconKey + '"]');
+  if (iconInput) {
+    iconInput.checked = true;
+    iconInput.parentNode.classList.add('checked');
+  }
+
+  if (!window._kbLinkTitlesLoaded) {
+    window._kbLinkTitlesLoaded = true;
+    apiGet({ action: 'getTitles' }, function(res){
+      if (res && res.success) renderChipPick('kbLinkTitles', res.titles, 'kbLinkT');
+    });
+  }
+
+  setTimeout(function(){
+    document.querySelectorAll('#kbLinkTitles input').forEach(function(i){
+      var checked = (link.targetTitles || []).indexOf(i.value) >= 0;
+      i.checked = checked;
+      i.parentNode.classList.toggle('checked', checked);
+    });
+  }, 200);
+
+  openModal('kbLinkFormModal');
+}
+
+function submitKbLinkForm() {
+  var id = $('kbLinkEditId').value;
+  var title = $('kbLinkTitle').value.trim();
+  var desc = $('kbLinkDesc').value.trim();
+  var url = $('kbLinkUrl').value.trim();
+  var orderRaw = $('kbLinkOrder').value;
+  var pwd = $('kbLinkPwd').value;
+  var iconEl = document.querySelector('#kbLinkIconPicker input:checked');
+  var icon = iconEl ? iconEl.value : 'book';
+  var targetTitles = getCheckedValues('kbLinkTitles');
+  var msg = $('kbLinkFormMsg');
+  var btn = $('btnKbLinkSubmit');
+
+  msg.textContent = '';
+  msg.className = 'modal-msg';
+
+  if (!title) { msg.textContent = '請輸入標題'; return; }
+  if (!url) { msg.textContent = '請輸入連結 URL'; return; }
+  if (!pwd) { msg.textContent = '請輸入密碼以確認身分'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>送出中…';
+
+  var payload = {
+    action: id ? 'updateKbLink' : 'postKbLink',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    title: title,
+    desc: desc,
+    url: url,
+    icon: icon,
+    targetTitles: targetTitles
+  };
+  if (id) payload.id = id;
+  if (orderRaw !== '') {
+    var ord = parseFloat(orderRaw);
+    if (!isNaN(ord)) payload.order = ord;
+  }
+
+  apiGet(payload, function(res){
+    btn.disabled = false;
+    btn.textContent = '送　出';
+
+    if (res && res.success) {
+      msg.className = 'modal-msg ok';
+      msg.textContent = id ? '✓ 已更新連結' : '✓ 已新增連結';
+      setTimeout(function(){
+        closeModal('kbLinkFormModal');
+        msg.textContent = '';
+        loadKbLinks();
+      }, 700);
+    } else {
+      msg.textContent = (res && res.error) ? res.error : '操作失敗，請稍後再試';
+    }
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '送　出';
+    msg.textContent = '連線失敗，請稍後再試';
+  });
+}
+
+function doArchiveKbLink(linkId) {
+  if (!confirm('確定要下架這個常用連結嗎？')) return;
+  var pwd = prompt('請輸入您的密碼以確認：');
+  if (!pwd) return;
+  apiGet({
+    action: 'archiveKbLink',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    id: linkId
+  }, function(res){
+    if (res && res.success) {
+      toast('已下架連結', 'ok');
+      loadKbLinks();
+    } else {
+      toast((res && res.error) || '下架失敗', 'err');
+    }
   });
 }
 
@@ -4190,8 +4625,8 @@ function showDashboard() {
   loadKb();
   setupAppsManagement();
 
-  // 先抓最新公告權限設定，再 setup 公告/任務/讚賞/卡片
-  // （這四個區塊的「發佈」按鈕都要依公告權限名單顯示）
+  // 先抓最新公告權限設定，再 setup 公告/任務/讚賞/系統卡片/知識連結
+  // （所有區塊的「發佈/管理」按鈕都要依公告權限名單顯示）
   loadAnnPermConfig(function(){
     setupAnnouncements();
     loadAnnouncements();
@@ -4199,7 +4634,10 @@ function showDashboard() {
     loadTasks();
     setupKudos();
     loadKudos();
-    loadApps();  // 卡片從後端載入
+    loadApps();
+    // setupKb 雖然在前面執行過，這裡再呼叫一次刷新 + 新增連結 按鈕的顯示
+    setupKb();
+    loadKbLinks();
   });
 }
 
