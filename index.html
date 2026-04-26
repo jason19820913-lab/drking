@@ -741,6 +741,224 @@
     border: 1px dashed rgba(42,157,159,.2);
   }
 
+  /* ============ 讚賞牆 ============ */
+  .kudos-section {
+    max-width: 1200px;
+    margin: 18px auto 0;
+    padding: 0 32px;
+  }
+  .kudos-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .kudos-header-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    color: var(--brown);
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .kudos-header-title svg {
+    width: 20px;
+    height: 20px;
+    color: var(--gold-deep);
+  }
+  .kudos-badge {
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: #ffffff;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    box-shadow: 0 2px 6px rgba(212,175,55,.35);
+  }
+  .kudos-badge.zero { background: var(--text-muted); box-shadow: none; }
+  .btn-write-kudos {
+    margin-left: auto;
+    padding: 7px 14px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 3px 10px rgba(212,175,55,.3);
+    transition: all .2s;
+    letter-spacing: .5px;
+  }
+  .btn-write-kudos:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(212,175,55,.45);
+  }
+
+  /* 月度排行榜 */
+  .kudos-leaderboard {
+    background: linear-gradient(135deg, rgba(212,175,55,.12), rgba(42,157,159,.06));
+    border: 1px solid rgba(212,175,55,.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .kudos-lb-title {
+    font-size: 13px;
+    color: var(--brown);
+    font-weight: 700;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .kudos-lb-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1;
+  }
+  .kudos-lb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--white);
+    border: 1px solid rgba(212,175,55,.3);
+    border-radius: 14px;
+    font-size: 12px;
+    color: var(--brown);
+  }
+  .kudos-lb-rank {
+    font-weight: 700;
+    color: var(--gold-deep);
+    margin-right: 2px;
+  }
+  .kudos-lb-rank.r1 { font-size: 13px; }
+  .kudos-lb-count {
+    font-size: 11px;
+    color: var(--gold-deep);
+    background: rgba(212,175,55,.18);
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 2px;
+  }
+  .kudos-lb-empty { font-size: 12px; color: var(--text-muted); }
+
+  /* 讚賞卡片清單 */
+  .kudos-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+  }
+  .kudos-item {
+    background: var(--white);
+    border: 1px solid rgba(212,175,55,.25);
+    border-radius: 12px;
+    padding: 14px 16px;
+    position: relative;
+    transition: all .2s;
+  }
+  .kudos-item:hover {
+    box-shadow: 0 4px 14px rgba(212,175,55,.18);
+    border-color: var(--gold);
+    transform: translateY(-1px);
+  }
+  .kudos-item.unread {
+    background: linear-gradient(135deg, rgba(212,175,55,.08), rgba(255,255,255,1) 50%);
+  }
+  .kudos-item.unread::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #C0392B;
+    box-shadow: 0 0 0 3px rgba(192,57,43,.15);
+  }
+  .kudos-from-to {
+    font-size: 12.5px;
+    color: var(--brown);
+    margin-bottom: 6px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+  .kudos-from-to .arr {
+    color: var(--gold-deep);
+    margin: 0 4px;
+    font-weight: 700;
+  }
+  .kudos-from-to .anon {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .kudos-message {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 8px 0 10px;
+    word-break: break-word;
+  }
+  .kudos-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(212,175,55,.3);
+    flex-wrap: wrap;
+  }
+  .kudos-tag {
+    font-size: 11px;
+    color: var(--gold-deep);
+    background: rgba(212,175,55,.15);
+    padding: 2px 8px;
+    border-radius: 8px;
+    letter-spacing: .5px;
+  }
+  .kudos-time {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .kudos-archive-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all .2s;
+  }
+  .kudos-item:hover .kudos-archive-btn { opacity: 1; }
+  .kudos-archive-btn:hover { color: #C0392B; background: #FBE9E6; }
+
+  .kudos-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+    background: rgba(255,255,255,.5);
+    border-radius: 10px;
+    border: 1px dashed rgba(212,175,55,.3);
+  }
+
   /* ============ 知識庫 ============ */
   .kb-section {
     max-width: 1200px;
@@ -1768,6 +1986,10 @@
     .kb-section { padding: 0 20px 32px; }
     .kb-header-title { font-size: 15px; }
     .kb-list { grid-template-columns: 1fr; gap: 10px; }
+    .kudos-section { padding: 0 20px; }
+    .kudos-header-title { font-size: 15px; }
+    .kudos-list { grid-template-columns: 1fr; gap: 10px; }
+    .kudos-leaderboard { padding: 10px 12px; gap: 10px; }
     .modal-card { max-height: 90vh; }
     .modal-header, .modal-form, .modal-body { padding-left: 20px; padding-right: 20px; }
     .modal-foot { padding-left: 20px; padding-right: 20px; }
@@ -1924,6 +2146,23 @@
     <div class="tasks-list" id="tasksList"></div>
   </div>
 
+  <!-- =============== 讚賞牆 =============== -->
+  <div class="kudos-section fade-up d3" id="kudosSection">
+    <div class="kudos-header">
+      <div class="kudos-header-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.39 4.84L20 7.27l-4 3.9.95 5.51L12 14.1l-4.95 2.58.95-5.51-4-3.9 5.61-.43z"/></svg>
+        <span>讚賞牆</span>
+      </div>
+      <span class="kudos-badge zero" id="kudosBadge">無新讚賞</span>
+      <button class="btn-write-kudos" id="btnWriteKudos">＋ 寫一張</button>
+    </div>
+    <div class="kudos-leaderboard" id="kudosLeaderboard" style="display:none;">
+      <div class="kudos-lb-title">🏆 本月被謝最多</div>
+      <div class="kudos-lb-list" id="kudosLbList"></div>
+    </div>
+    <div class="kudos-list" id="kudosList"></div>
+  </div>
+
   <div class="section-label fade-up d3">
     <span>系 統 功 能</span>
   </div>
@@ -1966,6 +2205,68 @@
     <div class="modal-foot">
       <button type="button" class="btn-modal btn-modal-danger" id="btnAnnArchive" style="display:none;">下架公告</button>
       <button type="button" class="btn-modal btn-modal-cancel" data-close="annViewModal">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============== 寫一張讚賞 Modal =============== -->
+<div class="modal-overlay" id="kudosWriteModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title">寫一張讚賞</div>
+        <div class="modal-meta">公開展示在讚賞牆上，讓大家一起看見你的感謝</div>
+      </div>
+      <button type="button" class="modal-close" data-close="kudosWriteModal" aria-label="關閉">✕</button>
+    </div>
+    <form id="kudosForm" class="modal-form" autocomplete="off">
+      <div class="form-group">
+        <label class="form-label" for="kudosMsg">想說什麼</label>
+        <textarea id="kudosMsg" class="form-input" placeholder="例如：謝謝小明上週四櫃檯爆量時來救援，當天真的人潮很多。" maxlength="500" required style="min-height:90px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">類別（選填）</label>
+        <div class="level-pick" id="kudosTagPick">
+          <label><input type="radio" name="kudosTag" value=""><span>不分類</span></label>
+          <label><input type="radio" name="kudosTag" value="互相支援"><span>🤝 支援</span></label>
+          <label><input type="radio" name="kudosTag" value="專業表現"><span>🌟 專業</span></label>
+          <label><input type="radio" name="kudosTag" value="堅持不懈"><span>💪 堅持</span></label>
+          <label><input type="radio" name="kudosTag" value="創意點子"><span>💡 創意</span></label>
+          <label><input type="radio" name="kudosTag" value="團隊精神"><span>👥 團隊</span></label>
+        </div>
+      </div>
+
+      <div class="form-group" style="border-top:1px dashed rgba(42,157,159,.25);padding-top:14px;margin-top:6px;">
+        <label class="form-label" for="kudosRecipientEmpId">想感謝誰（員編，可填多個用逗號分隔）</label>
+        <input type="text" id="kudosRecipientEmpId" class="form-input" placeholder="例如 0011 或 0011, 0023">
+      </div>
+      <div class="form-group">
+        <label class="form-label">或選整個院區（多選）</label>
+        <div class="chip-pick empty" id="kudosClinics"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">或選整個職稱（多選）</label>
+        <div class="chip-pick empty" id="kudosTitles"></div>
+        <div class="form-hint">員編 / 院區 / 職稱 三者至少擇一；可同時用，會合併去重。</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-check" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+          <input type="checkbox" id="kudosAnonymous" style="width:16px;height:16px;accent-color:var(--gold-deep);cursor:pointer;">
+          <span>以「匿名」發送（牆上不顯示我的姓名）</span>
+        </label>
+        <div class="form-hint" style="margin-left:24px;">後端仍記錄真實員編供追溯，避免被誤用</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="kudosPwd">確認你的密碼</label>
+        <input type="password" id="kudosPwd" class="form-input" placeholder="再次輸入密碼以確認身分" required>
+      </div>
+    </form>
+    <div class="modal-msg" id="kudosFormMsg"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="kudosWriteModal">取消</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnKudosSubmit">送　出</button>
     </div>
   </div>
 </div>
@@ -2480,11 +2781,307 @@ function logout() {
   KB_DOCS = [];
   KB_SEARCH = '';
   APPS = [];
+  KUDOS = [];
+  KUDOS_LB = [];
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
   $('loginMsg').textContent = '';
   toast('已登出', 'ok');
+}
+
+/* =========================================================
+ * 讚賞牆功能
+ * ========================================================= */
+var KUDOS = [];
+var KUDOS_LB = [];
+
+function setupKudos() {
+  if (window._kudosSetup) return;
+  window._kudosSetup = true;
+
+  $('btnWriteKudos').addEventListener('click', openWriteKudos);
+  $('btnKudosSubmit').addEventListener('click', submitKudos);
+}
+
+function loadKudos() {
+  apiGet({ action: 'getKudos', limit: 30 }, function(res){
+    KUDOS = (res && res.success && Array.isArray(res.kudos)) ? res.kudos : [];
+    renderKudos();
+  });
+  apiGet({ action: 'getKudosLeaderboard', n: 5 }, function(res){
+    KUDOS_LB = (res && res.success && Array.isArray(res.leaderboard)) ? res.leaderboard : [];
+    renderKudosLeaderboard();
+  });
+}
+
+function kudosReadKey() {
+  return 'eliteClinicReadKudos_' + ((CURRENT_USER && CURRENT_USER.empId) || 'anon');
+}
+function getReadKudosIds() {
+  try {
+    var raw = localStorage.getItem(kudosReadKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function markKudosRead(ids) {
+  var read = getReadKudosIds();
+  ids.forEach(function(id){
+    if (read.indexOf(id) < 0) read.push(id);
+  });
+  try { localStorage.setItem(kudosReadKey(), JSON.stringify(read)); } catch(e) {}
+}
+
+function isKudosForMe(k) {
+  if (!CURRENT_USER) return false;
+  // 員編比對
+  if (k.recipientEmpIds && k.recipientEmpIds.length > 0) {
+    for (var i = 0; i < k.recipientEmpIds.length; i++) {
+      if (normalizeEmpClient(k.recipientEmpIds[i]) === normalizeEmpClient(CURRENT_USER.empId)) return true;
+    }
+  }
+  // 院區
+  if (k.targetClinics && k.targetClinics.length > 0
+      && k.targetClinics.indexOf(CURRENT_USER.clinic) >= 0) return true;
+  // 職稱
+  if (k.targetTitles && k.targetTitles.length > 0
+      && k.targetTitles.indexOf(CURRENT_USER.title) >= 0) return true;
+  return false;
+}
+
+function normalizeEmpClient(s) {
+  s = String(s == null ? '' : s).trim().toLowerCase();
+  if (/^\d+$/.test(s)) return s.replace(/^0+/, '') || '0';
+  return s;
+}
+
+function renderKudos() {
+  var box = $('kudosList');
+  var badge = $('kudosBadge');
+
+  // 計算未讀（給自己的且還沒看過）
+  var read = getReadKudosIds();
+  var unreadIds = [];
+  KUDOS.forEach(function(k){
+    if (isKudosForMe(k) && read.indexOf(k.id) < 0) unreadIds.push(k.id);
+  });
+  if (unreadIds.length > 0) {
+    badge.textContent = unreadIds.length + ' 張新讚賞';
+    badge.className = 'kudos-badge';
+  } else {
+    badge.textContent = '無新讚賞';
+    badge.className = 'kudos-badge zero';
+  }
+
+  if (KUDOS.length === 0) {
+    box.innerHTML = '<div class="kudos-empty">還沒有人發讚賞，<br>點右上角「+ 寫一張」開個頭吧 💛</div>';
+    return;
+  }
+
+  box.innerHTML = '';
+  KUDOS.forEach(function(k){
+    box.appendChild(buildKudosItem(k, read));
+  });
+
+  // 標記為已讀（看過頁面就算讀過）
+  if (unreadIds.length > 0) {
+    setTimeout(function(){
+      markKudosRead(unreadIds);
+      // 不立即重 render，避免閃爍；下次 loadKudos 自然更新
+    }, 1500);
+  }
+}
+
+function buildKudosItem(k, read) {
+  var unread = isKudosForMe(k) && read.indexOf(k.id) < 0;
+  var item = document.createElement('div');
+  item.className = 'kudos-item' + (unread ? ' unread' : '');
+
+  // 「→」之前：發送者
+  var senderHtml = k.isAnonymous
+    ? '<span class="anon">匿名同仁</span>'
+    : escapeHtml(k.senderName || '?');
+
+  // 「→」之後：收件對象組合
+  var recParts = [];
+  if (k.recipientNames && k.recipientNames.length > 0) {
+    recParts.push(escapeHtml(k.recipientNames.join('、')));
+  }
+  if (k.targetClinics && k.targetClinics.length > 0) {
+    recParts.push(escapeHtml(k.targetClinics.join('、')) + '同仁');
+  }
+  if (k.targetTitles && k.targetTitles.length > 0) {
+    recParts.push(escapeHtml(k.targetTitles.join('、')));
+  }
+  var recHtml = recParts.length > 0 ? recParts.join(' + ') : '同仁';
+
+  // tag emoji
+  var tagEmoji = {
+    '互相支援': '🤝', '專業表現': '🌟', '堅持不懈': '💪',
+    '創意點子': '💡', '團隊精神': '👥'
+  }[k.tag] || '';
+  var tagHtml = k.tag
+    ? '<span class="kudos-tag">' + tagEmoji + ' ' + escapeHtml(k.tag) + '</span>'
+    : '<span></span>';
+
+  // 自己發的或有公告權限可下架
+  var canArchive = (CURRENT_USER && k.senderEmpId &&
+    normalizeEmpClient(k.senderEmpId) === normalizeEmpClient(CURRENT_USER.empId))
+    || hasAnnouncePermission();
+
+  item.innerHTML =
+    '<div class="kudos-from-to">' +
+      senderHtml +
+      '<span class="arr">→</span>' +
+      recHtml +
+    '</div>' +
+    '<div class="kudos-message">' + escapeHtml(k.message) + '</div>' +
+    '<div class="kudos-foot">' +
+      tagHtml +
+      '<span class="kudos-time">' + escapeHtml(k.time || '') + '</span>' +
+    '</div>' +
+    (canArchive ? '<button class="kudos-archive-btn" type="button" title="下架">✕</button>' : '');
+
+  if (canArchive) {
+    item.querySelector('.kudos-archive-btn').addEventListener('click', function(e){
+      e.stopPropagation();
+      doArchiveKudos(k.id);
+    });
+  }
+
+  return item;
+}
+
+function renderKudosLeaderboard() {
+  var section = $('kudosLeaderboard');
+  var list = $('kudosLbList');
+  if (!KUDOS_LB || KUDOS_LB.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  list.innerHTML = '';
+  KUDOS_LB.forEach(function(item, i){
+    var span = document.createElement('span');
+    span.className = 'kudos-lb-item';
+    var rankCls = i === 0 ? 'r1' : '';
+    var rankIcon = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
+    span.innerHTML =
+      '<span class="kudos-lb-rank ' + rankCls + '">' + rankIcon + '</span>' +
+      escapeHtml(item.name || item.empId) +
+      '<span class="kudos-lb-count">' + item.count + ' 次</span>';
+    list.appendChild(span);
+  });
+  section.style.display = 'flex';
+}
+
+function openWriteKudos() {
+  $('kudosMsg').value = '';
+  $('kudosRecipientEmpId').value = '';
+  $('kudosPwd').value = '';
+  $('kudosAnonymous').checked = false;
+  $('kudosFormMsg').textContent = '';
+  $('kudosFormMsg').className = 'modal-msg';
+  // 預設 tag = 不分類
+  var def = document.querySelector('input[name="kudosTag"][value=""]');
+  if (def) def.checked = true;
+
+  // 第一次開才載院區/職稱
+  if (!window._kudosTargetsLoaded) {
+    window._kudosTargetsLoaded = true;
+    apiGet({ action: 'getClinics' }, function(res){
+      if (res && res.success) renderChipPick('kudosClinics', res.clinics, 'kudosClinic');
+    });
+    apiGet({ action: 'getTitles' }, function(res){
+      if (res && res.success) renderChipPick('kudosTitles', res.titles, 'kudosTitle2');
+    });
+  } else {
+    document.querySelectorAll('#kudosClinics input:checked, #kudosTitles input:checked').forEach(function(i){
+      i.checked = false;
+      i.parentNode.classList.remove('checked');
+    });
+  }
+
+  openModal('kudosWriteModal');
+  setTimeout(function(){ $('kudosMsg').focus(); }, 100);
+}
+
+function submitKudos() {
+  var message = $('kudosMsg').value.trim();
+  var pwd = $('kudosPwd').value;
+  var isAnonymous = $('kudosAnonymous').checked;
+  var recipientRaw = $('kudosRecipientEmpId').value.trim();
+  var recipientEmpIds = recipientRaw
+    ? recipientRaw.split(/[,，、\s]+/).map(function(s){ return s.trim(); }).filter(Boolean)
+    : [];
+  var targetClinics = getCheckedValues('kudosClinics');
+  var targetTitles = getCheckedValues('kudosTitles');
+  var tagEl = document.querySelector('input[name="kudosTag"]:checked');
+  var tag = tagEl ? tagEl.value : '';
+  var msg = $('kudosFormMsg');
+  var btn = $('btnKudosSubmit');
+
+  msg.textContent = '';
+  msg.className = 'modal-msg';
+
+  if (!message) { msg.textContent = '請輸入感謝的話'; return; }
+  if (!pwd) { msg.textContent = '請輸入密碼以確認身分'; return; }
+  if (recipientEmpIds.length === 0 && targetClinics.length === 0 && targetTitles.length === 0) {
+    msg.textContent = '請至少指定一位同事，或選擇院區 / 職稱';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>送出中…';
+
+  apiPost({
+    action: 'postKudos',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    message: message,
+    tag: tag,
+    isAnonymous: isAnonymous ? 'true' : 'false',
+    recipientEmpIds: recipientEmpIds,
+    targetClinics: targetClinics,
+    targetTitles: targetTitles
+  }, function(res){
+    btn.disabled = false;
+    btn.textContent = '送　出';
+
+    if (res && res.success) {
+      msg.className = 'modal-msg ok';
+      msg.textContent = '✓ 感謝已送出';
+      setTimeout(function(){
+        closeModal('kudosWriteModal');
+        msg.textContent = '';
+        loadKudos();
+      }, 800);
+    } else {
+      msg.textContent = (res && res.error) ? res.error : '送出失敗，請稍後再試';
+    }
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '送　出';
+    msg.textContent = '連線失敗，請稍後再試';
+  });
+}
+
+function doArchiveKudos(kudosId) {
+  if (!confirm('確定要下架這張讚賞？牆上將不再顯示。')) return;
+  var pwd = prompt('請輸入您的密碼以確認：');
+  if (!pwd) return;
+  apiGet({
+    action: 'archiveKudos',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    id: kudosId
+  }, function(res){
+    if (res && res.success) {
+      toast('已下架', 'ok');
+      loadKudos();
+    } else {
+      toast((res && res.error) || '下架失敗', 'err');
+    }
+  });
 }
 
 
@@ -3596,6 +4193,8 @@ function showDashboard() {
   setupKb();
   loadKb();
   setupAppsManagement();
+  setupKudos();
+  loadKudos();
 
   // 先抓最新權限設定，再 setup 公告/任務/卡片（按鈕顯示要依最新權限判斷）
   loadAnnPermConfig(function(){
