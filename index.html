@@ -2057,11 +2057,6 @@
     </div>
     <form id="taskAssignForm" class="modal-form" autocomplete="off">
       <div class="form-group">
-        <label class="form-label" for="taskAssignee">受派員工編號</label>
-        <input type="text" id="taskAssignee" class="form-input" placeholder="例如 0011" required>
-        <div class="form-hint">不知道對方的員編？請先到登入頁查詢，或請對方提供。</div>
-      </div>
-      <div class="form-group">
         <label class="form-label" for="taskTitle">任務標題</label>
         <input type="text" id="taskTitle" class="form-input" placeholder="例如：彙整 4 月針劑庫存盤點" maxlength="80" required>
       </div>
@@ -2074,6 +2069,23 @@
         <input type="date" id="taskDueDate" class="form-input">
         <div class="form-hint">留空 = 沒有截止日；逾期未完成會在受派人 dashboard 標紅</div>
       </div>
+
+      <div class="form-group" style="border-top:1px dashed rgba(42,157,159,.25);padding-top:14px;margin-top:6px;">
+        <label class="form-label" for="taskAssignee">指定員編（選填，單人派發）</label>
+        <input type="text" id="taskAssignee" class="form-input" placeholder="例如 0011；不知道請到登入頁查詢">
+      </div>
+      <div class="form-group">
+        <label class="form-label">推送院區（多選）</label>
+        <div class="chip-pick empty" id="taskClinics"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">推送職稱（多選）</label>
+        <div class="chip-pick empty" id="taskTitles"></div>
+        <div class="form-hint">
+          指定員編 / 院區 / 職稱 三者至少擇一；可同時使用，會自動去重派給每個符合條件的員工。
+        </div>
+      </div>
+
       <div class="form-group">
         <label class="form-label" for="taskAssignPwd">確認你的密碼</label>
         <input type="password" id="taskAssignPwd" class="form-input" placeholder="再次輸入密碼以確認身分" required>
@@ -2855,8 +2867,25 @@ function openAssignTask() {
   $('taskContent').value = '';
   $('taskDueDate').value = '';
   $('taskAssignPwd').value = '';
+
+  // 第一次開啟才載入院區/職稱清單
+  if (!window._taskTargetsLoaded) {
+    window._taskTargetsLoaded = true;
+    apiGet({ action: 'getClinics' }, function(res){
+      if (res && res.success) renderChipPick('taskClinics', res.clinics, 'taskClinic');
+    });
+    apiGet({ action: 'getTitles' }, function(res){
+      if (res && res.success) renderChipPick('taskTitles', res.titles, 'taskTitle2');
+    });
+  } else {
+    document.querySelectorAll('#taskClinics input:checked, #taskTitles input:checked').forEach(function(i){
+      i.checked = false;
+      i.parentNode.classList.remove('checked');
+    });
+  }
+
   openModal('taskAssignModal');
-  setTimeout(function(){ $('taskAssignee').focus(); }, 100);
+  setTimeout(function(){ $('taskTitle').focus(); }, 100);
 }
 
 function submitAssignTask() {
@@ -2865,44 +2894,51 @@ function submitAssignTask() {
   var content = $('taskContent').value.trim();
   var dueDate = $('taskDueDate').value;
   var pwd = $('taskAssignPwd').value;
+  var targetClinics = getCheckedValues('taskClinics');
+  var targetTitles = getCheckedValues('taskTitles');
   var msg = $('taskAssignMsg');
   var btn = $('btnTaskAssignSubmit');
 
   msg.textContent = '';
   msg.className = 'modal-msg';
 
-  if (!assigneeEmpId) { msg.textContent = '請輸入受派員工編號'; return; }
   if (!title) { msg.textContent = '請輸入任務標題'; return; }
   if (!content) { msg.textContent = '請輸入任務內容'; return; }
   if (!pwd) { msg.textContent = '請輸入密碼以確認身分'; return; }
+  if (!assigneeEmpId && targetClinics.length === 0 && targetTitles.length === 0) {
+    msg.textContent = '請至少指定員編，或勾選院區 / 職稱條件';
+    return;
+  }
 
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span>派發中…';
 
-  apiGet({
+  apiPost({
     action: 'assignTask',
     empId: CURRENT_USER.empId,
     pwd: pwd,
     assigneeEmpId: assigneeEmpId,
     title: title,
     content: content,
-    dueDate: dueDate
+    dueDate: dueDate,
+    targetClinics: targetClinics,
+    targetTitles: targetTitles
   }, function(res){
     btn.disabled = false;
     btn.textContent = '派發任務';
 
     if (res && res.success) {
       msg.className = 'modal-msg ok';
-      msg.textContent = '✓ 任務已派發給 ' + (res.task.assigneeName || res.task.assigneeEmpId);
+      msg.textContent = '✓ 已派發給 ' + (res.count || 0) + ' 位員工';
       setTimeout(function(){
         closeModal('taskAssignModal');
         msg.textContent = '';
-        TASKS_TAB = 'assigned';  // 切到派出的 tab 看到剛派的
+        TASKS_TAB = 'assigned';
         document.querySelectorAll('.tasks-tab').forEach(function(t){
           t.classList.toggle('active', t.getAttribute('data-tab') === 'assigned');
         });
         loadTasks();
-      }, 800);
+      }, 1000);
     } else {
       msg.textContent = (res && res.error) ? res.error : '派發失敗，請稍後再試';
     }
