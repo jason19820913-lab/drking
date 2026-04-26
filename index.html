@@ -741,6 +741,218 @@
     border: 1px dashed rgba(42,157,159,.2);
   }
 
+  /* ============ 管理團隊 / 股東專區 ============ */
+  .mgmt-section {
+    max-width: 1200px;
+    margin: 32px auto 0;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, #2C3E50 0%, #34495E 50%, #2C3E50 100%);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(44,62,80,.25);
+    color: #F5EDDC;
+    position: relative;
+    overflow: hidden;
+  }
+  .mgmt-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-deep), var(--gold));
+  }
+  .mgmt-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .mgmt-header-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mgmt-header-title svg {
+    width: 22px;
+    height: 22px;
+    color: var(--gold);
+  }
+  .mgmt-sub {
+    font-size: 11px;
+    color: rgba(245,237,220,.6);
+    letter-spacing: 1.5px;
+    margin-left: 4px;
+  }
+  .btn-add-mgmt {
+    margin-left: auto;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: #2C3E50;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 3px 10px rgba(212,175,55,.35);
+    transition: all .2s;
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
+  .btn-add-mgmt:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(212,175,55,.5);
+  }
+
+  .mgmt-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .mgmt-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(212,175,55,.35);
+    border-radius: 12px;
+    padding: 22px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: all .25s cubic-bezier(.2,.8,.2,1);
+    position: relative;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+  }
+  .mgmt-card:hover {
+    background: rgba(255,255,255,.12);
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(212,175,55,.25);
+  }
+  .mgmt-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(212,175,55,.25), rgba(212,175,55,.10));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    transition: all .25s;
+    border: 1px solid rgba(212,175,55,.3);
+  }
+  .mgmt-card:hover .mgmt-card-icon {
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    border-color: var(--gold-deep);
+  }
+  .mgmt-card-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--gold);
+    transition: color .25s;
+  }
+  .mgmt-card:hover .mgmt-card-icon svg { color: #2C3E50; }
+  .mgmt-card-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #F5EDDC;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .mgmt-card-desc {
+    font-size: 12.5px;
+    color: rgba(245,237,220,.7);
+    line-height: 1.6;
+    margin-bottom: 16px;
+    flex: 1;
+  }
+  .mgmt-card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(212,175,55,.25);
+  }
+  .mgmt-card-tag {
+    font-size: 10.5px;
+    color: var(--gold);
+    background: rgba(212,175,55,.15);
+    padding: 2px 10px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+    border: 1px solid rgba(212,175,55,.3);
+  }
+  .mgmt-card-cta {
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    transition: all .25s;
+  }
+  .mgmt-card:hover .mgmt-card-cta { color: #FFE082; }
+  .mgmt-card-add {
+    background: rgba(212,175,55,.06);
+    border: 2px dashed rgba(212,175,55,.4);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 200px;
+  }
+  .mgmt-card-add:hover {
+    background: rgba(212,175,55,.12);
+    border-color: var(--gold);
+  }
+  .mgmt-card-add .mgmt-card-icon { margin: 0 auto 14px; }
+  .mgmt-card-add .mgmt-card-title { text-align: center; color: var(--gold); }
+  .mgmt-card-add .mgmt-card-desc { text-align: center; margin-bottom: 0; }
+  .mgmt-card-menu {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(212,175,55,.15);
+    border: 1px solid rgba(212,175,55,.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0;
+    transition: all .2s;
+    z-index: 2;
+  }
+  .mgmt-card:hover .mgmt-card-menu { opacity: 1; }
+  .mgmt-card-menu:hover {
+    background: var(--gold);
+    color: #2C3E50;
+    border-color: var(--gold-deep);
+  }
+  .mgmt-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(245,237,220,.55);
+    font-size: 13px;
+    background: rgba(255,255,255,.03);
+    border-radius: 10px;
+    border: 1px dashed rgba(212,175,55,.25);
+  }
+
+  @media (max-width: 600px) {
+    .mgmt-section { padding: 20px 18px; margin: 22px 16px 0; }
+    .mgmt-header-title { font-size: 16px; letter-spacing: 2px; }
+    .mgmt-cards { grid-template-columns: 1fr; gap: 12px; }
+  }
+
   /* ============ 讚賞牆 ============ */
   .kudos-section {
     max-width: 1200px;
@@ -2288,6 +2500,19 @@
     <div class="kb-list" id="kbList"></div>
   </div>
 
+  <!-- =============== 管理團隊 / 股東專區 =============== -->
+  <div class="mgmt-section fade-up" id="mgmtSection" style="display:none;">
+    <div class="mgmt-header">
+      <div class="mgmt-header-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22s2-12 10-12 10 12 10 12"/><circle cx="12" cy="6" r="4"/><path d="M12 2v8"/></svg>
+        <span>管理團隊 / 股東專區</span>
+        <span class="mgmt-sub">RESTRICTED</span>
+      </div>
+      <button class="btn-add-mgmt" id="btnAddMgmtCard" style="display:none;">＋ 新增卡片</button>
+    </div>
+    <div class="mgmt-cards" id="mgmtCardsList"></div>
+  </div>
+
   <div class="footer">© 金鶯診所 ELITE CLINIC ‧ EMPLOYEE PORTAL</div>
 </div>
 
@@ -2309,6 +2534,61 @@
     <div class="modal-foot">
       <button type="button" class="btn-modal btn-modal-danger" id="btnAnnArchive" style="display:none;">下架公告</button>
       <button type="button" class="btn-modal btn-modal-cancel" data-close="annViewModal">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============== 新增 / 編輯管理卡片 Modal =============== -->
+<div class="modal-overlay" id="mgmtCardFormModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title" id="mgmtCardFormTitle">新增管理卡片</div>
+        <div class="modal-meta">只有「管理股東權限」名單上的人能看到此區塊</div>
+      </div>
+      <button type="button" class="modal-close" data-close="mgmtCardFormModal" aria-label="關閉">✕</button>
+    </div>
+    <form id="mgmtCardForm" class="modal-form" autocomplete="off">
+      <input type="hidden" id="mgmtCardEditId" value="">
+      <div class="form-group">
+        <label class="form-label" for="mgmtCardTitle">卡片標題</label>
+        <input type="text" id="mgmtCardTitle" class="form-input" placeholder="例如：營運報表" maxlength="50" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="mgmtCardDesc">卡片描述</label>
+        <textarea id="mgmtCardDesc" class="form-input" placeholder="一句話說明這張卡片連結到什麼" maxlength="200" style="min-height:60px;"></textarea>
+      </div>
+      <div class="form-group" style="display:flex;gap:10px;">
+        <div style="flex:1;">
+          <label class="form-label" for="mgmtCardTag">標籤（選填）</label>
+          <input type="text" id="mgmtCardTag" class="form-input" placeholder="例如：財務 / 股東 / 內控" maxlength="10">
+        </div>
+        <div style="flex:1;">
+          <label class="form-label" for="mgmtCardOrder">顯示順序</label>
+          <input type="number" id="mgmtCardOrder" class="form-input" placeholder="數字小的排前面" step="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="mgmtCardUrl">連結 URL</label>
+        <input type="url" id="mgmtCardUrl" class="form-input" placeholder="https://..." required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">圖示</label>
+        <div class="icon-picker" id="mgmtCardIconPicker"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">可見職稱（不選 = 全部管理區成員可見）</label>
+        <div class="chip-pick empty" id="mgmtCardTitles"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="mgmtCardPwd">確認你的密碼</label>
+        <input type="password" id="mgmtCardPwd" class="form-input" placeholder="再次輸入密碼以確認身分" required>
+      </div>
+    </form>
+    <div class="modal-msg" id="mgmtCardFormMsg"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="mgmtCardFormModal">取消</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnMgmtCardSubmit">送　出</button>
     </div>
   </div>
 </div>
@@ -2937,6 +3217,8 @@ function logout() {
   KUDOS = [];
   KUDOS_LB = [];
   KB_LINKS = [];
+  MGMT_CARDS = [];
+  MGMT_PERM_CONFIG = null;
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
@@ -4626,7 +4908,6 @@ function showDashboard() {
   setupAppsManagement();
 
   // 先抓最新公告權限設定，再 setup 公告/任務/讚賞/系統卡片/知識連結
-  // （所有區塊的「發佈/管理」按鈕都要依公告權限名單顯示）
   loadAnnPermConfig(function(){
     setupAnnouncements();
     loadAnnouncements();
@@ -4635,9 +4916,14 @@ function showDashboard() {
     setupKudos();
     loadKudos();
     loadApps();
-    // setupKb 雖然在前面執行過，這裡再呼叫一次刷新 + 新增連結 按鈕的顯示
     setupKb();
     loadKbLinks();
+  });
+
+  // 管理股東專區（獨立權限名單，僅該名單能看到）
+  loadMgmtPermConfig(function(){
+    setupMgmtZone();
+    loadMgmtCards();
   });
 }
 
@@ -5041,6 +5327,339 @@ function doArchiveApp(appId) {
     if (res && res.success) {
       toast('已下架卡片', 'ok');
       loadApps();
+    } else {
+      toast((res && res.error) || '下架失敗', 'err');
+    }
+  });
+}
+
+/* =========================================================
+ * 管理團隊 / 股東專區
+ * ========================================================= */
+var MGMT_CARDS = [];
+var MGMT_PERM_CONFIG = null;
+
+function loadMgmtPermConfig(callback) {
+  apiGet({ action: 'getMgmtPermConfig' }, function(res){
+    if (res && res.success) {
+      MGMT_PERM_CONFIG = {
+        titleKeywords: Array.isArray(res.titleKeywords) ? res.titleKeywords : [],
+        empIds: Array.isArray(res.empIds) ? res.empIds : []
+      };
+    }
+    if (callback) callback();
+  }, function(){
+    if (callback) callback();
+  });
+}
+
+function hasMgmtPermission() {
+  if (!CURRENT_USER || !MGMT_PERM_CONFIG) return false;
+  var keywords = MGMT_PERM_CONFIG.titleKeywords || [];
+  var empIds = MGMT_PERM_CONFIG.empIds || [];
+
+  var userEmpId = String(CURRENT_USER.empId || '').toLowerCase();
+  for (var i = 0; i < empIds.length; i++) {
+    if (String(empIds[i]).toLowerCase() === userEmpId) return true;
+  }
+  var t = String(CURRENT_USER.title || '').toLowerCase();
+  if (!t) return false;
+  for (var j = 0; j < keywords.length; j++) {
+    var kw = String(keywords[j]).toLowerCase();
+    if (kw && t.indexOf(kw) >= 0) return true;
+  }
+  return false;
+}
+
+function setupMgmtZone() {
+  // 沒權限就完全隱藏整個區塊
+  if (!hasMgmtPermission()) {
+    $('mgmtSection').style.display = 'none';
+    return;
+  }
+  $('mgmtSection').style.display = 'block';
+  $('btnAddMgmtCard').style.display = 'inline-block';
+
+  if (window._mgmtSetup) return;
+  window._mgmtSetup = true;
+
+  $('btnAddMgmtCard').addEventListener('click', openAddMgmtCard);
+  $('btnMgmtCardSubmit').addEventListener('click', submitMgmtCardForm);
+  renderMgmtIconPicker();
+}
+
+function renderMgmtIconPicker() {
+  var box = $('mgmtCardIconPicker');
+  if (!box) return;
+  box.innerHTML = '';
+  ICON_LIST.forEach(function(key){
+    var label = document.createElement('label');
+    label.setAttribute('data-icon', key);
+    label.innerHTML = '<input type="radio" name="mgmtCardIcon" value="' + key + '">' + ICONS[key];
+    var input = label.querySelector('input');
+    input.addEventListener('change', function(){
+      box.querySelectorAll('label').forEach(function(l){ l.classList.remove('checked'); });
+      label.classList.add('checked');
+    });
+    box.appendChild(label);
+  });
+}
+
+function loadMgmtCards() {
+  if (!hasMgmtPermission()) return;
+  apiGet({ action: 'getMgmtCards' }, function(res){
+    MGMT_CARDS = (res && res.success && Array.isArray(res.cards)) ? res.cards : [];
+    renderMgmtCards();
+  });
+}
+
+function isMgmtCardVisibleToUser(card) {
+  // 已在 setupMgmtZone 確認有權限才會進來，這邊是個別卡片的職稱限制
+  if (card.targetTitles && card.targetTitles.length > 0) {
+    var t = (CURRENT_USER && CURRENT_USER.title) || '';
+    if (card.targetTitles.indexOf(t) < 0) return false;
+  }
+  return true;
+}
+
+function renderMgmtCards() {
+  var box = $('mgmtCardsList');
+  box.innerHTML = '';
+
+  var visible = MGMT_CARDS.filter(isMgmtCardVisibleToUser);
+
+  visible.forEach(function(card){
+    var item = document.createElement('div');
+    item.className = 'mgmt-card';
+    item.setAttribute('data-id', card.id);
+
+    var inner = document.createElement('a');
+    inner.href = card.url;
+    inner.target = '_blank';
+    inner.rel = 'noopener';
+    inner.style.cssText = 'display:contents;color:inherit;text-decoration:none;';
+    inner.innerHTML =
+      '<div class="mgmt-card-icon">' + (ICONS[card.icon] || ICONS.plus) + '</div>' +
+      '<div class="mgmt-card-title">' + escapeHtml(card.title) + '</div>' +
+      '<div class="mgmt-card-desc">' + escapeHtml(card.desc) + '</div>' +
+      '<div class="mgmt-card-foot">' +
+        '<span class="mgmt-card-tag">' + escapeHtml(card.tag || '管理') + '</span>' +
+        '<span class="mgmt-card-cta">開啟 →</span>' +
+      '</div>';
+    item.appendChild(inner);
+
+    // ⋮ 管理選單
+    var menuBtn = document.createElement('button');
+    menuBtn.className = 'mgmt-card-menu';
+    menuBtn.type = 'button';
+    menuBtn.innerHTML = '⋮';
+    menuBtn.setAttribute('aria-label', '管理');
+    menuBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMgmtCardMenu(item, card.id);
+    });
+    item.appendChild(menuBtn);
+
+    box.appendChild(item);
+  });
+
+  // 「+ 新增管理卡片」卡
+  var add = document.createElement('div');
+  add.className = 'mgmt-card mgmt-card-add';
+  add.innerHTML =
+    '<div class="mgmt-card-icon">' + ICONS.plus + '</div>' +
+    '<div class="mgmt-card-title">新增管理卡片</div>' +
+    '<div class="mgmt-card-desc">把財務報表、股東會議、營運資料連結加進來</div>';
+  add.addEventListener('click', openAddMgmtCard);
+  box.appendChild(add);
+}
+
+function toggleMgmtCardMenu(card, cardId) {
+  document.querySelectorAll('.card-menu-pop.show').forEach(function(p){
+    if (p._cardEl !== card) p.remove();
+  });
+  var existing = card.querySelector('.card-menu-pop');
+  if (existing) { existing.remove(); return; }
+
+  var pop = document.createElement('div');
+  pop.className = 'card-menu-pop show';
+  pop._cardEl = card;
+  pop.innerHTML =
+    '<button type="button" data-act="edit">編輯</button>' +
+    '<button type="button" data-act="archive" class="danger">下架</button>';
+  pop.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var act = btn.getAttribute('data-act');
+    pop.remove();
+    if (act === 'edit') openEditMgmtCard(cardId);
+    if (act === 'archive') doArchiveMgmtCard(cardId);
+  });
+  card.appendChild(pop);
+
+  setTimeout(function(){
+    document.addEventListener('click', function dismiss(){
+      pop.remove();
+      document.removeEventListener('click', dismiss);
+    });
+  }, 0);
+}
+
+function openAddMgmtCard() {
+  $('mgmtCardFormTitle').textContent = '新增管理卡片';
+  $('mgmtCardEditId').value = '';
+  $('mgmtCardTitle').value = '';
+  $('mgmtCardDesc').value = '';
+  $('mgmtCardTag').value = '';
+  $('mgmtCardOrder').value = '';
+  $('mgmtCardUrl').value = '';
+  $('mgmtCardPwd').value = '';
+  $('mgmtCardFormMsg').textContent = '';
+  $('mgmtCardFormMsg').className = 'modal-msg';
+
+  document.querySelectorAll('#mgmtCardIconPicker label').forEach(function(l){ l.classList.remove('checked'); });
+  var def = document.querySelector('#mgmtCardIconPicker input[value="chart"]');
+  if (def) {
+    def.checked = true;
+    def.parentNode.classList.add('checked');
+  }
+  document.querySelectorAll('#mgmtCardTitles input:checked').forEach(function(i){
+    i.checked = false;
+    i.parentNode.classList.remove('checked');
+  });
+
+  if (!window._mgmtTitlesLoaded) {
+    window._mgmtTitlesLoaded = true;
+    apiGet({ action: 'getTitles' }, function(res){
+      if (res && res.success) renderChipPick('mgmtCardTitles', res.titles, 'mgmtT');
+    });
+  }
+
+  openModal('mgmtCardFormModal');
+  setTimeout(function(){ $('mgmtCardTitle').focus(); }, 100);
+}
+
+function openEditMgmtCard(cardId) {
+  var card = null;
+  for (var i = 0; i < MGMT_CARDS.length; i++) if (MGMT_CARDS[i].id === cardId) { card = MGMT_CARDS[i]; break; }
+  if (!card) return;
+
+  $('mgmtCardFormTitle').textContent = '編輯管理卡片';
+  $('mgmtCardEditId').value = card.id;
+  $('mgmtCardTitle').value = card.title || '';
+  $('mgmtCardDesc').value = card.desc || '';
+  $('mgmtCardTag').value = card.tag || '';
+  $('mgmtCardOrder').value = card.order || '';
+  $('mgmtCardUrl').value = card.url || '';
+  $('mgmtCardPwd').value = '';
+  $('mgmtCardFormMsg').textContent = '';
+  $('mgmtCardFormMsg').className = 'modal-msg';
+
+  document.querySelectorAll('#mgmtCardIconPicker label').forEach(function(l){ l.classList.remove('checked'); });
+  var iconKey = card.icon || 'plus';
+  var iconInput = document.querySelector('#mgmtCardIconPicker input[value="' + iconKey + '"]');
+  if (iconInput) {
+    iconInput.checked = true;
+    iconInput.parentNode.classList.add('checked');
+  }
+
+  if (!window._mgmtTitlesLoaded) {
+    window._mgmtTitlesLoaded = true;
+    apiGet({ action: 'getTitles' }, function(res){
+      if (res && res.success) renderChipPick('mgmtCardTitles', res.titles, 'mgmtT');
+    });
+  }
+
+  setTimeout(function(){
+    document.querySelectorAll('#mgmtCardTitles input').forEach(function(i){
+      var checked = (card.targetTitles || []).indexOf(i.value) >= 0;
+      i.checked = checked;
+      i.parentNode.classList.toggle('checked', checked);
+    });
+  }, 200);
+
+  openModal('mgmtCardFormModal');
+}
+
+function submitMgmtCardForm() {
+  var id = $('mgmtCardEditId').value;
+  var title = $('mgmtCardTitle').value.trim();
+  var desc = $('mgmtCardDesc').value.trim();
+  var tag = $('mgmtCardTag').value.trim();
+  var orderRaw = $('mgmtCardOrder').value;
+  var url = $('mgmtCardUrl').value.trim();
+  var pwd = $('mgmtCardPwd').value;
+  var iconEl = document.querySelector('#mgmtCardIconPicker input:checked');
+  var icon = iconEl ? iconEl.value : 'plus';
+  var targetTitles = getCheckedValues('mgmtCardTitles');
+  var msg = $('mgmtCardFormMsg');
+  var btn = $('btnMgmtCardSubmit');
+
+  msg.textContent = '';
+  msg.className = 'modal-msg';
+
+  if (!title) { msg.textContent = '請輸入卡片標題'; return; }
+  if (!url) { msg.textContent = '請輸入連結 URL'; return; }
+  if (!pwd) { msg.textContent = '請輸入密碼以確認身分'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>送出中…';
+
+  var payload = {
+    action: id ? 'updateMgmtCard' : 'postMgmtCard',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    title: title,
+    desc: desc,
+    tag: tag,
+    url: url,
+    icon: icon,
+    targetTitles: targetTitles
+  };
+  if (id) payload.id = id;
+  if (orderRaw !== '') {
+    var ord = parseFloat(orderRaw);
+    if (!isNaN(ord)) payload.order = ord;
+  }
+
+  apiGet(payload, function(res){
+    btn.disabled = false;
+    btn.textContent = '送　出';
+
+    if (res && res.success) {
+      msg.className = 'modal-msg ok';
+      msg.textContent = id ? '✓ 已更新卡片' : '✓ 已新增卡片';
+      setTimeout(function(){
+        closeModal('mgmtCardFormModal');
+        msg.textContent = '';
+        loadMgmtCards();
+      }, 700);
+    } else {
+      msg.textContent = (res && res.error) ? res.error : '操作失敗，請稍後再試';
+    }
+  }, function(){
+    btn.disabled = false;
+    btn.textContent = '送　出';
+    msg.textContent = '連線失敗，請稍後再試';
+  });
+}
+
+function doArchiveMgmtCard(cardId) {
+  if (!confirm('確定要下架這張管理卡片嗎？')) return;
+  var pwd = prompt('請輸入您的密碼以確認：');
+  if (!pwd) return;
+  apiGet({
+    action: 'archiveMgmtCard',
+    empId: CURRENT_USER.empId,
+    pwd: pwd,
+    id: cardId
+  }, function(res){
+    if (res && res.success) {
+      toast('已下架卡片', 'ok');
+      loadMgmtCards();
     } else {
       toast((res && res.error) || '下架失敗', 'err');
     }
