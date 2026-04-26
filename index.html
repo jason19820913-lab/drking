@@ -2154,7 +2154,7 @@
         <span>讚賞牆</span>
       </div>
       <span class="kudos-badge zero" id="kudosBadge">無新讚賞</span>
-      <button class="btn-write-kudos" id="btnWriteKudos">＋ 寫一張</button>
+      <button class="btn-write-kudos" id="btnWriteKudos" style="display:none;">＋ 寫一張</button>
     </div>
     <div class="kudos-leaderboard" id="kudosLeaderboard" style="display:none;">
       <div class="kudos-lb-title">🏆 本月被謝最多</div>
@@ -2797,6 +2797,9 @@ var KUDOS = [];
 var KUDOS_LB = [];
 
 function setupKudos() {
+  // 「+ 寫一張」按鈕只給有公告權限的人看
+  $('btnWriteKudos').style.display = hasAnnouncePermission() ? 'inline-block' : 'none';
+
   if (window._kudosSetup) return;
   window._kudosSetup = true;
 
@@ -3241,14 +3244,7 @@ function renderTasks() {
   cntA.textContent = pendingAssigned;
   cntA.classList.toggle('zero', pendingAssigned === 0);
 
-  // 顯示/隱藏整個區塊
-  // 一般員工：沒收到任務也沒派出去就隱藏
-  // 管理者：永遠顯示（為了能派任務）
-  var hasAny = TASKS_RECEIVED.length > 0 || TASKS_ASSIGNED.length > 0;
-  if (!hasAnnouncePermission() && !hasAny) {
-    $('tasksSection').style.display = 'none';
-    return;
-  }
+  // 任務區塊：永遠顯示給全員（沒任務的人會看到「目前沒有指派給您的任務」）
   $('tasksSection').style.display = 'block';
 
   var list = TASKS_TAB === 'assigned' ? TASKS_ASSIGNED : TASKS_RECEIVED;
@@ -4193,15 +4189,16 @@ function showDashboard() {
   setupKb();
   loadKb();
   setupAppsManagement();
-  setupKudos();
-  loadKudos();
 
-  // 先抓最新權限設定，再 setup 公告/任務/卡片（按鈕顯示要依最新權限判斷）
+  // 先抓最新公告權限設定，再 setup 公告/任務/讚賞/卡片
+  // （這四個區塊的「發佈」按鈕都要依公告權限名單顯示）
   loadAnnPermConfig(function(){
     setupAnnouncements();
     loadAnnouncements();
     setupTasks();
     loadTasks();
+    setupKudos();
+    loadKudos();
     loadApps();  // 卡片從後端載入
   });
 }
