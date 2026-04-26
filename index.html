@@ -1938,7 +1938,6 @@
         <span>知識庫 / SOP</span>
         <span class="kb-count" id="kbCount" style="font-size:13px;font-weight:400;color:var(--text-muted);letter-spacing:1px;"></span>
       </div>
-      <a class="btn-add-kb" id="btnGoToKbDrive" href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none;">前往 Drive 管理 →</a>
     </div>
     <div class="kb-controls">
       <input type="text" class="kb-search" id="kbSearch" placeholder="🔍 搜尋文件標題">
@@ -2497,10 +2496,6 @@ var KB_SEARCH = '';
 var KB_FOLDER_URL = '';
 
 function setupKb() {
-  // 「前往 Drive 管理」按鈕：所有員工都看得到（直接點進 Drive 資料夾）
-  // 但若你想限管理者，可改成 hasAnnouncePermission()
-  $('btnGoToKbDrive').style.display = 'inline-block';
-
   if (window._kbSetup) return;
   window._kbSetup = true;
 
@@ -2515,7 +2510,6 @@ function loadKb() {
     if (res && res.success) {
       KB_DOCS = Array.isArray(res.docs) ? res.docs : [];
       KB_FOLDER_URL = res.folderUrl || '';
-      if (KB_FOLDER_URL) $('btnGoToKbDrive').href = KB_FOLDER_URL;
     } else {
       KB_DOCS = [];
     }
@@ -2545,7 +2539,7 @@ function renderKb() {
       (KB_SEARCH
         ? '找不到符合「' + escapeHtml(KB_SEARCH) + '」的文件'
         : (KB_DOCS.length === 0
-            ? '資料夾還沒有任何檔案，點右上角「前往 Drive 管理」上傳'
+            ? '資料夾還沒有任何檔案'
             : '沒有文件')) +
       '</div>';
     return;
