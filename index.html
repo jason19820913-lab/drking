@@ -741,6 +741,189 @@
     border: 1px dashed rgba(42,157,159,.2);
   }
 
+  /* ============ 知識庫 ============ */
+  .kb-section {
+    max-width: 1200px;
+    margin: 18px auto 0;
+    padding: 0 32px 24px;
+  }
+  .kb-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .kb-header-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 17px;
+    color: var(--brown);
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .kb-header-title svg {
+    width: 20px;
+    height: 20px;
+    color: var(--teal);
+  }
+  .btn-add-kb {
+    margin-left: auto;
+    padding: 7px 14px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-deep));
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 3px 10px rgba(42,157,159,.25);
+    transition: all .2s;
+  }
+  .btn-add-kb:hover { transform: translateY(-1px); }
+  .kb-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .kb-search {
+    flex: 1;
+    min-width: 240px;
+    padding: 10px 14px;
+    border: 1.5px solid #D5E5E5;
+    border-radius: 10px;
+    background: var(--cream);
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .kb-search:focus {
+    outline: none;
+    border-color: var(--teal);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(42,157,159,.15);
+  }
+  .kb-categories {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .kb-cat {
+    padding: 5px 14px;
+    border: 1.5px solid #D5E5E5;
+    border-radius: 18px;
+    font-size: 12.5px;
+    background: var(--white);
+    color: var(--brown);
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+  }
+  .kb-cat:hover { border-color: var(--teal-soft); }
+  .kb-cat.active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--white);
+  }
+  .kb-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .kb-item {
+    background: var(--white);
+    border: 1px solid rgba(42,157,159,.18);
+    border-radius: 10px;
+    padding: 16px 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: all .2s;
+    position: relative;
+  }
+  .kb-item:hover {
+    border-color: var(--teal);
+    box-shadow: 0 4px 14px rgba(42,157,159,.12);
+    transform: translateY(-2px);
+  }
+  .kb-item-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .kb-item-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #E5F4F4, #B8E0E1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--teal-deep);
+    transition: all .2s;
+  }
+  .kb-item:hover .kb-item-icon {
+    background: linear-gradient(135deg, var(--teal-light), var(--teal));
+    color: var(--white);
+  }
+  .kb-item-icon svg { width: 22px; height: 22px; }
+  .kb-item-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .kb-item-title {
+    font-weight: 700;
+    color: var(--brown);
+    font-size: 14px;
+    margin-bottom: 3px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  .kb-item-cat {
+    display: inline-block;
+    font-size: 10.5px;
+    color: var(--teal-deep);
+    background: #E5F4F4;
+    padding: 1px 8px;
+    border-radius: 8px;
+    letter-spacing: .5px;
+  }
+  .kb-item-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-top: 2px;
+  }
+  .kb-item-meta {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+  }
+  .kb-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 13px;
+    background: rgba(255,255,255,.5);
+    border-radius: 10px;
+    border: 1px dashed rgba(42,157,159,.2);
+  }
+
   /* ============ 公告區塊 ============ */
   .anns-section {
     max-width: 1200px;
@@ -1454,6 +1637,9 @@
     .tasks-section { padding: 0 20px; }
     .tasks-header-title { font-size: 15px; }
     .task-item { padding: 9px 12px; gap: 9px; }
+    .kb-section { padding: 0 20px 32px; }
+    .kb-header-title { font-size: 15px; }
+    .kb-list { grid-template-columns: 1fr; gap: 10px; }
     .modal-card { max-height: 90vh; }
     .modal-header, .modal-form, .modal-body { padding-left: 20px; padding-right: 20px; }
     .modal-foot { padding-left: 20px; padding-right: 20px; }
@@ -1615,6 +1801,22 @@
   </div>
 
   <div class="cards" id="cardsContainer"></div>
+
+  <!-- =============== 知識庫 =============== -->
+  <div class="kb-section fade-up d5" id="kbSection">
+    <div class="kb-header">
+      <div class="kb-header-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>知識庫 / SOP</span>
+        <span class="kb-count" id="kbCount" style="font-size:13px;font-weight:400;color:var(--text-muted);letter-spacing:1px;"></span>
+      </div>
+      <a class="btn-add-kb" id="btnGoToKbDrive" href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none;">前往 Drive 管理 →</a>
+    </div>
+    <div class="kb-controls">
+      <input type="text" class="kb-search" id="kbSearch" placeholder="🔍 搜尋文件標題">
+    </div>
+    <div class="kb-list" id="kbList"></div>
+  </div>
 
   <div class="footer">© 金鶯診所 ELITE CLINIC ‧ EMPLOYEE PORTAL</div>
 </div>
@@ -2098,11 +2300,120 @@ function logout() {
   ANNS_EXPANDED = false;
   TASKS_RECEIVED = [];
   TASKS_ASSIGNED = [];
+  KB_DOCS = [];
+  KB_SEARCH = '';
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
   $('loginMsg').textContent = '';
   toast('已登出', 'ok');
+}
+
+
+/* =========================================================
+ * 知識庫 / SOP（直接讀 Drive 資料夾）
+ * ========================================================= */
+var KB_DOCS = [];
+var KB_SEARCH = '';
+var KB_FOLDER_URL = '';
+
+function setupKb() {
+  // 「前往 Drive 管理」按鈕：所有員工都看得到（直接點進 Drive 資料夾）
+  // 但若你想限管理者，可改成 hasAnnouncePermission()
+  $('btnGoToKbDrive').style.display = 'inline-block';
+
+  if (window._kbSetup) return;
+  window._kbSetup = true;
+
+  $('kbSearch').addEventListener('input', function(){
+    KB_SEARCH = this.value.trim().toLowerCase();
+    renderKb();
+  });
+}
+
+function loadKb() {
+  apiGet({ action: 'getKnowledgeDocs' }, function(res){
+    if (res && res.success) {
+      KB_DOCS = Array.isArray(res.docs) ? res.docs : [];
+      KB_FOLDER_URL = res.folderUrl || '';
+      if (KB_FOLDER_URL) $('btnGoToKbDrive').href = KB_FOLDER_URL;
+    } else {
+      KB_DOCS = [];
+    }
+    renderKb();
+  }, function(){
+    KB_DOCS = [];
+    renderKb();
+  });
+}
+
+function renderKb() {
+  var box = $('kbList');
+  var cnt = $('kbCount');
+  box.innerHTML = '';
+
+  var filtered = KB_DOCS.filter(function(d){
+    if (!KB_SEARCH) return true;
+    return String(d.title || '').toLowerCase().indexOf(KB_SEARCH) >= 0;
+  });
+
+  cnt.textContent = filtered.length === KB_DOCS.length
+    ? '（共 ' + KB_DOCS.length + ' 份）'
+    : '（' + filtered.length + ' / ' + KB_DOCS.length + ' 份）';
+
+  if (filtered.length === 0) {
+    box.innerHTML = '<div class="kb-empty">' +
+      (KB_SEARCH
+        ? '找不到符合「' + escapeHtml(KB_SEARCH) + '」的文件'
+        : (KB_DOCS.length === 0
+            ? '資料夾還沒有任何檔案，點右上角「前往 Drive 管理」上傳'
+            : '沒有文件')) +
+      '</div>';
+    return;
+  }
+
+  filtered.forEach(function(d){
+    box.appendChild(buildKbItem(d));
+  });
+}
+
+function buildKbItem(d) {
+  var ftype = String(d.mimeType || '').toLowerCase();
+  var name = String(d.title || '').toLowerCase();
+  var icon;
+
+  if (ftype.indexOf('pdf') >= 0 || /\.pdf$/.test(name)) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  } else if (ftype.indexOf('image') >= 0 || /\.(jpg|jpeg|png|gif|webp|heic)$/.test(name)) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+  } else if (ftype.indexOf('document') >= 0 || ftype.indexOf('word') >= 0 || /\.docx?$/.test(name)) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>';
+  } else if (ftype.indexOf('spreadsheet') >= 0 || ftype.indexOf('excel') >= 0 || /\.xlsx?$/.test(name)) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>';
+  } else if (ftype.indexOf('presentation') >= 0 || ftype.indexOf('powerpoint') >= 0 || /\.pptx?$/.test(name)) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+  } else if (ftype.indexOf('folder') >= 0) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
+  } else {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  }
+
+  var item = document.createElement('a');
+  item.className = 'kb-item';
+  item.href = d.url || '#';
+  item.target = '_blank';
+  item.rel = 'noopener';
+
+  item.innerHTML =
+    '<div class="kb-item-head">' +
+      '<div class="kb-item-icon">' + icon + '</div>' +
+      '<div class="kb-item-body">' +
+        '<div class="kb-item-title">' + escapeHtml(d.title) + '</div>' +
+        (d.time ? '<div class="kb-item-meta" style="margin-top:4px;"><span>' + escapeHtml(d.time) + '</span></div>' : '') +
+      '</div>' +
+    '</div>';
+
+  return item;
 }
 
 /* =========================================================
@@ -3086,6 +3397,8 @@ function showDashboard() {
   renderCards();
   setupChangePwd();
   loadCelebrations();
+  setupKb();
+  loadKb();
 
   // 先抓最新權限設定，再 setup 公告/任務（按鈕顯示要依最新權限判斷）
   loadAnnPermConfig(function(){
