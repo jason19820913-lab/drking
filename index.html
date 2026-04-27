@@ -3335,6 +3335,7 @@ function logout() {
   MGMT_PERM_CONFIG = null;
   MGMT_DOCS = [];
   MGMT_DOCS_SEARCH = '';
+  TASK_PERM_CONFIG = null;
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
@@ -4030,7 +4031,7 @@ var TASKS_ASSIGNED = [];
 var TASKS_TAB = 'received'; // received / assigned
 
 function setupTasks() {
-  var canAssign = hasAnnouncePermission();
+  var canAssign = hasTaskPermission();
   $('btnAssignTask').style.display = canAssign ? 'inline-block' : 'none';
   $('tabAssigned').style.display = canAssign ? 'inline-block' : 'none';
 
@@ -4484,6 +4485,43 @@ function loadAnnPermConfig(callback) {
   }, function(){
     if (callback) callback();
   });
+}
+
+/* 任務權限（獨立於公告權限）*/
+var TASK_PERM_CONFIG = null;
+
+function loadTaskPermConfig(callback) {
+  apiGet({ action: 'getTaskPermConfig' }, function(res){
+    if (res && res.success) {
+      TASK_PERM_CONFIG = {
+        titleKeywords: Array.isArray(res.titleKeywords) ? res.titleKeywords : [],
+        empIds: Array.isArray(res.empIds) ? res.empIds : []
+      };
+    }
+    if (callback) callback();
+  }, function(){
+    if (callback) callback();
+  });
+}
+
+function hasTaskPermission() {
+  if (!CURRENT_USER) return false;
+  // 沒設定或載入失敗 → 直接回 false（避免顯示按鈕但後端會擋）
+  if (!TASK_PERM_CONFIG) return false;
+  var keywords = TASK_PERM_CONFIG.titleKeywords || [];
+  var empIds = TASK_PERM_CONFIG.empIds || [];
+
+  var userEmpId = String(CURRENT_USER.empId || '').toLowerCase();
+  for (var i = 0; i < empIds.length; i++) {
+    if (String(empIds[i]).toLowerCase() === userEmpId) return true;
+  }
+  var t = String(CURRENT_USER.title || '').toLowerCase();
+  if (!t) return false;
+  for (var j = 0; j < keywords.length; j++) {
+    var kw = String(keywords[j]).toLowerCase();
+    if (kw && t.indexOf(kw) >= 0) return true;
+  }
+  return false;
 }
 
 function annsReadKey() {
@@ -5023,17 +5061,21 @@ function showDashboard() {
   loadKb();
   setupAppsManagement();
 
-  // 先抓最新公告權限設定，再 setup 公告/任務/讚賞/系統卡片/知識連結
+  // 先抓最新公告權限設定，再 setup 公告/讚賞/系統卡片/知識連結
   loadAnnPermConfig(function(){
     setupAnnouncements();
     loadAnnouncements();
-    setupTasks();
-    loadTasks();
     setupKudos();
     loadKudos();
     loadApps();
     setupKb();
     loadKbLinks();
+  });
+
+  // 任務權限獨立 — 抓完才決定派任務按鈕和「派出的」分頁是否顯示
+  loadTaskPermConfig(function(){
+    setupTasks();
+    loadTasks();
   });
 
   // 管理股東專區（獨立權限名單，僅該名單能看到）
