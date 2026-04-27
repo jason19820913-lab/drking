@@ -947,6 +947,110 @@
     border: 1px dashed rgba(212,175,55,.25);
   }
 
+  /* 管理區內：簽呈列表 */
+  .mgmt-docs-wrap {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px dashed rgba(212,175,55,.3);
+  }
+  .mgmt-docs-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 16px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .mgmt-docs-count {
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(245,237,220,.5);
+    letter-spacing: 1px;
+  }
+  .mgmt-docs-search {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid rgba(212,175,55,.3);
+    border-radius: 10px;
+    background: rgba(0,0,0,.2);
+    font-size: 13.5px;
+    font-family: inherit;
+    color: #F5EDDC;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+  .mgmt-docs-search::placeholder { color: rgba(245,237,220,.4); }
+  .mgmt-docs-search:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: rgba(0,0,0,.3);
+    box-shadow: 0 0 0 3px rgba(212,175,55,.18);
+  }
+  .mgmt-docs-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+  }
+  .mgmt-doc-item {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(212,175,55,.22);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: all .2s;
+  }
+  .mgmt-doc-item:hover {
+    background: rgba(255,255,255,.10);
+    border-color: var(--gold);
+    transform: translateY(-1px);
+  }
+  .mgmt-doc-icon {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(212,175,55,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    border: 1px solid rgba(212,175,55,.25);
+  }
+  .mgmt-doc-icon svg { width: 18px; height: 18px; }
+  .mgmt-doc-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .mgmt-doc-name {
+    font-size: 13.5px;
+    color: #F5EDDC;
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-word;
+    margin-bottom: 2px;
+  }
+  .mgmt-doc-time {
+    font-size: 11px;
+    color: rgba(245,237,220,.55);
+  }
+  .mgmt-docs-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 24px 20px;
+    color: rgba(245,237,220,.5);
+    font-size: 13px;
+    background: rgba(255,255,255,.03);
+    border-radius: 10px;
+    border: 1px dashed rgba(212,175,55,.2);
+  }
+
   @media (max-width: 600px) {
     .mgmt-section { padding: 20px 18px; margin: 22px 16px 0; }
     .mgmt-header-title { font-size: 16px; letter-spacing: 2px; }
@@ -2511,6 +2615,16 @@
       <button class="btn-add-mgmt" id="btnAddMgmtCard" style="display:none;">＋ 新增卡片</button>
     </div>
     <div class="mgmt-cards" id="mgmtCardsList"></div>
+
+    <!-- 簽呈列表（從 Drive 資料夾讀取）-->
+    <div class="mgmt-docs-wrap" id="mgmtDocsWrap" style="display:none;">
+      <div class="mgmt-docs-title">
+        📑 簽呈列表
+        <span class="mgmt-docs-count" id="mgmtDocsCount"></span>
+      </div>
+      <input type="text" class="mgmt-docs-search" id="mgmtDocsSearch" placeholder="🔍 搜尋簽呈標題">
+      <div class="mgmt-docs-list" id="mgmtDocsList"></div>
+    </div>
   </div>
 
   <div class="footer">© 金鶯診所 ELITE CLINIC ‧ EMPLOYEE PORTAL</div>
@@ -3219,6 +3333,8 @@ function logout() {
   KB_LINKS = [];
   MGMT_CARDS = [];
   MGMT_PERM_CONFIG = null;
+  MGMT_DOCS = [];
+  MGMT_DOCS_SEARCH = '';
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
@@ -4924,6 +5040,8 @@ function showDashboard() {
   loadMgmtPermConfig(function(){
     setupMgmtZone();
     loadMgmtCards();
+    setupMgmtDocs();
+    loadMgmtDocs();
   });
 }
 
@@ -5664,6 +5782,101 @@ function doArchiveMgmtCard(cardId) {
       toast((res && res.error) || '下架失敗', 'err');
     }
   });
+}
+
+/* =========================================================
+ * 管理區 - 簽呈列表（讀 Drive 資料夾）
+ * ========================================================= */
+var MGMT_DOCS = [];
+var MGMT_DOCS_SEARCH = '';
+
+function setupMgmtDocs() {
+  if (window._mgmtDocsSetup) return;
+  window._mgmtDocsSetup = true;
+  $('mgmtDocsSearch').addEventListener('input', function(){
+    MGMT_DOCS_SEARCH = this.value.trim().toLowerCase();
+    renderMgmtDocs();
+  });
+}
+
+function loadMgmtDocs() {
+  if (!hasMgmtPermission()) return;
+  apiGet({
+    action: 'getMgmtDocs',
+    empId: CURRENT_USER.empId
+  }, function(res){
+    if (res && res.success && Array.isArray(res.docs)) {
+      MGMT_DOCS = res.docs;
+      $('mgmtDocsWrap').style.display = 'block';
+    } else {
+      MGMT_DOCS = [];
+      $('mgmtDocsWrap').style.display = 'block';  // 仍顯示但會出現空狀態
+    }
+    renderMgmtDocs();
+  }, function(){
+    MGMT_DOCS = [];
+    $('mgmtDocsWrap').style.display = 'none';
+  });
+}
+
+function renderMgmtDocs() {
+  var box = $('mgmtDocsList');
+  var cnt = $('mgmtDocsCount');
+  box.innerHTML = '';
+
+  var filtered = MGMT_DOCS.filter(function(d){
+    if (!MGMT_DOCS_SEARCH) return true;
+    return String(d.title || '').toLowerCase().indexOf(MGMT_DOCS_SEARCH) >= 0;
+  });
+
+  cnt.textContent = filtered.length === MGMT_DOCS.length
+    ? '（共 ' + MGMT_DOCS.length + ' 份）'
+    : '（' + filtered.length + ' / ' + MGMT_DOCS.length + ' 份）';
+
+  if (filtered.length === 0) {
+    box.innerHTML = '<div class="mgmt-docs-empty">' +
+      (MGMT_DOCS_SEARCH
+        ? '找不到符合「' + escapeHtml(MGMT_DOCS_SEARCH) + '」的簽呈'
+        : '資料夾還沒有任何檔案') +
+      '</div>';
+    return;
+  }
+
+  filtered.forEach(function(d){
+    box.appendChild(buildMgmtDocItem(d));
+  });
+}
+
+function buildMgmtDocItem(d) {
+  var ftype = String(d.mimeType || '').toLowerCase();
+  var name = String(d.title || '').toLowerCase();
+  var icon;
+
+  if (ftype.indexOf('pdf') >= 0 || /\.pdf$/.test(name)) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  } else if (ftype.indexOf('image') >= 0) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+  } else if (ftype.indexOf('document') >= 0 || /\.docx?$/.test(name)) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>';
+  } else if (ftype.indexOf('spreadsheet') >= 0 || /\.xlsx?$/.test(name)) {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>';
+  } else {
+    icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  }
+
+  var item = document.createElement('a');
+  item.className = 'mgmt-doc-item';
+  item.href = d.url || '#';
+  item.target = '_blank';
+  item.rel = 'noopener';
+
+  item.innerHTML =
+    '<div class="mgmt-doc-icon">' + icon + '</div>' +
+    '<div class="mgmt-doc-body">' +
+      '<div class="mgmt-doc-name">' + escapeHtml(d.title) + '</div>' +
+      (d.time ? '<div class="mgmt-doc-time">' + escapeHtml(d.time) + '</div>' : '') +
+    '</div>';
+  return item;
 }
 
 /* =========================================================
