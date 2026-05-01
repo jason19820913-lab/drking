@@ -4049,7 +4049,16 @@ function setupTasks() {
         x.classList.toggle('active', x === t);
       });
       renderTasks();
+      // 切換 tab 時順便抓最新（這樣管理者切「派出的」會看到對方剛完成的任務）
+      loadTasks();
     });
+  });
+
+  // 頁面從背景切回前景時自動 reload 任務狀態（即時同步效果）
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden && CURRENT_USER && CURRENT_USER.empId) {
+      loadTasks();
+    }
   });
 }
 
