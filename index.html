@@ -1827,6 +1827,102 @@
   }
   .btn-modal-danger:hover { background: #FBE9E6; }
 
+  /* 公告閱覽統計（管理者視角）*/
+  .ann-read-stats {
+    margin: 16px 0 4px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(42,157,159,.08), rgba(212,175,55,.06));
+    border: 1px solid rgba(42,157,159,.25);
+    border-radius: 10px;
+  }
+  .ann-read-summary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .ann-read-rate {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--teal-deep);
+    letter-spacing: 1px;
+  }
+  .ann-read-counts {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+  .ann-read-counts strong { color: var(--brown); }
+  .ann-read-toggle {
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .ann-read-toggle button {
+    background: var(--white);
+    border: 1px solid #D5E5E5;
+    border-radius: 14px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--brown);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .ann-read-toggle button:hover { border-color: var(--teal-soft); }
+  .ann-read-toggle button.active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--white);
+  }
+  .ann-read-list {
+    margin-top: 10px;
+    max-height: 220px;
+    overflow-y: auto;
+    background: var(--white);
+    border: 1px solid rgba(42,157,159,.18);
+    border-radius: 8px;
+    padding: 6px;
+    display: none;
+  }
+  .ann-read-list.show { display: block; }
+  .ann-read-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .ann-read-item:hover { background: var(--cream); }
+  .ann-read-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .ann-read-item-name { font-weight: 500; color: var(--brown); }
+  .ann-read-item-meta {
+    color: var(--text-muted);
+    font-size: 11px;
+    margin-top: 1px;
+  }
+  .ann-read-item-time {
+    font-size: 11px;
+    color: var(--teal-deep);
+    flex-shrink: 0;
+  }
+  .ann-read-empty {
+    text-align: center;
+    padding: 16px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+  }
+
   /* Modal 表單 */
   .modal-form { padding: 18px 26px 8px; }
   .modal-form .form-group { margin-bottom: 14px; }
@@ -2644,6 +2740,21 @@
       <div id="annViewTarget" style="display:none;"></div>
       <div id="annViewContent">-</div>
       <div class="ann-attachments" id="annViewAttachments" style="display:none;"></div>
+      <div class="ann-read-stats" id="annViewReadStats" style="display:none;">
+        <div class="ann-read-summary">
+          <span class="ann-read-rate" id="annReadRate">- %</span>
+          <div class="ann-read-counts">
+            <span>對象 <strong id="annReadTotal">0</strong> 位</span>
+            <span style="color:var(--teal-deep);">已閱 <strong id="annReadCount">0</strong></span>
+            <span style="color:#C0392B;">未閱 <strong id="annUnreadCount">0</strong></span>
+          </div>
+        </div>
+        <div class="ann-read-toggle">
+          <button type="button" data-stab="readers">查看已閱名單</button>
+          <button type="button" data-stab="unread">查看未閱名單</button>
+        </div>
+        <div class="ann-read-list" id="annReadList"></div>
+      </div>
     </div>
     <div class="modal-foot">
       <button type="button" class="btn-modal btn-modal-danger" id="btnAnnArchive" style="display:none;">下架公告</button>
@@ -4556,6 +4667,9 @@ function setupAnnouncements() {
   // 管理者顯示「+ 新增公告」
   $('btnPostAnn').style.display = hasAnnouncePermission() ? 'inline-block' : 'none';
 
+  // 閱覽統計切換按鈕綁定（一次性）
+  setupAnnReadToggle();
+
   // 事件只綁一次
   if (window._annsSetup) return;
   window._annsSetup = true;
@@ -4885,13 +4999,113 @@ function openAnnView(id) {
     btnArchive.style.display = 'none';
   }
 
+  // 閱覽統計區（管理者視角才顯示）
+  var statsBox = $('annViewReadStats');
+  if (hasAnnouncePermission()) {
+    statsBox.style.display = 'block';
+    loadAnnReadStats(a.id);
+  } else {
+    statsBox.style.display = 'none';
+  }
+
   openModal('annViewModal');
 
-  // 標記已讀
+  // 寫到後端 sheet（同步閱覽記錄）
+  if (CURRENT_USER && CURRENT_USER.empId) {
+    apiGet({ action: 'markAnnRead', empId: CURRENT_USER.empId, annId: id }, function(){});
+  }
+
+  // localStorage 標記已讀（控制 dashboard 紅點顯示）
   if (getReadAnnIds().indexOf(id) < 0) {
     markAnnAsRead(id);
     setTimeout(renderAnnouncements, 300);
   }
+}
+
+/* 公告閱覽統計 */
+var ANN_STATS_DATA = null;
+var ANN_STATS_TAB = 'readers';
+
+function loadAnnReadStats(annId) {
+  $('annReadRate').textContent = '計算中…';
+  $('annReadTotal').textContent = '-';
+  $('annReadCount').textContent = '-';
+  $('annUnreadCount').textContent = '-';
+  $('annReadList').classList.remove('show');
+  $('annReadList').innerHTML = '';
+  document.querySelectorAll('.ann-read-toggle button').forEach(function(b){ b.classList.remove('active'); });
+
+  apiGet({
+    action: 'getAnnReadStats',
+    empId: CURRENT_USER.empId,
+    annId: annId
+  }, function(res){
+    if (res && res.success) {
+      ANN_STATS_DATA = res;
+      $('annReadRate').textContent = res.readRate + ' %';
+      $('annReadTotal').textContent = res.totalAudience;
+      $('annReadCount').textContent = res.readCount;
+      $('annUnreadCount').textContent = res.unreadCount;
+    } else {
+      $('annReadRate').textContent = '—';
+      toast((res && res.error) || '無法取得閱覽統計', 'err');
+    }
+  }, function(){
+    $('annReadRate').textContent = '—';
+    toast('連線失敗', 'err');
+  });
+}
+
+function setupAnnReadToggle() {
+  if (window._annReadToggleSetup) return;
+  window._annReadToggleSetup = true;
+  document.querySelectorAll('.ann-read-toggle button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var tab = btn.getAttribute('data-stab');
+      // 若已是 active 再點一次 → 收合
+      if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        $('annReadList').classList.remove('show');
+        return;
+      }
+      document.querySelectorAll('.ann-read-toggle button').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      ANN_STATS_TAB = tab;
+      renderAnnReadList();
+    });
+  });
+}
+
+function renderAnnReadList() {
+  var box = $('annReadList');
+  box.classList.add('show');
+  box.innerHTML = '';
+  if (!ANN_STATS_DATA) {
+    box.innerHTML = '<div class="ann-read-empty">尚無資料</div>';
+    return;
+  }
+  var list = ANN_STATS_TAB === 'unread' ? ANN_STATS_DATA.unreadUsers : ANN_STATS_DATA.readers;
+  if (!list || list.length === 0) {
+    box.innerHTML = '<div class="ann-read-empty">' +
+      (ANN_STATS_TAB === 'unread' ? '🎉 全員都看過了' : '尚無人閱覽') +
+      '</div>';
+    return;
+  }
+  list.forEach(function(u){
+    var item = document.createElement('div');
+    item.className = 'ann-read-item';
+    item.innerHTML =
+      '<div class="ann-read-item-info">' +
+        '<div class="ann-read-item-name">' + escapeHtml(u.name || u.empId) + '</div>' +
+        '<div class="ann-read-item-meta">' +
+          escapeHtml(u.empId) +
+          (u.clinic ? ' · ' + escapeHtml(u.clinic) : '') +
+          (u.title ? ' · ' + escapeHtml(u.title) : '') +
+        '</div>' +
+      '</div>' +
+      (u.time ? '<span class="ann-read-item-time">' + escapeHtml(u.time) + '</span>' : '');
+    box.appendChild(item);
+  });
 }
 
 function submitAnnPost() {
