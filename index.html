@@ -2743,7 +2743,7 @@
   <div class="contract-section" id="contractSection" style="display:none;">
     <div class="contract-bar">
       <div class="contract-title">
-        📋 簽約到期提醒　<span style="font-size:11px;color:var(--text-muted);font-weight:400;letter-spacing:1px;">未來 3 個月內</span>
+        📋 下次簽約提醒　<span style="font-size:11px;color:var(--text-muted);font-weight:400;letter-spacing:1px;">距下次週年日 3 個月內</span>
       </div>
       <div class="contract-list" id="contractList"></div>
     </div>
@@ -4812,6 +4812,8 @@ function renderContractReminders() {
     if (r.daysLeft <= 7) cls += ' urgent';
     else if (r.daysLeft <= 30) cls += ' warning';
     chip.className = cls;
+    // 把原始簽約日當 tooltip 給好奇的人看
+    chip.title = r.signDate ? '原簽約日：' + r.signDate : '';
     chip.innerHTML =
       '<span class="contract-chip-name">' + escapeHtml(r.name) + '</span>' +
       '<span class="contract-chip-meta">' +
@@ -4819,8 +4821,10 @@ function renderContractReminders() {
         (r.title && r.clinic ? ' · ' : '') +
         (r.clinic ? escapeHtml(r.clinic) : '') +
       '</span>' +
-      '<span class="contract-chip-date">' + escapeHtml(r.contractDate) + '</span>' +
-      '<span class="contract-chip-days">' + (r.daysLeft === 0 ? '今天' : '剩 ' + r.daysLeft + ' 天') + '</span>';
+      '<span class="contract-chip-date">下次 ' + escapeHtml(r.nextSignDate || '') + '</span>' +
+      '<span class="contract-chip-days">' +
+        (r.daysLeft === 0 ? '今天' : '剩 ' + r.daysLeft + ' 天') +
+      '</span>';
     list.appendChild(chip);
   });
 }
