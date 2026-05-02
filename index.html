@@ -566,6 +566,95 @@
   }
   .celebration-chip.today .celebration-chip-date { color: #5A3F08; opacity: .85; }
 
+  /* ============ 合約到期提醒 ============ */
+  .contract-section {
+    max-width: 1200px;
+    margin: 12px auto 0;
+    padding: 0 32px;
+  }
+  .contract-bar {
+    background: linear-gradient(135deg, rgba(243,156,18,.10), rgba(230,126,34,.06));
+    border: 1px solid rgba(230,126,34,.4);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 10px rgba(230,126,34,.08);
+  }
+  .contract-title {
+    font-size: 13px;
+    color: #B36410;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .contract-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .contract-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--white);
+    border: 1px solid rgba(230,126,34,.4);
+    border-radius: 18px;
+    font-size: 12.5px;
+    color: var(--brown);
+    transition: all .2s;
+  }
+  .contract-chip:hover {
+    box-shadow: 0 3px 8px rgba(230,126,34,.18);
+    border-color: #E67E22;
+  }
+  .contract-chip.warning {
+    background: linear-gradient(135deg, #F39C12, #E67E22);
+    border-color: #B36410;
+    color: #fff;
+  }
+  .contract-chip.urgent {
+    background: linear-gradient(135deg, #E74C3C, #C0392B);
+    border-color: #922B21;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(192,57,43,.35);
+  }
+  .contract-chip-name {
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+  .contract-chip-meta {
+    color: var(--text-muted);
+    font-size: 11.5px;
+  }
+  .contract-chip.warning .contract-chip-meta,
+  .contract-chip.urgent .contract-chip-meta { color: rgba(255,255,255,.85); }
+  .contract-chip-date {
+    font-size: 11px;
+    color: #B36410;
+    font-weight: 500;
+  }
+  .contract-chip.warning .contract-chip-date,
+  .contract-chip.urgent .contract-chip-date { color: rgba(255,255,255,.95); }
+  .contract-chip-days {
+    font-size: 11px;
+    background: rgba(230,126,34,.18);
+    color: #B36410;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+  .contract-chip.warning .contract-chip-days {
+    background: rgba(255,255,255,.25);
+    color: #fff;
+  }
+  .contract-chip.urgent .contract-chip-days {
+    background: rgba(255,255,255,.3);
+    color: #fff;
+  }
+
   /* ============ 任務區塊 ============ */
   .tasks-section {
     max-width: 1200px;
@@ -2650,6 +2739,16 @@
     <div class="celebrations-bar" id="celebrationsBar"></div>
   </div>
 
+  <!-- =============== 合約到期提醒（僅副總經理 / 特助看得到）=============== -->
+  <div class="contract-section" id="contractSection" style="display:none;">
+    <div class="contract-bar">
+      <div class="contract-title">
+        📋 簽約到期提醒　<span style="font-size:11px;color:var(--text-muted);font-weight:400;letter-spacing:1px;">未來 3 個月內</span>
+      </div>
+      <div class="contract-list" id="contractList"></div>
+    </div>
+  </div>
+
   <!-- =============== 公告區塊 =============== -->
   <div class="anns-section fade-up d2" id="annsSection">
     <div class="anns-header">
@@ -3490,6 +3589,8 @@ function logout() {
   MGMT_DOCS = [];
   MGMT_DOCS_SEARCH = '';
   TASK_PERM_CONFIG = null;
+  CONTRACT_REMINDERS = [];
+  CONTRACT_REMINDER_KEYWORDS = null;
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
@@ -4650,6 +4751,81 @@ function submitAssignTask() {
 }
 
 /* =========================================================
+ * 合約到期提醒（限副總經理 / 特助）
+ * ========================================================= */
+var CONTRACT_REMINDERS = [];
+var CONTRACT_REMINDER_KEYWORDS = null;
+
+function loadContractReminderConfig(callback) {
+  apiGet({ action: 'getContractReminderConfig' }, function(res){
+    if (res && res.success) {
+      CONTRACT_REMINDER_KEYWORDS = Array.isArray(res.titleKeywords) ? res.titleKeywords : [];
+    }
+    if (callback) callback();
+  }, function(){ if (callback) callback(); });
+}
+
+function hasContractReminderPermissionFE() {
+  if (!CURRENT_USER || !CURRENT_USER.title || !CONTRACT_REMINDER_KEYWORDS) return false;
+  var t = String(CURRENT_USER.title).toLowerCase();
+  for (var i = 0; i < CONTRACT_REMINDER_KEYWORDS.length; i++) {
+    var kw = String(CONTRACT_REMINDER_KEYWORDS[i]).toLowerCase();
+    if (kw && t.indexOf(kw) >= 0) return true;
+  }
+  return false;
+}
+
+function loadContractReminders() {
+  if (!hasContractReminderPermissionFE()) {
+    $('contractSection').style.display = 'none';
+    return;
+  }
+  apiGet({
+    action: 'getContractReminders',
+    empId: CURRENT_USER.empId
+  }, function(res){
+    if (res && res.success && Array.isArray(res.reminders)) {
+      CONTRACT_REMINDERS = res.reminders;
+      renderContractReminders();
+    } else {
+      $('contractSection').style.display = 'none';
+    }
+  }, function(){
+    $('contractSection').style.display = 'none';
+  });
+}
+
+function renderContractReminders() {
+  var section = $('contractSection');
+  var list = $('contractList');
+  list.innerHTML = '';
+
+  if (!CONTRACT_REMINDERS || CONTRACT_REMINDERS.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  CONTRACT_REMINDERS.forEach(function(r){
+    var chip = document.createElement('span');
+    var cls = 'contract-chip';
+    if (r.daysLeft <= 7) cls += ' urgent';
+    else if (r.daysLeft <= 30) cls += ' warning';
+    chip.className = cls;
+    chip.innerHTML =
+      '<span class="contract-chip-name">' + escapeHtml(r.name) + '</span>' +
+      '<span class="contract-chip-meta">' +
+        (r.title ? escapeHtml(r.title) : '') +
+        (r.title && r.clinic ? ' · ' : '') +
+        (r.clinic ? escapeHtml(r.clinic) : '') +
+      '</span>' +
+      '<span class="contract-chip-date">' + escapeHtml(r.contractDate) + '</span>' +
+      '<span class="contract-chip-days">' + (r.daysLeft === 0 ? '今天' : '剩 ' + r.daysLeft + ' 天') + '</span>';
+    list.appendChild(chip);
+  });
+}
+
+/* =========================================================
  * 生日 / 紀念日
  * ========================================================= */
 function loadCelebrations() {
@@ -5439,6 +5615,10 @@ function showDashboard() {
 
   setupChangePwd();
   loadCelebrations();
+  // 合約到期提醒（僅特定職稱看得到，內部會自己檢查權限）
+  loadContractReminderConfig(function(){
+    loadContractReminders();
+  });
   setupKb();
   loadKb();
   setupAppsManagement();
