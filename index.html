@@ -655,6 +655,142 @@
     color: #fff;
   }
 
+  /* ============ 請假異動列表 ============ */
+  .leave-section {
+    max-width: 1200px;
+    margin: 12px auto 0;
+    padding: 0 32px;
+  }
+  .leave-bar {
+    background: linear-gradient(135deg, rgba(155,89,182,.06), rgba(142,68,173,.04));
+    border: 1px solid rgba(142,68,173,.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 10px rgba(142,68,173,.06);
+  }
+  .leave-title {
+    font-size: 13px;
+    color: #6C3483;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .leave-badge {
+    background: #8E44AD;
+    color: #fff;
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
+  .leave-badge.zero {
+    background: var(--text-muted);
+  }
+  .leave-tabs {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+  }
+  .leave-tab {
+    background: transparent;
+    border: 1.5px solid transparent;
+    color: var(--text-muted);
+    padding: 3px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 11.5px;
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .leave-tab.active {
+    background: var(--white);
+    border-color: rgba(142,68,173,.4);
+    color: #6C3483;
+    font-weight: 700;
+  }
+  .leave-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .leave-item {
+    background: var(--white);
+    border: 1px solid rgba(142,68,173,.18);
+    border-left: 3px solid #8E44AD;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all .2s;
+  }
+  .leave-item:hover {
+    box-shadow: 0 3px 10px rgba(142,68,173,.12);
+  }
+  .leave-item.read {
+    opacity: .55;
+    border-left-color: rgba(142,68,173,.3);
+  }
+  .leave-check {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid rgba(142,68,173,.4);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+    margin-top: 2px;
+  }
+  .leave-check:hover { border-color: #8E44AD; }
+  .leave-check.checked {
+    background: #8E44AD;
+    border-color: #8E44AD;
+  }
+  .leave-check.checked::after {
+    content: '✓';
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .leave-fields {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .leave-field { display: flex; gap: 4px; }
+  .leave-field-label {
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: .3px;
+  }
+  .leave-field-value {
+    color: var(--brown);
+    font-weight: 500;
+    word-break: break-word;
+  }
+  .leave-empty {
+    text-align: center;
+    padding: 18px 12px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    background: rgba(255,255,255,.5);
+    border-radius: 8px;
+    border: 1px dashed rgba(142,68,173,.2);
+  }
+
   /* ============ 任務區塊 ============ */
   .tasks-section {
     max-width: 1200px;
@@ -2749,6 +2885,21 @@
     </div>
   </div>
 
+  <!-- =============== 請假異動列表（僅副總經理 / 特助）=============== -->
+  <div class="leave-section" id="leaveSection" style="display:none;">
+    <div class="leave-bar">
+      <div class="leave-title">
+        🗓️ 請假異動
+        <span class="leave-badge zero" id="leaveBadge">0 筆未看</span>
+        <div class="leave-tabs">
+          <button type="button" class="leave-tab active" data-tab="unread">未看過</button>
+          <button type="button" class="leave-tab" data-tab="all">全部</button>
+        </div>
+      </div>
+      <div class="leave-list" id="leaveList"></div>
+    </div>
+  </div>
+
   <!-- =============== 公告區塊 =============== -->
   <div class="anns-section fade-up d2" id="annsSection">
     <div class="anns-header">
@@ -3591,6 +3742,8 @@ function logout() {
   TASK_PERM_CONFIG = null;
   CONTRACT_REMINDERS = [];
   CONTRACT_REMINDER_KEYWORDS = null;
+  LEAVE_RECORDS = [];
+  LEAVE_TAB = 'unread';
   $('dashboard').style.display = 'none';
   $('loginPage').style.display = 'flex';
   $('loginPwd').value = '';
@@ -4830,6 +4983,134 @@ function renderContractReminders() {
 }
 
 /* =========================================================
+ * 請假異動列表（限副總經理 / 特助；與合約提醒共用權限）
+ * ========================================================= */
+var LEAVE_RECORDS = [];
+var LEAVE_TAB = 'unread';  // 'unread' / 'all'
+var LEAVE_SETUP_DONE = false;
+
+function leaveReadKey() {
+  return 'eliteClinicLeaveRead_' + ((CURRENT_USER && CURRENT_USER.empId) || 'anon');
+}
+function getReadLeaveSigs() {
+  try {
+    var raw = localStorage.getItem(leaveReadKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+function markLeaveSig(sig, checked) {
+  var read = getReadLeaveSigs();
+  var idx = read.indexOf(sig);
+  if (checked && idx < 0) read.push(sig);
+  if (!checked && idx >= 0) read.splice(idx, 1);
+  try { localStorage.setItem(leaveReadKey(), JSON.stringify(read)); } catch (e) {}
+}
+
+function setupLeaveTabs() {
+  if (LEAVE_SETUP_DONE) return;
+  LEAVE_SETUP_DONE = true;
+  document.querySelectorAll('.leave-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      LEAVE_TAB = btn.getAttribute('data-tab');
+      document.querySelectorAll('.leave-tab').forEach(function(b){
+        b.classList.toggle('active', b === btn);
+      });
+      renderLeaveRecords();
+    });
+  });
+}
+
+function loadLeaveRecords() {
+  if (!hasContractReminderPermissionFE()) {
+    $('leaveSection').style.display = 'none';
+    return;
+  }
+  apiGet({
+    action: 'getLeaveRecords',
+    empId: CURRENT_USER.empId
+  }, function(res){
+    if (res && res.success && Array.isArray(res.rows)) {
+      LEAVE_RECORDS = res.rows;
+      setupLeaveTabs();
+      renderLeaveRecords();
+    } else {
+      $('leaveSection').style.display = 'none';
+    }
+  }, function(){
+    $('leaveSection').style.display = 'none';
+  });
+}
+
+function renderLeaveRecords() {
+  var section = $('leaveSection');
+  var list = $('leaveList');
+  var badge = $('leaveBadge');
+  list.innerHTML = '';
+
+  if (!LEAVE_RECORDS || LEAVE_RECORDS.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  var read = getReadLeaveSigs();
+  var unreadCount = 0;
+  LEAVE_RECORDS.forEach(function(r){ if (read.indexOf(r.sig) < 0) unreadCount++; });
+
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount + ' 筆未看';
+    badge.className = 'leave-badge';
+  } else {
+    badge.textContent = '已全部看過';
+    badge.className = 'leave-badge zero';
+  }
+
+  var visible = (LEAVE_TAB === 'all')
+    ? LEAVE_RECORDS
+    : LEAVE_RECORDS.filter(function(r){ return read.indexOf(r.sig) < 0; });
+
+  if (visible.length === 0) {
+    list.innerHTML = '<div class="leave-empty">' +
+      (LEAVE_TAB === 'unread' ? '🎉 沒有新的請假紀錄' : '尚無請假紀錄') +
+      '</div>';
+    return;
+  }
+
+  visible.forEach(function(r){
+    list.appendChild(buildLeaveItem(r, read));
+  });
+}
+
+function buildLeaveItem(r, read) {
+  var checked = read.indexOf(r.sig) >= 0;
+  var item = document.createElement('div');
+  item.className = 'leave-item' + (checked ? ' read' : '');
+
+  var fieldsHtml = '';
+  r.cells.forEach(function(c){
+    if (!c.value) return;
+    fieldsHtml +=
+      '<div class="leave-field">' +
+        '<span class="leave-field-label">' + escapeHtml(c.header) + '</span>' +
+        '<span class="leave-field-value">' + escapeHtml(c.value) + '</span>' +
+      '</div>';
+  });
+
+  item.innerHTML =
+    '<div class="leave-check' + (checked ? ' checked' : '') + '" data-sig="' + escapeAttr(r.sig) + '" title="' + (checked ? '取消已看' : '標記已看') + '"></div>' +
+    '<div class="leave-fields">' + fieldsHtml + '</div>';
+
+  item.querySelector('.leave-check').addEventListener('click', function(e){
+    e.stopPropagation();
+    var nowChecked = !this.classList.contains('checked');
+    markLeaveSig(r.sig, nowChecked);
+    renderLeaveRecords();
+  });
+
+  return item;
+}
+
+/* =========================================================
  * 生日 / 紀念日
  * ========================================================= */
 function loadCelebrations() {
@@ -5619,9 +5900,10 @@ function showDashboard() {
 
   setupChangePwd();
   loadCelebrations();
-  // 合約到期提醒（僅特定職稱看得到，內部會自己檢查權限）
+  // 合約到期提醒 + 請假異動（僅特定職稱看得到，內部會自己檢查權限）
   loadContractReminderConfig(function(){
     loadContractReminders();
+    loadLeaveRecords();
   });
   setupKb();
   loadKb();
