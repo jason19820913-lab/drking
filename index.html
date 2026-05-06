@@ -5025,6 +5025,12 @@ function loadLeaveRecords() {
     $('leaveSection').style.display = 'none';
     return;
   }
+  // 立刻顯示區塊，先顯示「載入中」
+  $('leaveSection').style.display = 'block';
+  $('leaveBadge').textContent = '載入中…';
+  $('leaveBadge').className = 'leave-badge zero';
+  $('leaveList').innerHTML = '<div class="leave-empty">⏳ 讀取中…</div>';
+
   apiGet({
     action: 'getLeaveRecords',
     empId: CURRENT_USER.empId
@@ -5033,11 +5039,21 @@ function loadLeaveRecords() {
       LEAVE_RECORDS = res.rows;
       setupLeaveTabs();
       renderLeaveRecords();
+    } else if (res && res.error) {
+      // 顯示錯誤訊息（方便除錯）
+      $('leaveBadge').textContent = '無法載入';
+      $('leaveBadge').className = 'leave-badge zero';
+      $('leaveList').innerHTML =
+        '<div class="leave-empty" style="color:#C0392B;">❌ ' +
+        escapeHtml(res.error) +
+        '</div>';
     } else {
       $('leaveSection').style.display = 'none';
     }
   }, function(){
-    $('leaveSection').style.display = 'none';
+    $('leaveBadge').textContent = '連線失敗';
+    $('leaveBadge').className = 'leave-badge zero';
+    $('leaveList').innerHTML = '<div class="leave-empty" style="color:#C0392B;">❌ 連線失敗，請稍後再試</div>';
   });
 }
 
@@ -5047,11 +5063,13 @@ function renderLeaveRecords() {
   var badge = $('leaveBadge');
   list.innerHTML = '';
 
+  section.style.display = 'block';
   if (!LEAVE_RECORDS || LEAVE_RECORDS.length === 0) {
-    section.style.display = 'none';
+    badge.textContent = '無資料';
+    badge.className = 'leave-badge zero';
+    list.innerHTML = '<div class="leave-empty">尚無請假紀錄</div>';
     return;
   }
-  section.style.display = 'block';
 
   var read = getReadLeaveSigs();
   var unreadCount = 0;
