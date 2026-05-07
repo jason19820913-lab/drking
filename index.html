@@ -514,27 +514,60 @@
     letter-spacing: 1px;
   }
 
-  /* ============ 慶祝橫幅（生日/紀念日）============ */
+  /* ============ 慶祝橫幅（生日/紀念日 拆兩列）============ */
   .celebrations {
     max-width: 1200px;
     margin: 8px auto 0;
     padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
   .celebrations-bar {
     background: linear-gradient(135deg, rgba(212,175,55,.10), rgba(42,157,159,.08));
     border: 1px solid rgba(212,175,55,.35);
     border-radius: 12px;
-    padding: 10px 14px;
+    padding: 8px 14px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    overflow: hidden;
+  }
+  /* 壽星列：粉紅暖色 */
+  .celebrations-bar.bday {
+    background: linear-gradient(135deg, rgba(255,182,193,.18), rgba(255,210,180,.12));
+    border-color: rgba(232,140,140,.4);
+  }
+  /* 週年列：金色 */
+  .celebrations-bar.anniv {
+    background: linear-gradient(135deg, rgba(212,175,55,.14), rgba(184,134,11,.06));
+    border-color: rgba(184,134,11,.4);
+  }
+  .celebrations-label {
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brown);
+    letter-spacing: 1px;
+    padding-right: 12px;
+    border-right: 1px solid rgba(0,0,0,.10);
+    white-space: nowrap;
+  }
+  .celebrations-bar.bday .celebrations-label { color: #B85C5C; }
+  .celebrations-bar.anniv .celebrations-label { color: var(--gold-deep); }
+  .celebrations-chips {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
     scrollbar-width: thin;
   }
-  .celebrations-bar::-webkit-scrollbar { height: 4px; }
-  .celebrations-bar::-webkit-scrollbar-thumb {
+  .celebrations-chips::-webkit-scrollbar { height: 4px; }
+  .celebrations-chips::-webkit-scrollbar-thumb {
     background: rgba(42,157,159,.25);
     border-radius: 2px;
   }
@@ -550,12 +583,21 @@
     color: var(--brown);
     flex-shrink: 0;
   }
+  .celebrations-bar.bday .celebration-chip {
+    border-color: rgba(232,140,140,.4);
+  }
   .celebration-chip.today {
     background: linear-gradient(135deg, var(--gold), #E8C766);
     border-color: var(--gold-deep);
     color: #5A3F08;
     font-weight: 700;
     box-shadow: 0 3px 10px rgba(212,175,55,.35);
+  }
+  .celebrations-bar.bday .celebration-chip.today {
+    background: linear-gradient(135deg, #FF9E9E, #FFB6B6);
+    border-color: #C04040;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(232,80,80,.35);
   }
   .celebration-chip-emoji { font-size: 14px; }
   .celebration-chip-name { font-weight: 500; }
@@ -564,7 +606,7 @@
     font-size: 11.5px;
     margin-left: 2px;
   }
-  .celebration-chip.today .celebration-chip-date { color: #5A3F08; opacity: .85; }
+  .celebration-chip.today .celebration-chip-date { color: inherit; opacity: .85; }
 
   /* ============ 合約到期提醒 ============ */
   .contract-section {
@@ -2870,9 +2912,16 @@
     <div class="hero-desc fade-up d3">請選擇您要使用的系統</div>
   </div>
 
-  <!-- =============== 生日 / 紀念日 橫幅 =============== -->
+  <!-- =============== 生日 / 紀念日 橫幅（拆兩列）=============== -->
   <div class="celebrations" id="celebrationsSection" style="display:none;">
-    <div class="celebrations-bar" id="celebrationsBar"></div>
+    <div class="celebrations-bar bday" id="birthdaysBar" style="display:none;">
+      <span class="celebrations-label">🎂 本月壽星</span>
+      <div class="celebrations-chips" id="birthdaysChips"></div>
+    </div>
+    <div class="celebrations-bar anniv" id="anniversariesBar" style="display:none;">
+      <span class="celebrations-label">🎉 本月滿週年</span>
+      <div class="celebrations-chips" id="anniversariesChips"></div>
+    </div>
   </div>
 
   <!-- =============== 合約到期提醒（僅副總經理 / 特助看得到）=============== -->
@@ -5144,50 +5193,66 @@ function loadCelebrations() {
 }
 
 function renderCelebrations(data) {
-  var bar = $('celebrationsBar');
   var section = $('celebrationsSection');
-  bar.innerHTML = '';
+  var bdayBar = $('birthdaysBar');
+  var annivBar = $('anniversariesBar');
+  var bdayChips = $('birthdaysChips');
+  var annivChips = $('anniversariesChips');
+
+  bdayChips.innerHTML = '';
+  annivChips.innerHTML = '';
 
   var bdays = data.birthdays || [];
   var anns = data.anniversaries || [];
+
+  // 兩列都沒人 → 整區隱藏
   if (bdays.length === 0 && anns.length === 0) {
     section.style.display = 'none';
     return;
   }
+  section.style.display = 'flex';
 
   // 本月壽星
-  bdays.forEach(function(b){
-    var chip = document.createElement('span');
-    chip.className = 'celebration-chip' + (b.isToday ? ' today' : '');
-    chip.innerHTML =
-      '<span class="celebration-chip-emoji">🎂</span>' +
-      '<span class="celebration-chip-name">' + escapeHtml(b.name) + '</span>' +
-      '<span class="celebration-chip-date">' +
-        (b.clinic ? escapeHtml(b.clinic) + ' · ' : '') +
-        b.month + '/' + b.day +
-        (b.isToday ? ' · 今天 🎉' : '') +
-      '</span>';
-    bar.appendChild(chip);
-  });
+  if (bdays.length > 0) {
+    bdayBar.style.display = 'flex';
+    bdays.forEach(function(b){
+      var chip = document.createElement('span');
+      chip.className = 'celebration-chip' + (b.isToday ? ' today' : '');
+      chip.innerHTML =
+        '<span class="celebration-chip-emoji">🎂</span>' +
+        '<span class="celebration-chip-name">' + escapeHtml(b.name) + '</span>' +
+        '<span class="celebration-chip-date">' +
+          (b.clinic ? escapeHtml(b.clinic) + ' · ' : '') +
+          b.month + '/' + b.day +
+          (b.isToday ? ' · 今天 🎉' : '') +
+        '</span>';
+      bdayChips.appendChild(chip);
+    });
+  } else {
+    bdayBar.style.display = 'none';
+  }
 
-  // 本月到職紀念日
-  anns.forEach(function(a){
-    var chip = document.createElement('span');
-    chip.className = 'celebration-chip' + (a.isToday ? ' today' : '');
-    var yearText = a.years ? a.years + ' 週年' : '';
-    chip.innerHTML =
-      '<span class="celebration-chip-emoji">🎉</span>' +
-      '<span class="celebration-chip-name">' + escapeHtml(a.name) + '</span>' +
-      '<span class="celebration-chip-date">' +
-        (a.clinic ? escapeHtml(a.clinic) + ' · ' : '') +
-        a.month + '/' + a.day +
-        (yearText ? ' · ' + yearText : ' · 入職') +
-        (a.isToday ? ' · 今天' : '') +
-      '</span>';
-    bar.appendChild(chip);
-  });
-
-  section.style.display = 'block';
+  // 本月滿週年
+  if (anns.length > 0) {
+    annivBar.style.display = 'flex';
+    anns.forEach(function(a){
+      var chip = document.createElement('span');
+      chip.className = 'celebration-chip' + (a.isToday ? ' today' : '');
+      var yearText = a.years ? a.years + ' 週年' : '';
+      chip.innerHTML =
+        '<span class="celebration-chip-emoji">🎉</span>' +
+        '<span class="celebration-chip-name">' + escapeHtml(a.name) + '</span>' +
+        '<span class="celebration-chip-date">' +
+          (a.clinic ? escapeHtml(a.clinic) + ' · ' : '') +
+          a.month + '/' + a.day +
+          (yearText ? ' · ' + yearText : ' · 入職') +
+          (a.isToday ? ' · 今天' : '') +
+        '</span>';
+      annivChips.appendChild(chip);
+    });
+  } else {
+    annivBar.style.display = 'none';
+  }
 }
 
 /* =========================================================
