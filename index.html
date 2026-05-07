@@ -1994,6 +1994,71 @@
     border-radius: 10px;
     border: 1px dashed rgba(42,157,159,.2);
   }
+
+  /* 公告分頁 + 收起按鈕 */
+  .anns-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .anns-tab {
+    background: transparent;
+    border: 1.5px solid transparent;
+    color: var(--text-muted);
+    padding: 4px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-family: inherit;
+    transition: all .15s;
+    letter-spacing: .5px;
+  }
+  .anns-tab:hover { color: var(--brown); }
+  .anns-tab.active {
+    background: var(--white);
+    border-color: var(--teal-soft);
+    color: var(--teal-deep);
+    font-weight: 700;
+  }
+  .anns-tab .count {
+    display: inline-block;
+    background: rgba(192,57,43,.15);
+    color: #C0392B;
+    font-size: 10.5px;
+    padding: 1px 7px;
+    border-radius: 9px;
+    margin-left: 4px;
+    font-weight: 700;
+  }
+  .anns-tab .count.zero { display: none; }
+  .anns-tab.active .count {
+    background: rgba(42,157,159,.15);
+    color: var(--teal-deep);
+  }
+  .ann-hide-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    background: transparent;
+    border: 1px solid rgba(42,157,159,.2);
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-family: inherit;
+    transition: all .15s;
+    z-index: 2;
+  }
+  .ann-hide-btn:hover {
+    color: var(--teal-deep);
+    border-color: var(--teal);
+    background: rgba(42,157,159,.06);
+  }
+  .ann-item.hidden-state {
+    opacity: .65;
+    border-style: dashed;
+  }
   .anns-toggle-all {
     text-align: center;
     margin-top: 6px;
@@ -2958,6 +3023,14 @@
       </div>
       <span class="anns-badge zero" id="annsBadge">0 則新訊息</span>
       <button class="btn-post-ann" id="btnPostAnn" style="display:none;">＋ 新增公告</button>
+    </div>
+    <div class="anns-tabs">
+      <button type="button" class="anns-tab active" data-tab="active">
+        進行中<span class="count zero" id="annsActiveCount">0</span>
+      </button>
+      <button type="button" class="anns-tab" data-tab="all">
+        全部<span class="count zero" id="annsAllCount">0</span>
+      </button>
     </div>
     <div class="anns-list" id="annsList"></div>
     <div class="anns-toggle-all" id="annsToggleAll" style="display:none;">
@@ -5262,6 +5335,7 @@ function renderCelebrations(data) {
  * ========================================================= */
 var ANNOUNCEMENTS = [];
 var ANNS_EXPANDED = false;
+var ANN_TAB = 'active';   // 'active' / 'all'
 // 公告權限設定，從後端「公告權限」分頁拉下來；null = 尚未載入
 var ANN_PERM_CONFIG = null;
 // 載入失敗時的後備關鍵字（理論上用不到）
@@ -5368,6 +5442,24 @@ function markAnnAsRead(id) {
   }
 }
 
+/* 「收起」狀態：每位員工各自記哪些公告從主清單中收起 */
+function annsHiddenKey() {
+  return 'eliteClinicHiddenAnns_' + ((CURRENT_USER && CURRENT_USER.empId) || 'anon');
+}
+function getHiddenAnnIds() {
+  try {
+    var raw = localStorage.getItem(annsHiddenKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function toggleHiddenAnn(id) {
+  var hidden = getHiddenAnnIds();
+  var idx = hidden.indexOf(id);
+  if (idx >= 0) hidden.splice(idx, 1);
+  else hidden.push(id);
+  try { localStorage.setItem(annsHiddenKey(), JSON.stringify(hidden)); } catch(e) {}
+}
+
 function setupAnnouncements() {
   // 管理者顯示「+ 新增公告」
   $('btnPostAnn').style.display = hasAnnouncePermission() ? 'inline-block' : 'none';
@@ -5392,6 +5484,18 @@ function setupAnnouncements() {
   $('btnAnnsExpand').addEventListener('click', function(){
     ANNS_EXPANDED = !ANNS_EXPANDED;
     renderAnnouncements();
+  });
+
+  // 進行中 / 全部 分頁切換
+  document.querySelectorAll('.anns-tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      ANN_TAB = t.getAttribute('data-tab');
+      document.querySelectorAll('.anns-tab').forEach(function(b){
+        b.classList.toggle('active', b === t);
+      });
+      ANNS_EXPANDED = false;  // 切換時重置展開
+      renderAnnouncements();
+    });
   });
 
   // 檔案選擇
@@ -5546,27 +5650,36 @@ function renderAnnouncements() {
   var list = $('annsList');
   var badge = $('annsBadge');
   var toggleAll = $('annsToggleAll');
+  var activeCnt = $('annsActiveCount');
+  var allCnt = $('annsAllCount');
   var allAnns = ANNOUNCEMENTS || [];
-  // 套受眾過濾
-  var anns = [];
-  for (var k = 0; k < allAnns.length; k++) {
-    if (isAnnVisibleToUser(allAnns[k])) anns.push(allAnns[k]);
-  }
 
-  if (anns.length === 0) {
-    list.innerHTML = '<div class="anns-empty">目前沒有公告</div>';
-    badge.textContent = '無新訊息';
-    badge.className = 'anns-badge zero';
-    toggleAll.style.display = 'none';
-    return;
+  // 受眾過濾（給此使用者該看到的公告）
+  var visibleAnns = [];
+  for (var k = 0; k < allAnns.length; k++) {
+    if (isAnnVisibleToUser(allAnns[k])) visibleAnns.push(allAnns[k]);
   }
 
   var read = getReadAnnIds();
+  var hidden = getHiddenAnnIds();
+
+  // 進行中：未被使用者收起的
+  var activeAnns = visibleAnns.filter(function(a){ return hidden.indexOf(a.id) < 0; });
+  var allListAnns = visibleAnns;
+
+  // 未讀數（只看「進行中」的，已收起的不計）
   var unreadCount = 0;
-  for (var i = 0; i < anns.length; i++) {
-    if (read.indexOf(anns[i].id) < 0) unreadCount++;
+  for (var i = 0; i < activeAnns.length; i++) {
+    if (read.indexOf(activeAnns[i].id) < 0) unreadCount++;
   }
 
+  // 分頁右側計數
+  activeCnt.textContent = activeAnns.length;
+  activeCnt.className = activeAnns.length === 0 ? 'count zero' : 'count';
+  allCnt.textContent = allListAnns.length;
+  allCnt.className = allListAnns.length === 0 ? 'count zero' : 'count';
+
+  // Header badge
   if (unreadCount > 0) {
     badge.textContent = unreadCount + ' 則新訊息';
     badge.className = 'anns-badge';
@@ -5575,32 +5688,46 @@ function renderAnnouncements() {
     badge.className = 'anns-badge zero';
   }
 
+  // 依分頁挑清單
+  var anns = (ANN_TAB === 'all') ? allListAnns : activeAnns;
+
+  if (anns.length === 0) {
+    list.innerHTML = '<div class="anns-empty">' +
+      (ANN_TAB === 'active' ? '🎉 沒有進行中的公告（可切到「全部」看歷史）' : '目前沒有公告') +
+      '</div>';
+    toggleAll.style.display = 'none';
+    return;
+  }
+
   var INITIAL_SHOW = 3;
   var showCount = ANNS_EXPANDED ? anns.length : Math.min(INITIAL_SHOW, anns.length);
 
   list.innerHTML = '';
   for (var j = 0; j < showCount; j++) {
-    list.appendChild(buildAnnItem(anns[j], read));
+    list.appendChild(buildAnnItem(anns[j], read, hidden));
   }
 
   if (anns.length > INITIAL_SHOW) {
     toggleAll.style.display = 'block';
-    $('annsTotalCount').textContent = anns.length;
     $('btnAnnsExpand').innerHTML = ANNS_EXPANDED
       ? '收合 ▴'
-      : '查看全部 <span id="annsTotalCount">' + anns.length + '</span> 則 ▾';
+      : '查看全部 ' + anns.length + ' 則 ▾';
   } else {
     toggleAll.style.display = 'none';
   }
 }
 
-function buildAnnItem(a, read) {
+function buildAnnItem(a, read, hidden) {
   var unread = read.indexOf(a.id) < 0;
+  var isHidden = hidden && hidden.indexOf(a.id) >= 0;
   var levelCls = a.level === '緊急' ? 'urgent'
                 : a.level === '重要' ? 'important' : '';
 
   var item = document.createElement('div');
-  item.className = 'ann-item' + (unread ? ' unread' : '') + (levelCls ? ' ' + levelCls : '');
+  item.className = 'ann-item'
+    + (unread ? ' unread' : '')
+    + (levelCls ? ' ' + levelCls : '')
+    + (isHidden ? ' hidden-state' : '');
   item.setAttribute('data-id', a.id);
 
   // 對象 badge（只在管理者視角顯示，因為一般員工看到的本來就是符合自己的）
@@ -5634,9 +5761,28 @@ function buildAnnItem(a, read) {
       '<div class="ann-summary">' + escapeHtml(a.content) + '</div>' +
       '<div class="ann-meta">' + escapeHtml(a.authorName || '') +
         ' · ' + escapeHtml(a.time || '') + '</div>' +
-    '</div>';
+    '</div>' +
+    '<button type="button" class="ann-hide-btn" title="' +
+      (isHidden ? '把這則重新顯示在進行中清單' : '從進行中清單收起，仍可在「全部」中找到') + '">' +
+      (isHidden ? '↻ 重新顯示' : '👁‍🗨 收起') +
+    '</button>';
 
-  item.addEventListener('click', function(){ openAnnView(a.id); });
+  // 點主體（不是按鈕）→ 開公告詳情
+  item.addEventListener('click', function(e){
+    if (e.target.closest('.ann-hide-btn')) return;
+    openAnnView(a.id);
+  });
+
+  // 點「收起 / 重新顯示」
+  var hideBtn = item.querySelector('.ann-hide-btn');
+  if (hideBtn) {
+    hideBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      toggleHiddenAnn(a.id);
+      renderAnnouncements();
+    });
+  }
+
   return item;
 }
 
@@ -5704,26 +5850,39 @@ function openAnnView(id) {
     btnArchive.style.display = 'none';
   }
 
-  // 閱覽統計區（管理者視角才顯示）
+  // 閱覽統計區：只有「發送者本人」才看得到（不是所有公告權限）
   var statsBox = $('annViewReadStats');
-  if (hasAnnouncePermission()) {
-    statsBox.style.display = 'block';
-    loadAnnReadStats(a.id);
-  } else {
-    statsBox.style.display = 'none';
-  }
+  var isPublisher = !!(CURRENT_USER && CURRENT_USER.empId && a.authorEmpId &&
+    String(a.authorEmpId).toLowerCase() === String(CURRENT_USER.empId).toLowerCase());
 
   openModal('annViewModal');
-
-  // 寫到後端 sheet（同步閱覽記錄）
-  if (CURRENT_USER && CURRENT_USER.empId) {
-    apiGet({ action: 'markAnnRead', empId: CURRENT_USER.empId, annId: id }, function(){});
-  }
 
   // localStorage 標記已讀（控制 dashboard 紅點顯示）
   if (getReadAnnIds().indexOf(id) < 0) {
     markAnnAsRead(id);
     setTimeout(renderAnnouncements, 300);
+  }
+
+  // 寫後端 sheet 後再去抓統計，這樣自己也會被算進已閱
+  if (CURRENT_USER && CURRENT_USER.empId) {
+    apiGet({ action: 'markAnnRead', empId: CURRENT_USER.empId, annId: id }, function(){
+      if (isPublisher) {
+        statsBox.style.display = 'block';
+        loadAnnReadStats(id);
+      } else {
+        statsBox.style.display = 'none';
+      }
+    }, function(){
+      // 即使寫入失敗，發送者仍可看統計
+      if (isPublisher) {
+        statsBox.style.display = 'block';
+        loadAnnReadStats(id);
+      } else {
+        statsBox.style.display = 'none';
+      }
+    });
+  } else {
+    statsBox.style.display = 'none';
   }
 }
 
