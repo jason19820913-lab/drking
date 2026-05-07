@@ -4869,7 +4869,7 @@ function openTaskView(id, tab) {
   // 受派人本人：可標完成 / 反向操作
   var btnToggle = $('btnTaskToggleDone');
   var isAssignee = CURRENT_USER && t.assigneeEmpId
-    && String(t.assigneeEmpId).toLowerCase() === String(CURRENT_USER.empId).toLowerCase();
+    && normalizeEmpClient(t.assigneeEmpId) === normalizeEmpClient(CURRENT_USER.empId);
   if (isAssignee) {
     btnToggle.style.display = 'inline-block';
     btnToggle.textContent = (t.status === 'done') ? '取消完成標記' : '標記完成';
@@ -4885,7 +4885,7 @@ function openTaskView(id, tab) {
   // 派發者本人或管理者：可下架
   var btnCancel = $('btnTaskCancel');
   var isAssigner = CURRENT_USER && t.assignerEmpId
-    && String(t.assignerEmpId).toLowerCase() === String(CURRENT_USER.empId).toLowerCase();
+    && normalizeEmpClient(t.assignerEmpId) === normalizeEmpClient(CURRENT_USER.empId);
   if (isAssigner || hasAnnouncePermission()) {
     btnCancel.style.display = 'inline-block';
     btnCancel.onclick = function(){ doCancelTask(t.id); };
@@ -5851,9 +5851,10 @@ function openAnnView(id) {
   }
 
   // 閱覽統計區：只有「發送者本人」才看得到（不是所有公告權限）
+  // 用歸一化比對，避免 "0011" vs 11 對不到
   var statsBox = $('annViewReadStats');
   var isPublisher = !!(CURRENT_USER && CURRENT_USER.empId && a.authorEmpId &&
-    String(a.authorEmpId).toLowerCase() === String(CURRENT_USER.empId).toLowerCase());
+    normalizeEmpClient(a.authorEmpId) === normalizeEmpClient(CURRENT_USER.empId));
 
   openModal('annViewModal');
 
