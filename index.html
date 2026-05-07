@@ -5847,8 +5847,9 @@ function openAnnView(id) {
     attEl.innerHTML = '';
   }
 
+  // 下架按鈕：只有發送者本人才看得到
   var btnArchive = $('btnAnnArchive');
-  if (hasAnnouncePermission()) {
+  if (isPublisher) {
     btnArchive.style.display = 'inline-block';
     btnArchive.onclick = function(){ archiveAnn(a.id); };
   } else {
