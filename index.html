@@ -5632,10 +5632,15 @@ function loadAnnouncements() {
 /**
  * 依使用者的院區/職稱過濾公告。
  * 規則：targetClinics、targetTitles 各自空陣列=全部；都符合（AND）才看得到。
- * 例外：有發公告權限者一律看得到所有公告（方便管理）。
+ * 例外：發送者本人一律看得到自己發的（方便管理 / 下架）。
  */
 function isAnnVisibleToUser(ann) {
-  if (hasAnnouncePermission()) return true;
+  // 發送者本人 → 永遠看得到
+  if (CURRENT_USER && CURRENT_USER.empId && ann.authorEmpId &&
+      normalizeEmpClient(ann.authorEmpId) === normalizeEmpClient(CURRENT_USER.empId)) {
+    return true;
+  }
+  // 其他人（含其他公告權限管理者）嚴格依推送院區 / 職稱判斷
   var u = CURRENT_USER || {};
   if (ann.targetClinics && ann.targetClinics.length > 0) {
     if (ann.targetClinics.indexOf(u.clinic) < 0) return false;
