@@ -3227,8 +3227,9 @@
       </div>
 
       <div class="form-group" style="border-top:1px dashed rgba(42,157,159,.25);padding-top:14px;margin-top:6px;">
-        <label class="form-label" for="kudosRecipientEmpId">想感謝誰（員編，可填多個用逗號分隔）</label>
-        <input type="text" id="kudosRecipientEmpId" class="form-input" placeholder="例如 0011 或 0011, 0023">
+        <label class="form-label" for="kudosRecipientEmpId">想感謝誰（員編或姓名，可填多個用逗號分隔）</label>
+        <input type="text" id="kudosRecipientEmpId" class="form-input" placeholder="例如 0011, 陳慶霖, 0023">
+        <div class="form-hint">員編優先比對；姓名相同時會請你改用員編</div>
       </div>
       <div class="form-group">
         <label class="form-label">或選整個院區（多選）</label>
@@ -3371,8 +3372,9 @@
       </div>
 
       <div class="form-group" style="border-top:1px dashed rgba(42,157,159,.25);padding-top:14px;margin-top:6px;">
-        <label class="form-label" for="taskAssignee">指定員編（選填，單人派發）</label>
-        <input type="text" id="taskAssignee" class="form-input" placeholder="例如 0011；不知道請到登入頁查詢">
+        <label class="form-label" for="taskAssignee">指定員編或姓名（選填，單人派發）</label>
+        <input type="text" id="taskAssignee" class="form-input" placeholder="例如 0011 或 陳慶霖">
+        <div class="form-hint">員編優先比對；姓名相同時會請你改用員編</div>
       </div>
       <div class="form-group">
         <label class="form-label">推送院區（多選）</label>
