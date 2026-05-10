@@ -833,6 +833,159 @@
     border: 1px dashed rgba(142,68,173,.2);
   }
 
+  /* ============ 醫師班表異動列表（藍色系，與請假紫色區隔） ============ */
+  .sched-section {
+    max-width: 1200px;
+    margin: 12px auto 0;
+    padding: 0 32px;
+  }
+  .sched-bar {
+    background: linear-gradient(135deg, rgba(52,152,219,.06), rgba(41,128,185,.04));
+    border: 1px solid rgba(41,128,185,.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 10px rgba(41,128,185,.06);
+  }
+  .sched-title {
+    font-size: 13px;
+    color: #1F618D;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .sched-badge {
+    background: #2980B9;
+    color: #fff;
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
+  .sched-badge.zero { background: var(--text-muted); }
+  .sched-tabs {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+  }
+  .sched-tab {
+    background: transparent;
+    border: 1.5px solid transparent;
+    color: var(--text-muted);
+    padding: 3px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 11.5px;
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .sched-tab.active {
+    background: var(--white);
+    border-color: rgba(41,128,185,.4);
+    color: #1F618D;
+    font-weight: 700;
+  }
+  .sched-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sched-item {
+    background: var(--white);
+    border: 1px solid rgba(41,128,185,.18);
+    border-left: 3px solid #2980B9;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all .2s;
+  }
+  .sched-item:hover { box-shadow: 0 3px 10px rgba(41,128,185,.12); }
+  .sched-item.read {
+    opacity: .55;
+    border-left-color: rgba(41,128,185,.3);
+  }
+  /* 不同例外類型用不同邊色 */
+  .sched-item[data-kind="請假"] { border-left-color: #E74C3C; }
+  .sched-item[data-kind="代班"] { border-left-color: #2980B9; }
+  .sched-item[data-kind="加診"] { border-left-color: #27AE60; }
+  .sched-item.read[data-kind="請假"] { border-left-color: rgba(231,76,60,.3); }
+  .sched-item.read[data-kind="代班"] { border-left-color: rgba(41,128,185,.3); }
+  .sched-item.read[data-kind="加診"] { border-left-color: rgba(39,174,96,.3); }
+  .sched-check {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid rgba(41,128,185,.4);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+    margin-top: 2px;
+  }
+  .sched-check:hover { border-color: #2980B9; }
+  .sched-check.checked {
+    background: #2980B9;
+    border-color: #2980B9;
+  }
+  .sched-check.checked::after {
+    content: '✓';
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .sched-fields {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12.5px;
+    color: var(--text);
+    align-items: center;
+  }
+  .sched-field { display: flex; gap: 4px; }
+  .sched-field-label {
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: .3px;
+  }
+  .sched-field-value {
+    color: var(--brown);
+    font-weight: 500;
+    word-break: break-word;
+  }
+  .sched-kind-pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(41,128,185,.12);
+    color: #1F618D;
+  }
+  .sched-kind-pill[data-kind="請假"] { background: rgba(231,76,60,.12); color: #C0392B; }
+  .sched-kind-pill[data-kind="代班"] { background: rgba(41,128,185,.12); color: #1F618D; }
+  .sched-kind-pill[data-kind="加診"] { background: rgba(39,174,96,.12); color: #1E8449; }
+  .sched-empty {
+    text-align: center;
+    padding: 18px 12px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    background: rgba(255,255,255,.5);
+    border-radius: 8px;
+    border: 1px dashed rgba(41,128,185,.2);
+  }
+
   /* ============ 任務區塊 ============ */
   .tasks-section {
     max-width: 1200px;
@@ -3011,6 +3164,21 @@
         </div>
       </div>
       <div class="leave-list" id="leaveList"></div>
+    </div>
+  </div>
+
+  <!-- =============== 醫師班表異動列表（執行長/總經理/副總/特助/策略長）=============== -->
+  <div class="sched-section" id="schedExcSection" style="display:none;">
+    <div class="sched-bar">
+      <div class="sched-title">
+        🩺 醫師班表異動
+        <span class="sched-badge zero" id="schedExcBadge">0 筆未看</span>
+        <div class="sched-tabs">
+          <button type="button" class="sched-tab active" data-tab="unread">未看過</button>
+          <button type="button" class="sched-tab" data-tab="all">全部</button>
+        </div>
+      </div>
+      <div class="sched-list" id="schedExcList"></div>
     </div>
   </div>
 
@@ -5375,6 +5543,244 @@ function buildLeaveItem(r, read) {
 }
 
 /* =========================================================
+ * 醫師班表異動列表（執行長/總經理/副總/特助/策略長）
+ * 從金鶯診所班表系統的「例外記錄」分頁讀取
+ * ========================================================= */
+var SCHED_EXC_RECORDS = [];
+var SCHED_EXC_TAB = 'unread';
+var SCHED_EXC_SETUP_DONE = false;
+var SCHED_EXC_KEYWORDS = ['執行長', '總經理', '副總經理', '特助', '策略長'];
+
+function loadScheduleExceptionConfig(callback) {
+  apiGet({ action: 'getScheduleExceptionConfig' }, function(res){
+    if (res && res.success && Array.isArray(res.titleKeywords)) {
+      SCHED_EXC_KEYWORDS = res.titleKeywords;
+    }
+    if (callback) callback();
+  }, function(){ if (callback) callback(); });
+}
+
+function hasScheduleExceptionPermissionFE() {
+  if (!CURRENT_USER || !CURRENT_USER.title || !SCHED_EXC_KEYWORDS) return false;
+  var t = String(CURRENT_USER.title).toLowerCase();
+  for (var i = 0; i < SCHED_EXC_KEYWORDS.length; i++) {
+    var kw = String(SCHED_EXC_KEYWORDS[i]).toLowerCase();
+    if (kw && t.indexOf(kw) >= 0) return true;
+  }
+  return false;
+}
+
+function schedExcReadKey() {
+  return 'eliteClinicSchedExcRead_' + ((CURRENT_USER && CURRENT_USER.empId) || 'anon');
+}
+function getReadSchedExcSigs() {
+  try {
+    var raw = localStorage.getItem(schedExcReadKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+function markSchedExcSig(sig, checked) {
+  var read = getReadSchedExcSigs();
+  var idx = read.indexOf(sig);
+  if (checked && idx < 0) read.push(sig);
+  if (!checked && idx >= 0) read.splice(idx, 1);
+  try { localStorage.setItem(schedExcReadKey(), JSON.stringify(read)); } catch (e) {}
+}
+
+function setupSchedExcTabs() {
+  if (SCHED_EXC_SETUP_DONE) return;
+  SCHED_EXC_SETUP_DONE = true;
+  document.querySelectorAll('.sched-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      SCHED_EXC_TAB = btn.getAttribute('data-tab');
+      document.querySelectorAll('.sched-tab').forEach(function(b){
+        b.classList.toggle('active', b === btn);
+      });
+      renderSchedExceptions();
+    });
+  });
+}
+
+function loadScheduleExceptions() {
+  if (!hasScheduleExceptionPermissionFE()) {
+    $('schedExcSection').style.display = 'none';
+    return;
+  }
+  $('schedExcSection').style.display = 'block';
+  $('schedExcBadge').textContent = '載入中…';
+  $('schedExcBadge').className = 'sched-badge zero';
+  $('schedExcList').innerHTML = '<div class="sched-empty">⏳ 讀取中…</div>';
+
+  apiGet({
+    action: 'getScheduleExceptions',
+    empId: CURRENT_USER.empId
+  }, function(res){
+    if (res && res.success && Array.isArray(res.rows)) {
+      SCHED_EXC_RECORDS = res.rows;
+      setupSchedExcTabs();
+      renderSchedExceptions();
+    } else if (res && res.error) {
+      $('schedExcBadge').textContent = '無法載入';
+      $('schedExcBadge').className = 'sched-badge zero';
+      $('schedExcList').innerHTML =
+        '<div class="sched-empty" style="color:#C0392B;">❌ ' +
+        escapeHtml(res.error) + '</div>';
+    } else {
+      $('schedExcSection').style.display = 'none';
+    }
+  }, function(){
+    $('schedExcBadge').textContent = '連線失敗';
+    $('schedExcBadge').className = 'sched-badge zero';
+    $('schedExcList').innerHTML = '<div class="sched-empty" style="color:#C0392B;">❌ 連線失敗，請稍後再試</div>';
+  });
+}
+
+function renderSchedExceptions() {
+  var section = $('schedExcSection');
+  var list = $('schedExcList');
+  var badge = $('schedExcBadge');
+  list.innerHTML = '';
+
+  section.style.display = 'block';
+  if (!SCHED_EXC_RECORDS || SCHED_EXC_RECORDS.length === 0) {
+    badge.textContent = '無資料';
+    badge.className = 'sched-badge zero';
+    list.innerHTML = '<div class="sched-empty">尚無班表異動</div>';
+    return;
+  }
+
+  var read = getReadSchedExcSigs();
+  var unreadCount = 0;
+  SCHED_EXC_RECORDS.forEach(function(r){ if (read.indexOf(r.sig) < 0) unreadCount++; });
+
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount + ' 筆未看';
+    badge.className = 'sched-badge';
+  } else {
+    badge.textContent = '已全部看過';
+    badge.className = 'sched-badge zero';
+  }
+
+  var visible = (SCHED_EXC_TAB === 'all')
+    ? SCHED_EXC_RECORDS
+    : SCHED_EXC_RECORDS.filter(function(r){ return read.indexOf(r.sig) < 0; });
+
+  if (visible.length === 0) {
+    list.innerHTML = '<div class="sched-empty">' +
+      (SCHED_EXC_TAB === 'unread' ? '🎉 沒有新的班表異動' : '尚無班表異動') +
+      '</div>';
+    return;
+  }
+
+  visible.forEach(function(r){
+    list.appendChild(buildSchedExcItem(r, read));
+  });
+}
+
+// 從 cells 找出指定 header 的值（支援多個 keyword）
+function pickCell(cells, keywords) {
+  for (var i = 0; i < cells.length; i++) {
+    var h = cells[i].header || '';
+    for (var k = 0; k < keywords.length; k++) {
+      if (h.indexOf(keywords[k]) >= 0) return cells[i].value;
+    }
+  }
+  return '';
+}
+
+function buildSchedExcItem(r, read) {
+  var checked = read.indexOf(r.sig) >= 0;
+  var item = document.createElement('div');
+  item.className = 'sched-item' + (checked ? ' read' : '');
+
+  // 抽出常用欄位做精簡顯示
+  var kind = pickCell(r.cells, ['類型']);
+  var clinic = pickCell(r.cells, ['院區']);
+  var date = pickCell(r.cells, ['日期']);
+  var session = pickCell(r.cells, ['時段']);
+  var origDoc = pickCell(r.cells, ['原醫師']);
+  var subDoc = pickCell(r.cells, ['代班醫師']);
+  var startT = pickCell(r.cells, ['起始']);
+  var endT = pickCell(r.cells, ['結束']);
+  var note = pickCell(r.cells, ['備註']);
+
+  if (kind) item.setAttribute('data-kind', kind);
+
+  var fieldsHtml = '';
+
+  // 類型 pill
+  if (kind) {
+    fieldsHtml += '<span class="sched-kind-pill" data-kind="' + escapeAttr(kind) + '">' +
+      escapeHtml(kind) + '</span>';
+  }
+
+  // 主要描述：日期 + 時段 + 院區
+  var mainParts = [];
+  if (date) mainParts.push(date);
+  if (session) mainParts.push(session);
+  if (clinic) mainParts.push(clinic);
+  if (mainParts.length > 0) {
+    fieldsHtml += '<div class="sched-field">' +
+      '<span class="sched-field-value">' + escapeHtml(mainParts.join(' · ')) + '</span>' +
+      '</div>';
+  }
+
+  // 醫師資訊
+  if (origDoc) {
+    var docText = origDoc;
+    if (subDoc && subDoc !== origDoc) {
+      docText = origDoc + ' → ' + subDoc;
+    }
+    fieldsHtml += '<div class="sched-field">' +
+      '<span class="sched-field-label">醫師</span>' +
+      '<span class="sched-field-value">' + escapeHtml(docText) + '</span>' +
+      '</div>';
+  }
+
+  // 時間
+  if (startT || endT) {
+    fieldsHtml += '<div class="sched-field">' +
+      '<span class="sched-field-label">時間</span>' +
+      '<span class="sched-field-value">' + escapeHtml(startT) +
+      (endT ? ' - ' + escapeHtml(endT) : '') + '</span>' +
+      '</div>';
+  }
+
+  // 備註
+  if (note) {
+    fieldsHtml += '<div class="sched-field">' +
+      '<span class="sched-field-label">備註</span>' +
+      '<span class="sched-field-value">' + escapeHtml(note) + '</span>' +
+      '</div>';
+  }
+
+  // 沒抓到任何欄位 → 退回顯示全部 cells
+  if (!fieldsHtml) {
+    r.cells.forEach(function(c){
+      if (!c.value) return;
+      fieldsHtml += '<div class="sched-field">' +
+        '<span class="sched-field-label">' + escapeHtml(c.header) + '</span>' +
+        '<span class="sched-field-value">' + escapeHtml(c.value) + '</span>' +
+        '</div>';
+    });
+  }
+
+  item.innerHTML =
+    '<div class="sched-check' + (checked ? ' checked' : '') +
+      '" data-sig="' + escapeAttr(r.sig) + '" title="' + (checked ? '取消已看' : '標記已看') + '"></div>' +
+    '<div class="sched-fields">' + fieldsHtml + '</div>';
+
+  item.querySelector('.sched-check').addEventListener('click', function(e){
+    e.stopPropagation();
+    var nowChecked = !this.classList.contains('checked');
+    markSchedExcSig(r.sig, nowChecked);
+    renderSchedExceptions();
+  });
+
+  return item;
+}
+
+/* =========================================================
  * 生日 / 紀念日
  * ========================================================= */
 function loadCelebrations() {
@@ -6274,10 +6680,13 @@ function showDashboard() {
 
   setupChangePwd();
   loadCelebrations();
-  // 合約到期提醒 + 請假異動（僅特定職稱看得到，內部會自己檢查權限）
+  // 合約到期提醒 + 請假異動 + 班表異動（僅特定職稱看得到，內部會自己檢查權限）
   loadContractReminderConfig(function(){
     loadContractReminders();
     loadLeaveRecords();
+  });
+  loadScheduleExceptionConfig(function(){
+    loadScheduleExceptions();
   });
   setupKb();
   loadKb();
