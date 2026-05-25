@@ -4359,12 +4359,14 @@ function openKudosView(id) {
     attEl.innerHTML = '';
   }
 
-  // 下架按鈕：只有發送者本人才看得到
-  var canArchive = !!(CURRENT_USER && k.senderEmpId &&
+  // 下架按鈕：發送者本人 或 有公告發佈權限者
+  var isSender = !!(CURRENT_USER && k.senderEmpId &&
     normalizeEmpClient(k.senderEmpId) === normalizeEmpClient(CURRENT_USER.empId));
+  var canArchive = isSender || hasAnnouncePermission();
   var btnArchive = $('btnKudosArchive');
   if (canArchive) {
     btnArchive.style.display = 'inline-block';
+    btnArchive.textContent = isSender ? '下架讚賞' : '下架（管理者）';
     btnArchive.onclick = function(){
       doArchiveKudos(k.id);
       closeModal('kudosViewModal');
