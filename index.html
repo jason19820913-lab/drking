@@ -5436,8 +5436,19 @@ function setupLeaveTabs() {
   });
 }
 
+// 請假異動列表 — 只給特定員編看（白名單，正規化後比對）
+var LEAVE_ALLOWED_EMPIDS = ['7', '9'];
+function canViewLeaveRecordsFE() {
+  if (!CURRENT_USER || !CURRENT_USER.empId) return false;
+  var me = normalizeEmpClient(CURRENT_USER.empId);
+  for (var i = 0; i < LEAVE_ALLOWED_EMPIDS.length; i++) {
+    if (me === normalizeEmpClient(LEAVE_ALLOWED_EMPIDS[i])) return true;
+  }
+  return false;
+}
+
 function loadLeaveRecords() {
-  if (!hasContractReminderPermissionFE()) {
+  if (!canViewLeaveRecordsFE()) {
     $('leaveSection').style.display = 'none';
     return;
   }
