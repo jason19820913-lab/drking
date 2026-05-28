@@ -986,6 +986,170 @@
     border: 1px dashed rgba(41,128,185,.2);
   }
 
+  /* ============ 推介獎金提醒（金色系） ============ */
+  .referral-section {
+    max-width: 1200px;
+    margin: 12px auto 0;
+    padding: 0 32px;
+  }
+  .referral-bar {
+    background: linear-gradient(135deg, rgba(212,175,55,.08), rgba(184,134,11,.05));
+    border: 1px solid rgba(184,134,11,.35);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 10px rgba(184,134,11,.08);
+  }
+  .referral-title {
+    font-size: 13px;
+    color: #8B6914;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .referral-badge {
+    background: #B8860B;
+    color: #fff;
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
+  .referral-badge.zero { background: var(--text-muted); }
+  .referral-tabs {
+    margin-left: auto;
+    display: flex;
+    gap: 4px;
+  }
+  .referral-tab {
+    background: transparent;
+    border: 1.5px solid transparent;
+    color: var(--text-muted);
+    padding: 3px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 11.5px;
+    font-family: inherit;
+    transition: all .2s;
+  }
+  .referral-tab.active {
+    background: var(--white);
+    border-color: rgba(184,134,11,.45);
+    color: #8B6914;
+    font-weight: 700;
+  }
+  .referral-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .referral-item {
+    background: var(--white);
+    border: 1px solid rgba(184,134,11,.2);
+    border-left: 3px solid #B8860B;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all .2s;
+  }
+  .referral-item:hover { box-shadow: 0 3px 10px rgba(184,134,11,.12); }
+  .referral-item.read {
+    opacity: .55;
+    border-left-color: rgba(184,134,11,.3);
+  }
+  .referral-check {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid rgba(184,134,11,.45);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+    margin-top: 2px;
+  }
+  .referral-check:hover { border-color: #B8860B; }
+  .referral-check.checked {
+    background: #B8860B;
+    border-color: #B8860B;
+  }
+  .referral-check.checked::after {
+    content: '✓';
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .referral-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+  }
+  .referral-headline {
+    font-weight: 700;
+    color: var(--brown);
+    line-height: 1.5;
+  }
+  .referral-headline .ref-name {
+    color: #8B6914;
+  }
+  .referral-stage-pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(184,134,11,.12);
+    color: #8B6914;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .referral-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .referral-meta .meta-label { letter-spacing: .3px; }
+  .referral-meta .meta-value { color: var(--text); font-weight: 500; }
+  .referral-overdue-pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+  .referral-overdue-pill.due-today {
+    background: rgba(46,204,113,.15);
+    color: #1E8449;
+  }
+  .referral-overdue-pill.overdue {
+    background: rgba(231,76,60,.15);
+    color: #C0392B;
+  }
+  .referral-empty {
+    text-align: center;
+    padding: 18px 12px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    background: rgba(255,255,255,.5);
+    border-radius: 8px;
+    border: 1px dashed rgba(184,134,11,.2);
+  }
+
   /* ============ 任務區塊 ============ */
   .tasks-section {
     max-width: 1200px;
@@ -3149,6 +3313,21 @@
         📋 下次簽約提醒　<span style="font-size:11px;color:var(--text-muted);font-weight:400;letter-spacing:1px;">距下次週年日 3 個月內</span>
       </div>
       <div class="contract-list" id="contractList"></div>
+    </div>
+  </div>
+
+  <!-- =============== 推介獎金提醒（僅副總 0007）=============== -->
+  <div class="referral-section" id="referralSection" style="display:none;">
+    <div class="referral-bar">
+      <div class="referral-title">
+        💰 推介獎金提醒
+        <span class="referral-badge zero" id="referralBadge">0 筆待發</span>
+        <div class="referral-tabs">
+          <button type="button" class="referral-tab active" data-tab="unread">未發放</button>
+          <button type="button" class="referral-tab" data-tab="all">全部</button>
+        </div>
+      </div>
+      <div class="referral-list" id="referralList"></div>
     </div>
   </div>
 
@@ -5794,6 +5973,190 @@ function buildSchedExcItem(r, read) {
 }
 
 /* =========================================================
+ * 推介獎金提醒（只給副總 0007 看）
+ * 每筆 = 員工某階段（M3 / M12）；勾選 = 已發放
+ * ========================================================= */
+var REFERRAL_REMINDERS = [];
+var REFERRAL_TAB = 'unread';
+var REFERRAL_SETUP_DONE = false;
+var REFERRAL_VIEW_EMPIDS = ['7'];
+
+function loadReferralBonusConfig(callback) {
+  apiGet({ action: 'getReferralBonusConfig' }, function(res){
+    if (res && res.success && Array.isArray(res.allowedEmpIds)) {
+      REFERRAL_VIEW_EMPIDS = res.allowedEmpIds;
+    }
+    if (callback) callback();
+  }, function(){ if (callback) callback(); });
+}
+
+function canViewReferralBonusFE() {
+  if (!CURRENT_USER || !CURRENT_USER.empId) return false;
+  var me = normalizeEmpClient(CURRENT_USER.empId);
+  for (var i = 0; i < REFERRAL_VIEW_EMPIDS.length; i++) {
+    if (me === normalizeEmpClient(REFERRAL_VIEW_EMPIDS[i])) return true;
+  }
+  return false;
+}
+
+function referralPaidKey() {
+  return 'eliteClinicReferralPaid_' + ((CURRENT_USER && CURRENT_USER.empId) || 'anon');
+}
+function getPaidReferralSigs() {
+  try {
+    var raw = localStorage.getItem(referralPaidKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+function markReferralPaid(sig, paid) {
+  var arr = getPaidReferralSigs();
+  var idx = arr.indexOf(sig);
+  if (paid && idx < 0) arr.push(sig);
+  if (!paid && idx >= 0) arr.splice(idx, 1);
+  try { localStorage.setItem(referralPaidKey(), JSON.stringify(arr)); } catch (e) {}
+}
+
+function setupReferralTabs() {
+  if (REFERRAL_SETUP_DONE) return;
+  REFERRAL_SETUP_DONE = true;
+  document.querySelectorAll('.referral-tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      REFERRAL_TAB = btn.getAttribute('data-tab');
+      document.querySelectorAll('.referral-tab').forEach(function(b){
+        b.classList.toggle('active', b === btn);
+      });
+      renderReferralBonus();
+    });
+  });
+}
+
+function loadReferralBonusReminders() {
+  if (!canViewReferralBonusFE()) {
+    $('referralSection').style.display = 'none';
+    return;
+  }
+  $('referralSection').style.display = 'block';
+  $('referralBadge').textContent = '載入中…';
+  $('referralBadge').className = 'referral-badge zero';
+  $('referralList').innerHTML = '<div class="referral-empty">⏳ 讀取中…</div>';
+
+  apiGet({
+    action: 'getReferralBonusReminders',
+    empId: CURRENT_USER.empId
+  }, function(res){
+    if (res && res.success && Array.isArray(res.reminders)) {
+      REFERRAL_REMINDERS = res.reminders;
+      setupReferralTabs();
+      renderReferralBonus();
+    } else if (res && res.error) {
+      $('referralBadge').textContent = '無法載入';
+      $('referralBadge').className = 'referral-badge zero';
+      $('referralList').innerHTML =
+        '<div class="referral-empty" style="color:#C0392B;">❌ ' + escapeHtml(res.error) + '</div>';
+    } else {
+      $('referralSection').style.display = 'none';
+    }
+  }, function(){
+    $('referralBadge').textContent = '連線失敗';
+    $('referralBadge').className = 'referral-badge zero';
+    $('referralList').innerHTML = '<div class="referral-empty" style="color:#C0392B;">❌ 連線失敗，請稍後再試</div>';
+  });
+}
+
+function renderReferralBonus() {
+  var section = $('referralSection');
+  var list = $('referralList');
+  var badge = $('referralBadge');
+  list.innerHTML = '';
+
+  section.style.display = 'block';
+
+  if (!REFERRAL_REMINDERS || REFERRAL_REMINDERS.length === 0) {
+    badge.textContent = '無待發';
+    badge.className = 'referral-badge zero';
+    list.innerHTML = '<div class="referral-empty">目前沒有待發放的推介獎金</div>';
+    return;
+  }
+
+  var paid = getPaidReferralSigs();
+  var unpaidCount = 0;
+  REFERRAL_REMINDERS.forEach(function(r){ if (paid.indexOf(r.sig) < 0) unpaidCount++; });
+
+  if (unpaidCount > 0) {
+    badge.textContent = unpaidCount + ' 筆待發';
+    badge.className = 'referral-badge';
+  } else {
+    badge.textContent = '已全部發放';
+    badge.className = 'referral-badge zero';
+  }
+
+  var visible = (REFERRAL_TAB === 'all')
+    ? REFERRAL_REMINDERS
+    : REFERRAL_REMINDERS.filter(function(r){ return paid.indexOf(r.sig) < 0; });
+
+  if (visible.length === 0) {
+    list.innerHTML = '<div class="referral-empty">' +
+      (REFERRAL_TAB === 'unread' ? '🎉 沒有待發放的推介獎金' : '目前沒有資料') +
+      '</div>';
+    return;
+  }
+
+  visible.forEach(function(r){
+    list.appendChild(buildReferralItem(r, paid));
+  });
+}
+
+function buildReferralItem(r, paid) {
+  var isPaid = paid.indexOf(r.sig) >= 0;
+  var item = document.createElement('div');
+  item.className = 'referral-item' + (isPaid ? ' read' : '');
+
+  var overdueText = '';
+  var overdueClass = '';
+  if (r.daysOverdue === 0) {
+    overdueText = '今天到期';
+    overdueClass = 'due-today';
+  } else if (r.daysOverdue > 0) {
+    overdueText = '已逾 ' + r.daysOverdue + ' 天';
+    overdueClass = 'overdue';
+  }
+
+  var clinicText = r.clinic ? '（' + escapeHtml(r.clinic) + '）' : '';
+  var titleText = r.title ? ' · ' + escapeHtml(r.title) : '';
+
+  item.innerHTML =
+    '<div class="referral-check' + (isPaid ? ' checked' : '') +
+      '" title="' + (isPaid ? '取消已發放' : '標記為已發放') + '"></div>' +
+    '<div class="referral-body">' +
+      '<div class="referral-headline">' +
+        '需給付推薦人 <span class="ref-name">' + escapeHtml(r.referrerName) + '</span> 獎金' +
+        '<span class="referral-stage-pill">' + escapeHtml(r.stageLabel) + '</span>' +
+      '</div>' +
+      '<div class="referral-meta">' +
+        '<span><span class="meta-label">被推介員工</span>　' +
+          '<span class="meta-value">' + escapeHtml(r.name) + clinicText + titleText + '</span>' +
+        '</span>' +
+        '<span><span class="meta-label">入職日</span>　' +
+          '<span class="meta-value">' + escapeHtml(r.hireDate) + '</span>' +
+        '</span>' +
+        '<span><span class="meta-label">應發日</span>　' +
+          '<span class="meta-value">' + escapeHtml(r.dueDate) + '</span>' +
+          (overdueText ? '<span class="referral-overdue-pill ' + overdueClass + '">' + overdueText + '</span>' : '') +
+        '</span>' +
+      '</div>' +
+    '</div>';
+
+  item.querySelector('.referral-check').addEventListener('click', function(e){
+    e.stopPropagation();
+    var nowChecked = !this.classList.contains('checked');
+    markReferralPaid(r.sig, nowChecked);
+    renderReferralBonus();
+  });
+
+  return item;
+}
+
+/* =========================================================
  * 生日 / 紀念日
  * ========================================================= */
 function loadCelebrations() {
@@ -6693,13 +7056,16 @@ function showDashboard() {
 
   setupChangePwd();
   loadCelebrations();
-  // 合約到期提醒 + 請假異動 + 班表異動（僅特定職稱看得到，內部會自己檢查權限）
+  // 合約到期提醒 + 請假異動 + 班表異動 + 推介獎金（僅特定職稱/員編看得到，內部會自己檢查權限）
   loadContractReminderConfig(function(){
     loadContractReminders();
     loadLeaveRecords();
   });
   loadScheduleExceptionConfig(function(){
     loadScheduleExceptions();
+  });
+  loadReferralBonusConfig(function(){
+    loadReferralBonusReminders();
   });
   setupKb();
   loadKb();
