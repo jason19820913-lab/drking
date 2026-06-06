@@ -3509,8 +3509,45 @@
       </div>
     </div>
     <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-primary" id="btnAnnEditAtt" style="display:none;">✏️ 編輯附件</button>
       <button type="button" class="btn-modal btn-modal-danger" id="btnAnnArchive" style="display:none;">下架公告</button>
       <button type="button" class="btn-modal btn-modal-cancel" data-close="annViewModal">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============== 編輯公告附件 Modal =============== -->
+<div class="modal-overlay" id="annEditAttModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-text">
+        <div class="modal-title">編輯附件</div>
+        <div class="modal-meta" id="annEditAttSubtitle">-</div>
+      </div>
+      <button type="button" class="modal-close" data-close="annEditAttModal" aria-label="關閉">✕</button>
+    </div>
+    <form class="modal-form" autocomplete="off" onsubmit="return false;">
+      <div class="form-group">
+        <label class="form-label">目前附件</label>
+        <div id="annEditAttCurrentList" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="annEditAttFiles">新增附件（PDF / 圖片）</label>
+        <label class="file-drop" for="annEditAttFiles">
+          <span>📎 點此選擇要新增的檔案</span>
+          <input type="file" id="annEditAttFiles" multiple accept="application/pdf,image/*">
+        </label>
+        <div class="file-list" id="annEditAttPendingList"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="annEditAttPwd">確認你的密碼</label>
+        <input type="password" id="annEditAttPwd" class="form-input" placeholder="再次輸入密碼以確認身分" autocomplete="off">
+      </div>
+    </form>
+    <div class="modal-msg" id="annEditAttMsg"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn-modal btn-modal-cancel" data-close="annEditAttModal">取消</button>
+      <button type="button" class="btn-modal btn-modal-primary" id="btnAnnEditAttSubmit">儲存變更</button>
     </div>
   </div>
 </div>
@@ -6519,7 +6556,7 @@ function formatBytes(b) {
 function openModal(id) { $(id).classList.add('show'); document.body.style.overflow = 'hidden'; }
 function closeModal(id) { $(id).classList.remove('show'); document.body.style.overflow = ''; }
 
-function loadAnnouncements() {
+function loadAnnouncements(callback) {
   apiGet({ action: 'getAnnouncements' }, function(res){
     if (res && res.success && Array.isArray(res.announcements)) {
       ANNOUNCEMENTS = res.announcements;
@@ -6527,9 +6564,11 @@ function loadAnnouncements() {
       ANNOUNCEMENTS = [];
     }
     renderAnnouncements();
+    if (typeof callback === 'function') callback();
   }, function(){
     ANNOUNCEMENTS = [];
     renderAnnouncements();
+    if (typeof callback === 'function') callback();
   });
 }
 
@@ -6762,6 +6801,15 @@ function openAnnView(id) {
     btnArchive.onclick = function(){ archiveAnn(a.id); };
   } else {
     btnArchive.style.display = 'none';
+  }
+
+  // 編輯附件按鈕：只有發送者本人才看得到
+  var btnEditAtt = $('btnAnnEditAtt');
+  if (isPublisher) {
+    btnEditAtt.style.display = 'inline-block';
+    btnEditAtt.onclick = function(){ openAnnEditAtt(a.id); };
+  } else {
+    btnEditAtt.style.display = 'none';
   }
 
   // 閱覽統計區：只有「發送者本人」才看得到（不是所有公告權限）
@@ -7031,6 +7079,200 @@ function archiveAnn(id) {
   }, function(){
     toast('連線失敗', 'err');
   });
+}
+
+/* =========================================================
+ * 編輯公告附件 Modal
+ * - 只給發送者本人
+ * - 可移除現有附件、加新附件
+ * - 儲存時先上傳新檔，再呼叫 updateAnnouncementAttachments
+ * ========================================================= */
+var ANN_EDIT_TARGET_ID = null;
+var ANN_EDIT_CURRENT_ATTS = [];     // 原本還留下來的附件
+var ANN_EDIT_PENDING_FILES = [];    // 等上傳的新檔
+var ANN_EDIT_SETUP_DONE = false;
+
+function setupAnnEditAtt() {
+  if (ANN_EDIT_SETUP_DONE) return;
+  ANN_EDIT_SETUP_DONE = true;
+
+  $('annEditAttFiles').addEventListener('change', function(e){
+    var files = Array.prototype.slice.call(e.target.files || []);
+    files.forEach(function(f){ ANN_EDIT_PENDING_FILES.push(f); });
+    e.target.value = '';
+    renderAnnEditPendingList();
+  });
+
+  $('btnAnnEditAttSubmit').addEventListener('click', submitAnnEditAtt);
+}
+
+function openAnnEditAtt(annId) {
+  var a = findAnnById(annId);
+  if (!a) return;
+  setupAnnEditAtt();
+
+  ANN_EDIT_TARGET_ID = annId;
+  // 深拷貝目前附件
+  ANN_EDIT_CURRENT_ATTS = (a.attachments || []).map(function(x){
+    return { name: x.name, url: x.url, mimeType: x.mimeType, size: x.size };
+  });
+  ANN_EDIT_PENDING_FILES = [];
+
+  $('annEditAttSubtitle').textContent = a.title || '';
+  $('annEditAttPwd').value = '';
+  $('annEditAttMsg').textContent = '';
+  $('annEditAttMsg').className = 'modal-msg';
+
+  renderAnnEditCurrentList();
+  renderAnnEditPendingList();
+  openModal('annEditAttModal');
+}
+
+function renderAnnEditCurrentList() {
+  var box = $('annEditAttCurrentList');
+  box.innerHTML = '';
+  if (ANN_EDIT_CURRENT_ATTS.length === 0) {
+    box.innerHTML = '<div style="font-size:12.5px;color:var(--text-muted);padding:8px 12px;background:rgba(0,0,0,.03);border-radius:8px;">目前沒有附件</div>';
+    return;
+  }
+  ANN_EDIT_CURRENT_ATTS.forEach(function(f, idx){
+    var item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--white);border:1px solid var(--teal-soft);border-radius:8px;';
+    item.innerHTML =
+      '<svg style="width:16px;height:16px;flex-shrink:0;color:var(--teal-deep);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>' +
+      '<a href="' + escapeAttr(f.url) + '" target="_blank" rel="noopener" style="flex:1;font-size:13px;color:var(--teal-deep);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' +
+        escapeHtml(f.name || '附件') +
+      '</a>' +
+      (f.size ? '<span style="font-size:11.5px;color:var(--text-muted);">' + formatBytes(f.size) + '</span>' : '') +
+      '<button type="button" data-idx="' + idx + '" style="background:transparent;border:none;color:#C0392B;font-size:18px;cursor:pointer;padding:0 4px;" title="移除">✕</button>';
+    item.querySelector('button').addEventListener('click', function(){
+      var i = parseInt(this.getAttribute('data-idx'), 10);
+      ANN_EDIT_CURRENT_ATTS.splice(i, 1);
+      renderAnnEditCurrentList();
+    });
+    box.appendChild(item);
+  });
+}
+
+function renderAnnEditPendingList() {
+  var box = $('annEditAttPendingList');
+  box.innerHTML = '';
+  if (ANN_EDIT_PENDING_FILES.length === 0) return;
+  ANN_EDIT_PENDING_FILES.forEach(function(f, idx){
+    var item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML =
+      '<span class="file-item-name">📎 ' + escapeHtml(f.name) + '</span>' +
+      '<span class="file-item-size">' + formatBytes(f.size) + '</span>' +
+      '<button type="button" class="file-item-remove" data-idx="' + idx + '" title="移除">✕</button>';
+    item.querySelector('.file-item-remove').addEventListener('click', function(){
+      ANN_EDIT_PENDING_FILES.splice(parseInt(this.getAttribute('data-idx'), 10), 1);
+      renderAnnEditPendingList();
+    });
+    box.appendChild(item);
+  });
+}
+
+function submitAnnEditAtt() {
+  if (!ANN_EDIT_TARGET_ID) return;
+  var pwd = $('annEditAttPwd').value;
+  var msg = $('annEditAttMsg');
+  var btn = $('btnAnnEditAttSubmit');
+  msg.textContent = '';
+  msg.className = 'modal-msg';
+
+  if (!pwd) { msg.textContent = '請輸入密碼以確認身分'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>處理中…';
+
+  // 先上傳新檔
+  uploadAnnEditPendingFiles(pwd, function(newAtts){
+    var finalAtts = ANN_EDIT_CURRENT_ATTS.concat(newAtts);
+    btn.innerHTML = '<span class="spin"></span>儲存中…';
+
+    apiPost({
+      action: 'updateAnnouncementAttachments',
+      empId: CURRENT_USER.empId,
+      pwd: pwd,
+      id: ANN_EDIT_TARGET_ID,
+      attachments: finalAtts
+    }, function(res){
+      btn.disabled = false;
+      btn.textContent = '儲存變更';
+
+      if (res && res.success) {
+        msg.className = 'modal-msg ok';
+        msg.textContent = '✓ 已更新';
+        ANN_EDIT_PENDING_FILES = [];
+        setTimeout(function(){
+          closeModal('annEditAttModal');
+          msg.textContent = '';
+          // 重新載入公告，然後重開原 Modal 看更新後內容
+          loadAnnouncements(function(){
+            openAnnView(ANN_EDIT_TARGET_ID);
+          });
+        }, 600);
+      } else {
+        msg.textContent = (res && res.error) ? res.error : '儲存失敗，請稍後再試';
+      }
+    }, function(){
+      btn.disabled = false;
+      btn.textContent = '儲存變更';
+      msg.textContent = '連線失敗，請稍後再試';
+    });
+  }, function(err){
+    btn.disabled = false;
+    btn.textContent = '儲存變更';
+    msg.textContent = err || '附件上傳失敗';
+  });
+}
+
+function uploadAnnEditPendingFiles(pwd, callback, errorCb) {
+  if (ANN_EDIT_PENDING_FILES.length === 0) { callback([]); return; }
+  var uploaded = [];
+  var idx = 0;
+  var btn = $('btnAnnEditAttSubmit');
+
+  function next() {
+    if (idx >= ANN_EDIT_PENDING_FILES.length) { callback(uploaded); return; }
+    var file = ANN_EDIT_PENDING_FILES[idx];
+    btn.innerHTML = '<span class="spin"></span>上傳新檔 ' + (idx + 1) + '/' + ANN_EDIT_PENDING_FILES.length + '…';
+
+    var reader = new FileReader();
+    reader.onload = function(){
+      var dataUrl = reader.result;
+      var commaIdx = String(dataUrl).indexOf(',');
+      var base64 = commaIdx >= 0 ? dataUrl.substring(commaIdx + 1) : dataUrl;
+
+      apiPost({
+        action: 'uploadAttachment',
+        empId: CURRENT_USER.empId,
+        pwd: pwd,
+        fileName: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        dataBase64: base64
+      }, function(res){
+        if (res && res.success) {
+          uploaded.push({
+            name: res.name,
+            url: res.url,
+            mimeType: res.mimeType,
+            size: res.size
+          });
+          idx++;
+          next();
+        } else {
+          errorCb((res && res.error) || ('上傳失敗：' + file.name));
+        }
+      }, function(){
+        errorCb('上傳「' + file.name + '」連線失敗');
+      });
+    };
+    reader.onerror = function(){ errorCb('無法讀取「' + file.name + '」'); };
+    reader.readAsDataURL(file);
+  }
+  next();
 }
 
 /* =========================================================
