@@ -3195,6 +3195,157 @@
   .fade-up.d3 { animation-delay: .15s; }
   .fade-up.d4 { animation-delay: .20s; }
   .fade-up.d5 { animation-delay: .25s; }
+
+  /* ============ SOP 全文搜尋 ============ */
+  .sop-search-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #2CA5AD, #6FB6BA);
+    color: #fff; border: none; border-radius: 8px;
+    font-weight: 600; cursor: pointer;
+    box-shadow: 0 2px 8px rgba(44, 165, 173, 0.3);
+    transition: transform .15s, box-shadow .15s;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .sop-search-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(44, 165, 173, 0.4);
+  }
+  .sop-search-icon { font-size: 16px; }
+
+  .sop-search-dialog {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sop-search-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,.45); backdrop-filter: blur(2px);
+  }
+  .sop-search-panel {
+    position: relative;
+    width: min(800px, 94vw);
+    height: min(760px, 90vh);
+    background: #fff; border-radius: 16px;
+    display: flex; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25); overflow: hidden;
+  }
+
+  .sop-search-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #2CA5AD, #6FB6BA);
+    color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sop-search-title { font-size: 18px; font-weight: 700; }
+  .sop-search-subtitle { font-size: 12px; opacity: .9; margin-top: 2px; }
+  .sop-search-close {
+    background: rgba(255,255,255,.2); color: #fff;
+    border: none; width: 28px; height: 28px; border-radius: 50%;
+    font-size: 14px; cursor: pointer;
+  }
+  .sop-search-close:hover { background: rgba(255,255,255,.35); }
+
+  .sop-search-input-area {
+    display: flex; gap: 8px;
+    padding: 14px 16px;
+    background: #fff;
+    border-bottom: 1px solid #e2e8ec;
+  }
+  .sop-search-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #cdd6dc;
+    border-radius: 10px;
+    font-family: inherit; font-size: 15px;
+    outline: none;
+  }
+  .sop-search-input:focus {
+    border-color: #2CA5AD;
+    box-shadow: 0 0 0 3px rgba(44,165,173,.15);
+  }
+  .sop-search-btn-go {
+    padding: 0 18px;
+    background: #2CA5AD; color: #fff;
+    border: none; border-radius: 10px;
+    font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+  .sop-search-btn-go:disabled {
+    background: #b6c0c4; cursor: not-allowed;
+  }
+
+  .sop-search-results {
+    flex: 1; overflow-y: auto;
+    padding: 12px 16px;
+    background: #fafbfc;
+  }
+  .sop-search-empty {
+    padding: 30px 20px;
+    text-align: center; color: #94a3b3;
+    line-height: 1.6;
+  }
+  .sop-search-loading {
+    padding: 30px 20px; text-align: center; color: #2CA5AD;
+  }
+  .sop-search-stats {
+    font-size: 12px; color: #647082;
+    padding: 4px 6px 12px;
+  }
+
+  .sop-search-card {
+    background: #fff;
+    border: 1px solid #e2e8ec;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    transition: box-shadow .15s, transform .15s;
+  }
+  .sop-search-card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+    transform: translateY(-1px);
+  }
+  .sop-search-card-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 8px; margin-bottom: 8px;
+  }
+  .sop-search-card-name {
+    display: flex; align-items: center; gap: 6px;
+    color: #18757d;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    word-break: break-word;
+  }
+  .sop-search-card-name:hover { text-decoration: underline; }
+  .sop-search-card-badge {
+    background: #e7f5f6; color: #18757d;
+    padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; white-space: nowrap;
+  }
+  .sop-search-snippet {
+    background: #f6f9fa;
+    border-left: 3px solid #2CA5AD;
+    padding: 8px 12px;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #4b5663;
+    line-height: 1.5;
+    border-radius: 0 6px 6px 0;
+  }
+  .sop-search-snippet mark {
+    background: #fff3a8;
+    color: #5c4500;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+  .sop-search-error {
+    padding: 14px 16px;
+    background: #fee2e2; color: #b91c1c;
+    border-radius: 10px;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
@@ -3437,6 +3588,10 @@
         <span class="kb-count" id="kbCount" style="font-size:13px;font-weight:400;color:var(--text-muted);letter-spacing:1px;"></span>
       </div>
       <button class="btn-add-kb" id="btnAddKbLink" style="display:none;">＋ 新增連結</button>
+      <button class="sop-search-btn" onclick="openSOPSearch()" style="margin-left:10px;">
+        <span class="sop-search-icon">🔍</span>
+        <span>SOP 全文搜尋</span>
+      </button>
     </div>
 
     <!-- 常用連結卡片（管理者可新增/編輯/刪除）-->
@@ -5625,18 +5780,10 @@ function leaveReadKey() {
   return 'eliteClinicLeaveRead_' + ((CURRENT_USER && CURRENT_USER.empId) || 'anon');
 }
 function getReadLeaveSigs() {
-  var sigs = [];
   try {
     var raw = localStorage.getItem(leaveReadKey());
-    if (raw) sigs = JSON.parse(raw);
-  } catch (e) {}
-  // 新增:把 server 端標記的 seen 也算進來,跨裝置同步
-  if (Array.isArray(LEAVE_RECORDS)) {
-    LEAVE_RECORDS.forEach(function(r) {
-      if (r && r.seen && sigs.indexOf(r.sig) < 0) sigs.push(r.sig);
-    });
-  }
-  return sigs;
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
 }
 function markLeaveSig(sig, checked) {
   var read = getReadLeaveSigs();
@@ -5644,13 +5791,6 @@ function markLeaveSig(sig, checked) {
   if (checked && idx < 0) read.push(sig);
   if (!checked && idx >= 0) read.splice(idx, 1);
   try { localStorage.setItem(leaveReadKey(), JSON.stringify(read)); } catch (e) {}
-  // 新增:同步到 server (只在勾選時送,取消勾選不取消 server)
-  if (checked && typeof CURRENT_USER !== 'undefined' && CURRENT_USER && CURRENT_USER.empId) {
-    var url = API_URL + '?action=dismissLeaveRecord' +
-              '&empId=' + encodeURIComponent(CURRENT_USER.empId) +
-              '&sig=' + encodeURIComponent(sig);
-    fetch(url).catch(function(){});
-  }
 }
 
 function setupLeaveTabs() {
@@ -8195,6 +8335,214 @@ document.addEventListener('DOMContentLoaded', function(){
   $('btnLogout').addEventListener('click', logout);
   initLogin();
 });
+
+/* =========================================================
+ * SOP 全文搜尋（無 AI 版）
+ * 依賴：var API（Apps Script /exec URL）與 var CURRENT_USER.empId
+ * ========================================================= */
+(function() {
+  var debounceTimer = null;
+  var lastQuery = '';
+
+  window.openSOPSearch = function() {
+    document.getElementById('sop-search-dialog').style.display = 'flex';
+    setTimeout(function() {
+      var el = document.getElementById('sop-search-input');
+      if (el) el.focus();
+    }, 50);
+    refreshSOPStatus();
+  };
+
+  window.closeSOPSearch = function() {
+    document.getElementById('sop-search-dialog').style.display = 'none';
+    if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
+  };
+
+  window.handleSOPSearchKey = function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      runSOPSearch();
+    } else if (e.key === 'Escape') {
+      closeSOPSearch();
+    }
+  };
+
+  // 輸入框 debounce（300ms 沒打字就自動搜）
+  window.onSOPSearchInput = function() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(runSOPSearch, 300);
+  };
+
+  // 取得目前登入員工 empId（用 index.html 既有的 CURRENT_USER）
+  function getCurrentEmpId() {
+    try {
+      return (typeof CURRENT_USER !== 'undefined' && CURRENT_USER && CURRENT_USER.empId) || '';
+    } catch (e) { return ''; }
+  }
+
+  function refreshSOPStatus() {
+    try {
+      fetch(API + '?action=getSOPIndexStatus')
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          var el = document.getElementById('sop-search-status');
+          if (!el) return;
+          if (data && data.success) {
+            el.textContent = data.total > 0
+              ? '已索引 ' + data.total + ' 份 SOP・最後更新 ' + (data.lastIndexed || '未知')
+              : '尚未索引，請聯絡管理員建立索引';
+          } else {
+            el.textContent = '索引狀態未知';
+          }
+        })
+        .catch(function(){
+          var el = document.getElementById('sop-search-status');
+          if (el) el.textContent = '索引狀態載入失敗';
+        });
+    } catch (e) {}
+  }
+
+  window.runSOPSearch = function() {
+    var input = document.getElementById('sop-search-input');
+    var query = input.value.trim();
+    if (!query) {
+      renderEmpty();
+      lastQuery = '';
+      return;
+    }
+    if (query === lastQuery) return;   // 沒變就不重打
+    lastQuery = query;
+
+    var empId = getCurrentEmpId();
+    if (!empId) {
+      renderError('請先登入');
+      return;
+    }
+
+    renderLoading();
+    var url = API + '?action=searchSOPText&empId=' + encodeURIComponent(empId)
+              + '&query=' + encodeURIComponent(query);
+    fetch(url)
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (data && data.error) {
+          renderError(data.error);
+        } else {
+          renderResults(data);
+        }
+      })
+      .catch(function(err){
+        renderError('連線失敗：' + (err && err.message ? err.message : err));
+      });
+  };
+
+  function renderEmpty() {
+    var el = document.getElementById('sop-search-results');
+    if (el) el.innerHTML =
+      '<div class="sop-search-empty">在上方輸入關鍵字，會即時找出 SOP 中提到該詞的位置。</div>';
+  }
+  function renderLoading() {
+    var el = document.getElementById('sop-search-results');
+    if (el) el.innerHTML =
+      '<div class="sop-search-loading">搜尋中…</div>';
+  }
+  function renderError(msg) {
+    var el = document.getElementById('sop-search-results');
+    if (el) el.innerHTML =
+      '<div class="sop-search-error">' + escapeHtml(msg) + '</div>';
+  }
+
+  function renderResults(data) {
+    var wrap = document.getElementById('sop-search-results');
+    if (!wrap) return;
+    if (!data || data.matchedFiles === 0) {
+      wrap.innerHTML =
+        '<div class="sop-search-empty">' +
+        '沒有 SOP 提到「' + escapeHtml((data && data.query) || '') + '」<br>' +
+        '<span style="opacity:.7;">試試其他關鍵字，或拆短一點（例如「冷藏」「藥品」分別搜）</span>' +
+        '</div>';
+      return;
+    }
+
+    var html = '<div class="sop-search-stats">' +
+               '在 ' + data.totalFiles + ' 份 SOP 中找到 ' +
+               '<strong>' + data.matchedFiles + '</strong> 份提到「' +
+               escapeHtml(data.query) + '」</div>';
+
+    (data.results || []).forEach(function(r) {
+      html += '<div class="sop-search-card">';
+      html += '<div class="sop-search-card-head">';
+      html += '<a class="sop-search-card-name" href="' + escapeAttr(r.url) +
+              '" target="_blank" rel="noopener">';
+      html += '📄 ' + escapeHtml(r.name);
+      html += '</a>';
+      html += '<span class="sop-search-card-badge">' + r.matchCount + ' 處命中' +
+              (r.inFilename ? ' ・檔名也命中' : '') + '</span>';
+      html += '</div>';
+
+      (r.snippets || []).forEach(function(s) {
+        html += '<div class="sop-search-snippet">' + highlight(s, data.query) + '</div>';
+      });
+
+      html += '</div>';
+    });
+    wrap.innerHTML = html;
+  }
+
+  function highlight(text, query) {
+    var safe = escapeHtml(text);
+    if (!query) return safe;
+    var escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return safe.replace(new RegExp(escapedQuery, 'gi'), function(m) {
+      return '<mark>' + m + '</mark>';
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+  function escapeAttr(s) {
+    return escapeHtml(s);
+  }
+})();
 </script>
+
+<!-- =============== SOP 全文搜尋面板 =============== -->
+<div id="sop-search-dialog" class="sop-search-dialog" style="display:none;">
+  <div class="sop-search-backdrop" onclick="closeSOPSearch()"></div>
+  <div class="sop-search-panel">
+    <div class="sop-search-header">
+      <div>
+        <div class="sop-search-title">🔍 SOP 全文搜尋</div>
+        <div class="sop-search-subtitle" id="sop-search-status">載入中…</div>
+      </div>
+      <button class="sop-search-close" onclick="closeSOPSearch()" aria-label="關閉">✕</button>
+    </div>
+
+    <div class="sop-search-input-area">
+      <input
+        id="sop-search-input"
+        class="sop-search-input"
+        type="text"
+        maxlength="100"
+        placeholder="輸入關鍵字，例如：冷藏 / 值班 / 員工請假…"
+        oninput="onSOPSearchInput()"
+        onkeydown="handleSOPSearchKey(event)" />
+      <button class="sop-search-btn-go" id="sop-search-go" onclick="runSOPSearch()">搜尋</button>
+    </div>
+
+    <div class="sop-search-results" id="sop-search-results">
+      <div class="sop-search-empty">
+        在上方輸入關鍵字，會即時找出 SOP 中提到該詞的位置。<br>
+        <span style="opacity:.7;">支援中文 / 英文 / 數字，大小寫不分。</span>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
