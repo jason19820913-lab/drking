@@ -5625,10 +5625,18 @@ function leaveReadKey() {
   return 'eliteClinicLeaveRead_' + ((CURRENT_USER && CURRENT_USER.empId) || 'anon');
 }
 function getReadLeaveSigs() {
+  var sigs = [];
   try {
     var raw = localStorage.getItem(leaveReadKey());
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) { return []; }
+    if (raw) sigs = JSON.parse(raw);
+  } catch (e) {}
+  // 新增:把 server 端標記的 seen 也算進來,跨裝置同步
+  if (Array.isArray(LEAVE_RECORDS)) {
+    LEAVE_RECORDS.forEach(function(r) {
+      if (r && r.seen && sigs.indexOf(r.sig) < 0) sigs.push(r.sig);
+    });
+  }
+  return sigs;
 }
 function markLeaveSig(sig, checked) {
   var read = getReadLeaveSigs();
@@ -5636,6 +5644,13 @@ function markLeaveSig(sig, checked) {
   if (checked && idx < 0) read.push(sig);
   if (!checked && idx >= 0) read.splice(idx, 1);
   try { localStorage.setItem(leaveReadKey(), JSON.stringify(read)); } catch (e) {}
+  // 新增:同步到 server (只在勾選時送,取消勾選不取消 server)
+  if (checked && typeof CURRENT_USER !== 'undefined' && CURRENT_USER && CURRENT_USER.empId) {
+    var url = API_URL + '?action=dismissLeaveRecord' +
+              '&empId=' + encodeURIComponent(CURRENT_USER.empId) +
+              '&sig=' + encodeURIComponent(sig);
+    fetch(url).catch(function(){});
+  }
 }
 
 function setupLeaveTabs() {
