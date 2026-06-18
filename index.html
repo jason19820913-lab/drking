@@ -3346,6 +3346,89 @@
     border-radius: 10px;
     text-align: center;
   }
+
+  /* === SOP 模式切換 + AI 問答氣泡 === */
+  .sop-search-mode-tabs {
+    display: flex; gap: 6px;
+    padding: 12px 16px 0;
+    background: #fff;
+  }
+  .sop-search-mode-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: #f0f3f5;
+    color: #647082;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .sop-search-mode-btn.active {
+    background: #2CA5AD;
+    color: #fff;
+  }
+  .sop-search-mode-btn:hover:not(.active) {
+    background: #e2e8ec;
+  }
+  .sop-ai-answer {
+    background: #fff;
+    border: 1px solid #e2e8ec;
+    border-left: 4px solid #2CA5AD;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    font-size: 14px;
+    color: #2c3340;
+  }
+  .sop-ai-question {
+    background: #2CA5AD;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border-bottom-right-radius: 4px;
+    margin: 0 0 10px auto;
+    max-width: 80%;
+    width: fit-content;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .sop-ai-sources {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #e2e8ec;
+  }
+  .sop-ai-source-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px;
+    background: #e7f5f6;
+    color: #18757d;
+    border-radius: 12px;
+    font-size: 12px;
+    text-decoration: none;
+  }
+  .sop-ai-source-link:hover {
+    background: #d3edef;
+  }
+  .sop-ai-loading {
+    padding: 16px;
+    text-align: center;
+    color: #2CA5AD;
+  }
+  .sop-ai-loading::after {
+    content: '...';
+    animation: sopAiDots 1.4s infinite;
+  }
+  @keyframes sopAiDots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+  }
 </style>
 </head>
 <body>
@@ -8343,6 +8426,39 @@ document.addEventListener('DOMContentLoaded', function(){
 (function() {
   var debounceTimer = null;
   var lastQuery = '';
+  var sopSearchMode = 'keyword';
+
+  window.switchSOPMode = function(mode) {
+    sopSearchMode = mode;
+    var btns = document.querySelectorAll('.sop-search-mode-btn');
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].getAttribute('data-mode') === mode) {
+        btns[i].classList.add('active');
+      } else {
+        btns[i].classList.remove('active');
+      }
+    }
+    var input = document.getElementById('sop-search-input');
+    if (input) {
+      if (mode === 'qa') {
+        input.placeholder = '輸入問題，例如：冷藏藥品要幾度？員工請假規定？';
+      } else {
+        input.placeholder = '輸入關鍵字，例如：冷藏 / 值班 / 員工請假…';
+      }
+      input.value = '';
+    }
+    lastQuery = '';
+    if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
+    var results = document.getElementById('sop-search-results');
+    if (results) {
+      results.innerHTML =
+        '<div class="sop-search-empty">' +
+        (mode === 'qa'
+          ? '用自然語言問問題，AI 會根據 SOP 文件給你答案 + 來源檔。<br><span style="opacity:.7;">⚠ AI 回答僅供參考，涉及病人安全請與主管確認。</span>'
+          : '在上方輸入關鍵字，會即時找出 SOP 中提到該詞的位置。') +
+        '</div>';
+    }
+  };
 
   window.openSOPSearch = function() {
     document.getElementById('sop-search-dialog').style.display = 'flex';
@@ -8367,9 +8483,10 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   };
 
-  // 輸入框 debounce（300ms 沒打字就自動搜）
+  // 輸入框 debounce（300ms 沒打字就自動搜）— 僅關鍵字模式啟用
   window.onSOPSearchInput = function() {
-    if (debounceTimer) clearTimeout(debounceTimer);
+    if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
+    if (sopSearchMode === 'qa') return; // 問答模式：只用 Enter / 送出鈕觸發
     debounceTimer = setTimeout(runSOPSearch, 300);
   };
 
@@ -8410,14 +8527,39 @@ document.addEventListener('DOMContentLoaded', function(){
       lastQuery = '';
       return;
     }
-    if (query === lastQuery) return;   // 沒變就不重打
-    lastQuery = query;
 
     var empId = getCurrentEmpId();
     if (!empId) {
       renderError('請先登入');
       return;
     }
+
+    if (sopSearchMode === 'qa') {
+      // 問答模式：每次送出都要打，不做 dedupe
+      lastQuery = query;
+      renderAIQuestion(query);
+      var qaUrl = API + '?action=askSOPAI&empId=' + encodeURIComponent(empId)
+                + '&question=' + encodeURIComponent(query);
+      fetch(qaUrl)
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if (data && data.error) {
+            replaceAILoadingWithError(data.error);
+          } else {
+            renderAIAnswer(data);
+          }
+        })
+        .catch(function(err){
+          replaceAILoadingWithError('連線失敗：' + (err && err.message ? err.message : err));
+        });
+      // 送出後清空輸入，讓使用者直接問下一題
+      input.value = '';
+      return;
+    }
+
+    // 關鍵字模式（原本行為）
+    if (query === lastQuery) return;   // 沒變就不重打
+    lastQuery = query;
 
     renderLoading();
     var url = API + '?action=searchSOPText&empId=' + encodeURIComponent(empId)
@@ -8435,6 +8577,67 @@ document.addEventListener('DOMContentLoaded', function(){
         renderError('連線失敗：' + (err && err.message ? err.message : err));
       });
   };
+
+  // === Q&A 模式渲染 ===
+  function renderAIQuestion(question) {
+    var wrap = document.getElementById('sop-search-results');
+    if (!wrap) return;
+    // 第一次提問時清掉 empty hint
+    var emptyHint = wrap.querySelector('.sop-search-empty');
+    if (emptyHint) emptyHint.parentNode.removeChild(emptyHint);
+    var qDiv = document.createElement('div');
+    qDiv.className = 'sop-ai-question';
+    qDiv.textContent = question;
+    wrap.appendChild(qDiv);
+    var loading = document.createElement('div');
+    loading.className = 'sop-ai-loading';
+    loading.id = 'sop-ai-loading-current';
+    loading.textContent = 'AI 思考中';
+    wrap.appendChild(loading);
+    wrap.scrollTop = wrap.scrollHeight;
+  }
+  function renderAIAnswer(data) {
+    var loading = document.getElementById('sop-ai-loading-current');
+    if (loading && loading.parentNode) loading.parentNode.removeChild(loading);
+    var wrap = document.getElementById('sop-search-results');
+    if (!wrap) return;
+    var answerText = (data && (data.answer || data.text)) || '抱歉，AI 沒有回傳答案。';
+    var card = document.createElement('div');
+    card.className = 'sop-ai-answer';
+    var ansSpan = document.createElement('span');
+    ansSpan.textContent = answerText;
+    card.appendChild(ansSpan);
+    var sources = (data && (data.sources || data.files)) || [];
+    if (sources && sources.length) {
+      var srcWrap = document.createElement('div');
+      srcWrap.className = 'sop-ai-sources';
+      sources.forEach(function(s) {
+        var a = document.createElement('a');
+        a.className = 'sop-ai-source-link';
+        var name = (s && (s.name || s.title || s.fileName)) || '來源檔';
+        var href = (s && (s.url || s.link || s.webViewLink)) || '#';
+        a.textContent = '📄 ' + name;
+        a.href = href;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        srcWrap.appendChild(a);
+      });
+      card.appendChild(srcWrap);
+    }
+    wrap.appendChild(card);
+    wrap.scrollTop = wrap.scrollHeight;
+  }
+  function replaceAILoadingWithError(msg) {
+    var loading = document.getElementById('sop-ai-loading-current');
+    if (loading && loading.parentNode) loading.parentNode.removeChild(loading);
+    var wrap = document.getElementById('sop-search-results');
+    if (!wrap) return;
+    var err = document.createElement('div');
+    err.className = 'sop-search-error';
+    err.textContent = msg;
+    wrap.appendChild(err);
+    wrap.scrollTop = wrap.scrollHeight;
+  }
 
   function renderEmpty() {
     var el = document.getElementById('sop-search-results');
@@ -8522,6 +8725,11 @@ document.addEventListener('DOMContentLoaded', function(){
         <div class="sop-search-subtitle" id="sop-search-status">載入中…</div>
       </div>
       <button class="sop-search-close" onclick="closeSOPSearch()" aria-label="關閉">✕</button>
+    </div>
+
+    <div class="sop-search-mode-tabs">
+      <button class="sop-search-mode-btn active" data-mode="keyword" onclick="switchSOPMode('keyword')">🔍 關鍵字搜尋</button>
+      <button class="sop-search-mode-btn" data-mode="qa" onclick="switchSOPMode('qa')">💬 問問題</button>
     </div>
 
     <div class="sop-search-input-area">
