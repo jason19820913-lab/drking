@@ -8475,15 +8475,13 @@ document.addEventListener('DOMContentLoaded', function(){
   };
 
   window.handleSOPSearchKey = function(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      runSOPSearch();
-    } else if (e.key === 'Escape') {
+    // 不在 Enter 自動觸發,只接 Escape 關閉視窗,搜尋一律要按「搜尋」按鈕
+    if (e.key === 'Escape') {
       closeSOPSearch();
     }
   };
 
-  // 不自動搜尋 — 只有按 Enter 或「搜尋」按鈕才會觸發
+  // 不自動搜尋 — 只有按「搜尋」按鈕才會觸發
   window.onSOPSearchInput = function() {
     if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
     // 不做任何 auto-search,避免邊打邊查擾人
