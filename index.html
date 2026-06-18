@@ -8483,11 +8483,10 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   };
 
-  // 輸入框 debounce（300ms 沒打字就自動搜）— 僅關鍵字模式啟用
+  // 不自動搜尋 — 只有按 Enter 或「搜尋」按鈕才會觸發
   window.onSOPSearchInput = function() {
     if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
-    if (sopSearchMode === 'qa') return; // 問答模式：只用 Enter / 送出鈕觸發
-    debounceTimer = setTimeout(runSOPSearch, 300);
+    // 不做任何 auto-search,避免邊打邊查擾人
   };
 
   // 取得目前登入員工 empId（用 index.html 既有的 CURRENT_USER）
