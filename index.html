@@ -5902,6 +5902,12 @@ function canViewLeaveRecordsFE() {
 }
 
 function loadLeaveRecords() {
+  // === 請假異動功能已暫停顯示 ===
+  // 未來要恢復:刪除下面 3 行(含註解),整個區塊會重新運作
+  $('leaveSection').style.display = 'none';
+  return;
+  // === 暫停區塊結束 ===
+
   if (!canViewLeaveRecordsFE()) {
     $('leaveSection').style.display = 'none';
     return;
