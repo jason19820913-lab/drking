@@ -3650,7 +3650,7 @@
       <button class="btn-write-kudos" id="btnWriteKudos" style="display:none;">＋ 寫一張</button>
     </div>
     <div class="kudos-leaderboard" id="kudosLeaderboard" style="display:none;">
-      <div class="kudos-lb-title">🏆 本月被謝最多</div>
+      <div class="kudos-lb-title" id="kudosLbTitle">🏆 本月被謝最多</div>
       <div class="kudos-lb-list" id="kudosLbList"></div>
     </div>
     <div class="kudos-list" id="kudosList"></div>
@@ -4574,6 +4574,12 @@ function renderKudosFileList() {
 }
 
 function loadKudos() {
+  var titleEl = document.getElementById('kudosLbTitle');
+  if (titleEl && window.KUDOS_LB_MONTH) {
+    titleEl.textContent = window.KUDOS_LB_MONTH.isCurrentMonth
+      ? '🏆 本月被謝最多 (' + window.KUDOS_LB_MONTH.month + ')'
+      : '📊 上月排行 (' + window.KUDOS_LB_MONTH.month + ')';
+  }
   apiGet({ action: 'getKudos', limit: 30 }, function(res){
     KUDOS = (res && res.success && Array.isArray(res.kudos)) ? res.kudos : [];
     renderKudos();
@@ -4581,6 +4587,7 @@ function loadKudos() {
   apiGet({ action: 'getKudosLeaderboard', n: 5 }, function(res){
     KUDOS_LB = (res && res.success && Array.isArray(res.leaderboard)) ? res.leaderboard : [];
     renderKudosLeaderboard();
+    window.KUDOS_LB_MONTH = (res && res.success) ? { month: res.month, isCurrentMonth: res.isCurrentMonth } : null;
   });
 }
 
