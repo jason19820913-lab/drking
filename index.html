@@ -4587,7 +4587,6 @@ function loadKudos() {
   apiGet({ action: 'getKudosLeaderboard', n: 5 }, function(res){
     KUDOS_LB = (res && res.success && Array.isArray(res.leaderboard)) ? res.leaderboard : [];
     renderKudosLeaderboard();
-    window.KUDOS_LB_MONTH = (res && res.success) ? { month: res.month, isCurrentMonth: res.isCurrentMonth } : null;
   });
 }
 
@@ -4852,14 +4851,16 @@ function renderKudosLeaderboard() {
     section.style.display = 'none';
     return;
   }
+  var titleEl = document.getElementById('kudosLbTitle');
+  if (titleEl) titleEl.textContent = '🏆 每月被謝最多';
+
   list.innerHTML = '';
-  KUDOS_LB.forEach(function(item, i){
+  KUDOS_LB.forEach(function(item){
+    var monthNum = item.month ? parseInt(item.month.split('-')[1], 10) : '?';
     var span = document.createElement('span');
     span.className = 'kudos-lb-item';
-    var rankCls = i === 0 ? 'r1' : '';
-    var rankIcon = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
     span.innerHTML =
-      '<span class="kudos-lb-rank ' + rankCls + '">' + rankIcon + '</span>' +
+      '<span class="kudos-lb-rank">' + monthNum + '月</span>' +
       escapeHtml(item.name || item.empId) +
       '<span class="kudos-lb-count">' + item.count + ' 次</span>';
     list.appendChild(span);
