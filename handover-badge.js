@@ -17,7 +17,7 @@
 
   function getUser() {
     try {
-      var d = JSON.parse(localStorage.getItem('ho_user') || 'null');
+      var d = JSON.parse(localStorage.getItem('ho_user_v2') || 'null');
       return d && d.user && d.user.empId ? d.user : null;
     } catch (e) { return null; }
   }
@@ -65,6 +65,6 @@
   setInterval(refresh, REFRESH_MS);
   // 同瀏覽器其他分頁登入/登出交班系統時即時同步
   window.addEventListener('storage', function (e) {
-    if (!e || !e.key || e.key === 'ho_user') refresh();
+    if (!e || !e.key || e.key === 'ho_user_v2') refresh();
   });
 })();
