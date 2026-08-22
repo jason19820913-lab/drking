@@ -3650,7 +3650,7 @@
       <button class="btn-write-kudos" id="btnWriteKudos" style="display:none;">＋ 寫一張</button>
     </div>
     <div class="kudos-leaderboard" id="kudosLeaderboard" style="display:none;">
-      <div class="kudos-lb-title" id="kudosLbTitle">🏆 本月被謝最多</div>
+      <div class="kudos-lb-title">🏆 本月被謝最多</div>
       <div class="kudos-lb-list" id="kudosLbList"></div>
     </div>
     <div class="kudos-list" id="kudosList"></div>
@@ -4272,14 +4272,24 @@ function toast(msg, type) {
 }
 
 // 用 GET 呼叫 Apps Script（避開 CORS）
-function apiGet(params, cb, errCb) {
+function apiGet(params, cb, errCb, _retry) {
   var q = Object.keys(params).map(function(k){
     return encodeURIComponent(k) + '=' + encodeURIComponent(params[k] == null ? '' : params[k]);
   }).join('&');
   fetch(API + '?' + q)
     .then(function(r){ return r.json(); })
     .then(cb)
-    .catch(function(e){ if (errCb) errCb(e); else console.error(e); });
+    .catch(function(e){
+      // 失敗自動重試 2 次（間隔遞增），解決同時多請求被 Google 丟棄造成卡片空白
+      var attempt = _retry || 0;
+      if (attempt < 2) {
+        setTimeout(function(){ apiGet(params, cb, errCb, attempt + 1); }, 800 * (attempt + 1));
+      } else if (errCb) {
+        errCb(e);
+      } else {
+        console.error(e);
+      }
+    });
 }
 
 // 用 POST 呼叫 Apps Script（用於含陣列、附件 base64 的請求）
@@ -4574,12 +4584,6 @@ function renderKudosFileList() {
 }
 
 function loadKudos() {
-  var titleEl = document.getElementById('kudosLbTitle');
-  if (titleEl && window.KUDOS_LB_MONTH) {
-    titleEl.textContent = window.KUDOS_LB_MONTH.isCurrentMonth
-      ? '🏆 本月被謝最多 (' + window.KUDOS_LB_MONTH.month + ')'
-      : '📊 上月排行 (' + window.KUDOS_LB_MONTH.month + ')';
-  }
   apiGet({ action: 'getKudos', limit: 30 }, function(res){
     KUDOS = (res && res.success && Array.isArray(res.kudos)) ? res.kudos : [];
     renderKudos();
@@ -4851,16 +4855,14 @@ function renderKudosLeaderboard() {
     section.style.display = 'none';
     return;
   }
-  var titleEl = document.getElementById('kudosLbTitle');
-  if (titleEl) titleEl.textContent = '🏆 每月被謝最多';
-
   list.innerHTML = '';
-  KUDOS_LB.forEach(function(item){
-    var monthNum = item.month ? parseInt(item.month.split('-')[1], 10) : '?';
+  KUDOS_LB.forEach(function(item, i){
     var span = document.createElement('span');
     span.className = 'kudos-lb-item';
+    var rankCls = i === 0 ? 'r1' : '';
+    var rankIcon = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
     span.innerHTML =
-      '<span class="kudos-lb-rank">' + monthNum + '月</span>' +
+      '<span class="kudos-lb-rank ' + rankCls + '">' + rankIcon + '</span>' +
       escapeHtml(item.name || item.empId) +
       '<span class="kudos-lb-count">' + item.count + ' 次</span>';
     list.appendChild(span);
@@ -8763,6 +8765,5 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
   </div>
 </div>
-<script src="handover-badge.js"></script>
 </body>
 </html>
