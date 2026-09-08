@@ -63,5 +63,7 @@
   refresh();
   setInterval(refresh, REFRESH_MS);
   window.addEventListener('focus', refresh);
+  // 員工在另一個分頁看完回報頁（已讀紀錄寫入 localStorage）→ 這裡立刻同步消掉
+  window.addEventListener('storage', function (ev) { if (!ev.key || ev.key === READ_KEY || ev.key === USER_KEY) refresh(); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) refresh(); });
 })();
