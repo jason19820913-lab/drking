@@ -4309,6 +4309,30 @@ function apiPost(payload, cb, errCb) {
 /* =========================================================
  * 登入
  * ========================================================= */
+/* ---------- 4 小時自動登出 ---------- */
+var SESSION_MAX_HOURS = 4;   // 登入有效時數,要調整改這裡
+
+function isSessionExpired() {
+  try {
+    var loginAt = parseInt(localStorage.getItem('eliteClinicLoginAt') || '0', 10);
+    if (!loginAt) return true;   // 沒有時間戳(舊版登入的)一律視為過期,強制重新登入一次
+    return (Date.now() - loginAt) > SESSION_MAX_HOURS * 60 * 60 * 1000;
+  } catch(e) { return false; }
+}
+
+function startSessionWatch() {
+  // 每 60 秒檢查一次;過期就提示 + 自動登出
+  if (window._sessionWatchTimer) return;
+  window._sessionWatchTimer = setInterval(function(){
+    if (CURRENT_USER && isSessionExpired()) {
+      clearInterval(window._sessionWatchTimer);
+      window._sessionWatchTimer = null;
+      alert('登入已超過 ' + SESSION_MAX_HOURS + ' 小時,為確保資訊安全請重新登入。');
+      logout();
+    }
+  }, 60 * 1000);
+}
+
 function initLogin() {
   // 記住上次登入的員工編號
   try {
@@ -4316,15 +4340,20 @@ function initLogin() {
     if (rememberedEmpId) $('loginEmpId').value = rememberedEmpId;
   } catch(e) {}
 
-  // 已登入就直接進主畫面
+  // 已登入且未過期才直接進主畫面;過期就清掉強制重新登入
   try {
     var saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      var u = JSON.parse(saved);
-      if (u && u.name) {
-        CURRENT_USER = u;
-        showDashboard();
-        return;
+      if (isSessionExpired()) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem('eliteClinicLoginAt');
+      } else {
+        var u = JSON.parse(saved);
+        if (u && u.name) {
+          CURRENT_USER = u;
+          showDashboard();
+          return;
+        }
       }
     }
   } catch(e) {}
@@ -4406,6 +4435,7 @@ function doLogin() {
       CURRENT_USER = res.user;
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(res.user));
+        localStorage.setItem('eliteClinicLoginAt', String(Date.now()));  // 記錄登入時間(供 4 小時自動登出)
         if (remember) {
           localStorage.setItem('eliteClinicRememberEmpId', empId);
         } else {
@@ -4501,7 +4531,14 @@ function escapeHtml(s) {
 function escapeAttr(s) { return escapeHtml(s); }
 
 function logout() {
-  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('eliteClinicLoginAt');   // 清掉登入時間戳
+  } catch(e) {}
+  if (window._sessionWatchTimer) {
+    clearInterval(window._sessionWatchTimer);
+    window._sessionWatchTimer = null;
+  }
   CURRENT_USER = null;
   ANNOUNCEMENTS = [];
   ANNS_EXPANDED = false;
@@ -7536,6 +7573,7 @@ function showDashboard() {
   if (!CURRENT_USER) return;
   $('loginPage').style.display = 'none';
   $('dashboard').style.display = 'block';
+  startSessionWatch();   // 啟動 4 小時自動登出監控
 
   // 使用者資訊
   var u = CURRENT_USER;
@@ -8765,6 +8803,5 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
   </div>
 </div>
-  <script src="report-badge.js"></script>
 </body>
 </html>
