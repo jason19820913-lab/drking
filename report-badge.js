@@ -54,7 +54,10 @@
     getJson('action=getMyIssues&empId=' + encodeURIComponent(u.empId)).then(function (res) {
       if (!res || !res.success) { reply.style.display = 'none'; return; }
       var read = getMap(READ_KEY);
-      var n = (res.issues || []).filter(function (it) { return it.reply && read[it.id] !== it.replyTime; }).length;
+      var n = (res.issues || []).filter(function (it) {
+        var a = it.lastActivity || it.replyTime || '';
+        return a && read[it.id] !== a;
+      }).length;
       reply.innerHTML = '💬 問題回報有新回覆 <span class="ir-n">' + n + '</span>';
       reply.style.display = n > 0 ? 'flex' : 'none';
     });
