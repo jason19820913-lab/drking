@@ -6447,6 +6447,9 @@ function buildReferralItem(r, paid) {
   } else if (r.daysOverdue > 0) {
     overdueText = '已逾 ' + r.daysOverdue + ' 天';
     overdueClass = 'overdue';
+  } else {
+    overdueText = '還有 ' + (-r.daysOverdue) + ' 天到期';   // 提前 1 個月預告
+    overdueClass = 'due-today';
   }
 
   var clinicText = r.clinic ? '（' + escapeHtml(r.clinic) + '）' : '';
