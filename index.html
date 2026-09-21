@@ -6336,12 +6336,33 @@ function getPaidReferralSigs() {
     return raw ? JSON.parse(raw) : [];
   } catch (e) { return []; }
 }
-function markReferralPaid(sig, paid) {
+function markReferralPaid(r, paid) {
+  var sig = (typeof r === 'string') ? r : r.sig;
   var arr = getPaidReferralSigs();
   var idx = arr.indexOf(sig);
   if (paid && idx < 0) arr.push(sig);
   if (!paid && idx >= 0) arr.splice(idx, 1);
   try { localStorage.setItem(referralPaidKey(), JSON.stringify(arr)); } catch (e) {}
+
+  // 同步寫進 Google Sheet 永久紀錄(誰、何時標記發放)
+  if (CURRENT_USER && CURRENT_USER.empId) {
+    var q = {
+      action: 'markReferralBonusPaid',
+      empId: CURRENT_USER.empId,
+      sig: sig,
+      paid: paid ? '1' : '0'
+    };
+    if (typeof r === 'object' && r) {
+      q.targetEmpId = r.empId || '';
+      q.empName = r.name || '';
+      q.stage = r.stageLabel || r.stage || '';
+      q.referrerName = r.referrerName || '';
+    }
+    apiGet(q, function(res){
+      // 標記成功後重抓,讓畫面帶出 server 記錄的發放時間
+      if (res && res.success) loadReferralBonusReminders();
+    });
+  }
 }
 
 function setupReferralTabs() {
@@ -6407,8 +6428,11 @@ function renderReferralBonus() {
   }
 
   var paid = getPaidReferralSigs();
+  // server 記錄(r.paid)或本機記錄任一成立就算已發放
+  function isPaidRec(r) { return !!r.paid || paid.indexOf(r.sig) >= 0; }
+
   var unpaidCount = 0;
-  REFERRAL_REMINDERS.forEach(function(r){ if (paid.indexOf(r.sig) < 0) unpaidCount++; });
+  REFERRAL_REMINDERS.forEach(function(r){ if (!isPaidRec(r)) unpaidCount++; });
 
   if (unpaidCount > 0) {
     badge.textContent = unpaidCount + ' 筆待發';
@@ -6420,7 +6444,7 @@ function renderReferralBonus() {
 
   var visible = (REFERRAL_TAB === 'all')
     ? REFERRAL_REMINDERS
-    : REFERRAL_REMINDERS.filter(function(r){ return paid.indexOf(r.sig) < 0; });
+    : REFERRAL_REMINDERS.filter(function(r){ return !isPaidRec(r); });
 
   if (visible.length === 0) {
     list.innerHTML = '<div class="referral-empty">' +
@@ -6435,7 +6459,7 @@ function renderReferralBonus() {
 }
 
 function buildReferralItem(r, paid) {
-  var isPaid = paid.indexOf(r.sig) >= 0;
+  var isPaid = !!r.paid || paid.indexOf(r.sig) >= 0;
   var item = document.createElement('div');
   item.className = 'referral-item' + (isPaid ? ' read' : '');
 
@@ -6474,13 +6498,19 @@ function buildReferralItem(r, paid) {
           '<span class="meta-value">' + escapeHtml(r.dueDate) + '</span>' +
           (overdueText ? '<span class="referral-overdue-pill ' + overdueClass + '">' + overdueText + '</span>' : '') +
         '</span>' +
+        (r.paid && r.paidAt
+          ? '<span><span class="meta-label">發放紀錄</span>　' +
+            '<span class="meta-value">✅ ' + escapeHtml(r.paidAt) +
+            (r.paidBy ? '（' + escapeHtml(r.paidBy) + ' 標記）' : '') + '</span></span>'
+          : '') +
       '</div>' +
     '</div>';
 
   item.querySelector('.referral-check').addEventListener('click', function(e){
     e.stopPropagation();
     var nowChecked = !this.classList.contains('checked');
-    markReferralPaid(r.sig, nowChecked);
+    if (!nowChecked && !confirm('確定要取消「已發放」標記？Sheet 上的發放紀錄也會一併刪除。')) return;
+    markReferralPaid(r, nowChecked);
     renderReferralBonus();
   });
 
