@@ -4312,17 +4312,11 @@ function apiPost(payload, cb, errCb) {
 /* ---------- 4 小時自動登出 ---------- */
 var SESSION_MAX_HOURS = 4;   // 登入有效時數,要調整改這裡
 
-var IDLE_LOGOUT_MINUTES = 2;  // 入口網與回報頁的分頁全部關閉超過幾分鐘 → 視為離開，強制重新登入（0 = 停用）
-
 function isSessionExpired() {
   try {
     var loginAt = parseInt(localStorage.getItem('eliteClinicLoginAt') || '0', 10);
     if (!loginAt) return true;   // 沒有時間戳(舊版登入的)一律視為過期,強制重新登入一次
-    if ((Date.now() - loginAt) > SESSION_MAX_HOURS * 60 * 60 * 1000) return true;
-    // 關閉即登出：report-badge.js / 回報頁開著時會每 15 秒寫心跳；心跳太舊代表所有分頁都關了
-    var seen = parseInt(localStorage.getItem('eliteClinicLastSeen') || '0', 10);
-    if (IDLE_LOGOUT_MINUTES > 0 && seen && (Date.now() - seen) > IDLE_LOGOUT_MINUTES * 60 * 1000) return true;
-    return false;
+    return (Date.now() - loginAt) > SESSION_MAX_HOURS * 60 * 60 * 1000;
   } catch(e) { return false; }
 }
 
@@ -4442,7 +4436,6 @@ function doLogin() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(res.user));
         localStorage.setItem('eliteClinicLoginAt', String(Date.now()));  // 記錄登入時間(供 4 小時自動登出)
-        localStorage.setItem('eliteClinicLastSeen', String(Date.now()));
         if (remember) {
           localStorage.setItem('eliteClinicRememberEmpId', empId);
         } else {
@@ -4541,7 +4534,6 @@ function logout() {
   try {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('eliteClinicLoginAt');   // 清掉登入時間戳
-    localStorage.removeItem('eliteClinicLastSeen');
   } catch(e) {}
   if (window._sessionWatchTimer) {
     clearInterval(window._sessionWatchTimer);
@@ -8844,5 +8836,6 @@ document.addEventListener('DOMContentLoaded', function(){
     </div>
   </div>
 </div>
+<script src="report-badge.js"></script>
 </body>
 </html>
