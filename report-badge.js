@@ -10,6 +10,10 @@
  *   1. 「我的回報」有沒有還沒看過的回覆   → 💬 問題回報有新回覆 N
  *   2. 「派給我的」有沒有未結案的案件     → 🛠 派案給你 N 件待處理
  * 點了分別開回報頁的對應分頁。沒有時完全不顯示。
+ *   3. 關閉即登出：所有分頁關閉超過 IDLE_LOGOUT_MINUTES 後再開 → 自動登出（見下方）
+ *
+ * ※ 入口網 index.html 只需要保留 </body> 前那一行 <script>，其餘邏輯都在本檔；
+ *   之後重新產生 index.html 時記得留著那一行即可。
  */
 (function () {
   var API = 'https://script.google.com/macros/s/AKfycbzH52RfuQaSbx1iyMbTHSIqC2ydsJPDz6SsWIYSCqpgVo9oCOymLu7B3JmSteprsYk/exec';
@@ -78,7 +82,22 @@
     });
   }
 
+  /* ---------- 關閉即登出（全部邏輯在本檔，入口網 index.html 不用改程式） ----------
+   * 入口網 / 回報頁開著時每 15 秒寫心跳；本檔載入時若心跳已超過 IDLE_LOGOUT_MINUTES，
+   * 代表所有分頁都關掉一陣子了 → 清掉登入並回到登入畫面。設 0 停用。 */
+  var IDLE_LOGOUT_MINUTES = 2;
+  var LOGIN_AT_KEY = 'eliteClinicLoginAt';
   function heartbeat() { if (getUser()) { try { localStorage.setItem(LAST_SEEN_KEY, String(Date.now())); } catch (e) {} } }
+  function forceLogoutIfIdle() {
+    if (!(IDLE_LOGOUT_MINUTES > 0) || !getUser()) return false;
+    var seen = parseInt(localStorage.getItem(LAST_SEEN_KEY) || '0', 10);
+    if (!seen || Date.now() - seen <= IDLE_LOGOUT_MINUTES * 60 * 1000) return false;
+    try { localStorage.removeItem(USER_KEY); localStorage.removeItem(LOGIN_AT_KEY); localStorage.removeItem(LAST_SEEN_KEY); } catch (e) {}
+    if (typeof window.logout === 'function') { try { window.logout(); } catch (e) { location.reload(); } }
+    else location.reload();
+    return true;
+  }
+  if (forceLogoutIfIdle()) return;
   heartbeat();
   setInterval(function () { if (!document.hidden) heartbeat(); }, 15000);
   window.addEventListener('pagehide', heartbeat);
@@ -86,6 +105,7 @@
   refresh();
   setInterval(refresh, REFRESH_MS);
   window.addEventListener('focus', refresh);
-  window.addEventListener('storage', function (ev) { if (!ev.key || ev.key === READ_KEY || ev.key === SEEN_KEY || ev.key === USER_KEY) refresh(); });
+  window.addEventListener('storage', function (ev) { if (!ev.key || ev.key === READ_KEY || ev.key === SEEN_KEY || ev.key === USER_KEY) { heartbeat(); refresh(); } });
+  window.addEventListener('focus', heartbeat);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) { heartbeat(); refresh(); } });
 })();
