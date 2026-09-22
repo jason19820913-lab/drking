@@ -50,7 +50,9 @@
       .then(function (r) { return r.json(); })
       .then(function (res) {
         if (!res || res.error) { box.style.display = 'none'; return; }
-        var n = (res.records || []).filter(function (r) { return r.status !== '已簽收'; }).length;
+        var n = (res.records || []).filter(function (r) {
+          return r.status !== '已簽收' && r.status !== '已完成';
+        }).length;
         if (n > 0) {
           box.innerHTML = '📥 交班待簽收 <span class="ho-n">' + n + '</span>';
           box.style.display = 'flex';
