@@ -17,6 +17,7 @@
   var USER_KEY = 'eliteClinicPortalUser';
   var READ_KEY = 'issueReadReplies';
   var SEEN_KEY = 'issueAssignedSeen';
+  var LAST_SEEN_KEY = 'eliteClinicLastSeen';   // 心跳：入口網開著就每 15 秒更新（供「關閉即登出」判斷）
   var REFRESH_MS = 120000; // 每 2 分鐘更新一次
 
   function getUser() {
@@ -77,9 +78,14 @@
     });
   }
 
+  function heartbeat() { if (getUser()) { try { localStorage.setItem(LAST_SEEN_KEY, String(Date.now())); } catch (e) {} } }
+  heartbeat();
+  setInterval(function () { if (!document.hidden) heartbeat(); }, 15000);
+  window.addEventListener('pagehide', heartbeat);
+
   refresh();
   setInterval(refresh, REFRESH_MS);
   window.addEventListener('focus', refresh);
   window.addEventListener('storage', function (ev) { if (!ev.key || ev.key === READ_KEY || ev.key === SEEN_KEY || ev.key === USER_KEY) refresh(); });
-  document.addEventListener('visibilitychange', function () { if (!document.hidden) refresh(); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { heartbeat(); refresh(); } });
 })();
