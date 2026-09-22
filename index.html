@@ -6787,15 +6787,15 @@ function setupAnnouncements() {
   // 點 modal 背景關閉
   document.querySelectorAll('.modal-overlay').forEach(function(overlay){
     overlay.addEventListener('click', function(e){
-      if (e.target === overlay) overlay.classList.remove('show');
+            if (e.target === overlay) closeModal(overlay.id);
     });
   });
 
   // Esc 關閉
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-overlay.show').forEach(function(m){
-        m.classList.remove('show');
+            document.querySelectorAll('.modal-overlay.show').forEach(function(m){
+        closeModal(m.id);
       });
     }
   });
