@@ -91,6 +91,8 @@
   function forceLogoutIfIdle() {
     if (!(IDLE_LOGOUT_MINUTES > 0) || !getUser()) return false;
     var seen = parseInt(localStorage.getItem(LAST_SEEN_KEY) || '0', 10);
+    var loginAt = parseInt(localStorage.getItem(LOGIN_AT_KEY) || '0', 10);
+    if (loginAt && seen && seen < loginAt) seen = 0;   // 上一次登入留下的舊心跳不算數
     if (!seen || Date.now() - seen <= IDLE_LOGOUT_MINUTES * 60 * 1000) return false;
     try { localStorage.removeItem(USER_KEY); localStorage.removeItem(LOGIN_AT_KEY); localStorage.removeItem(LAST_SEEN_KEY); } catch (e) {}
     if (typeof window.logout === 'function') { try { window.logout(); } catch (e) { location.reload(); } }
